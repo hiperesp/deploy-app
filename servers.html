@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-        <title>Apps - AppOps</title>
+        <title>Servers - AppOps</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous" defer=""></script>
@@ -40,7 +40,7 @@
         <main class="py-3">
             <div class="container">
                 <div>
-                    <h1 class="fs-1">Aplicativos</h1>
+                    <h1 class="fs-1">Servidores</h1>
                 </div>
                 <hr class="mt-0">
                 <div class="row">
@@ -52,15 +52,41 @@
                                         <img src="images/icons/1309-load-balancer-flat.gif" class="rounded-circle" style="background-color: hsl(263, 90%, 80%)" width="40" height="40">
                                     </div>
                                     <div class="col-10 ps-0">
-                                        <h5 class="card-title">Criar um novo app</h5>
-                                        <p class="card-text text-muted">Um repositório no GitHub será criado e configurado. Esse esse app será criado no servidor Dokku selecionado.</p>
+                                        <h5 class="card-title">Adicionar um novo servidor</h5>
+                                        <p class="card-text text-muted">Adicionar um novo servidor Dokku para permitir a criação de apps.</p>
                                     </div>
                                 </div>
                             </div>
                         </a>
                     </div>
                     <div class="col-sm-12 col-md-6 col-xl-4 mb-4">
-                        <a href="app.html" class="card text-reset text-decoration-none">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-2">
+                                        <img src="images/icons/57-server-flat.gif" class="rounded-circle" style="background-color: hsl(152, 69%, 70%)" width="40" height="40">
+                                    </div>
+                                    <div class="col-10 ps-0">
+                                        <h5 class="card-title">Oracle Cloud Infrastructure - Production</h5>
+                                        <p class="card-text text-muted">12 apps estão aqui</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- colocar na tela de server -->
+                            <div class="card-footer">
+                                <div class="d-flex">
+                                    <div class="flex-fill"></div>
+                                    <a href="apps.html" class="list-group-item link-primary fw-bold text-decoration-none">Ver apps</a>
+                                    <div class="vr mx-2"></div>
+                                    <a href="server.html" class="list-group-item link-primary fw-bold text-decoration-none">Ver detalhes</a>
+                                    <div class="vr mx-2"></div>
+                                    <a target="_blank" href="https://gabstep.com.br" class="list-group-item link-primary fw-bold text-decoration-none">Acessar App <i class="bi bi-box-arrow-up-right"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-6 col-xl-4 mb-4">
+                        <div class="card">
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-2">
@@ -72,10 +98,18 @@
                                     </div>
                                 </div>
                             </div>
-                        </a>
+                            <div class="card-footer">
+                                <div class="d-flex">
+                                    <div class="flex-fill"></div>
+                                    <a href="app.html" class="list-group-item link-primary fw-bold text-decoration-none">Ver detalhes</a>
+                                    <div class="vr mx-2"></div>
+                                    <a target="_blank" href="https://gabstep.com.br" class="list-group-item link-primary fw-bold text-decoration-none">Acessar App <i class="bi bi-box-arrow-up-right"></i></a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="col-sm-12 col-md-6 col-xl-4 mb-4">
-                        <a href="app.html" class="card text-reset text-decoration-none">
+                        <div class="card">
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-2">
@@ -87,25 +121,18 @@
                                     </div>
                                 </div>
                             </div>
-                        </a>
-                    </div>
-                    <div class="col-sm-12 col-md-6 col-xl-4 mb-4">
-                        <a href="app.html" class="card text-reset text-decoration-none">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-2">
-                                        <img src="images/icons/57-server-flat.gif" class="rounded-circle" style="background-color: hsl(152, 69%, 70%)" width="40" height="40">
-                                    </div>
-                                    <div class="col-10 ps-0">
-                                        <h5 class="card-title">upload-pages-artifact</h5>
-                                        <p class="card-text text-muted">Uma ação composite para empacotar e enviar um artefato que pode ser implantado no Github Pages.</p>
-                                    </div>
+                            <div class="card-footer">
+                                <div class="d-flex">
+                                    <div class="flex-fill"></div>
+                                    <a href="app.html" class="list-group-item link-primary fw-bold text-decoration-none">Ver detalhes</a>
+                                    <div class="vr mx-2"></div>
+                                    <a target="_blank" href="https://gabstep.com.br" class="list-group-item link-primary fw-bold text-decoration-none">Acessar App <i class="bi bi-box-arrow-up-right"></i></a>
                                 </div>
                             </div>
-                        </a>
+                        </div>
                     </div>
                     <div class="col-sm-12 col-md-6 col-xl-4 mb-4">
-                        <a href="app.html" class="card text-reset text-decoration-none">
+                        <div class="card">
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-2">
@@ -117,10 +144,18 @@
                                     </div>
                                 </div>
                             </div>
-                        </a>
+                            <div class="card-footer">
+                                <div class="d-flex">
+                                    <div class="flex-fill"></div>
+                                    <a href="app.html" class="list-group-item link-primary fw-bold text-decoration-none">Ver detalhes</a>
+                                    <div class="vr mx-2"></div>
+                                    <a target="_blank" href="https://gabstep.com.br" class="list-group-item link-primary fw-bold text-decoration-none">Acessar App <i class="bi bi-box-arrow-up-right"></i></a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="col-sm-12 col-md-6 col-xl-4 mb-4">
-                        <a href="app.html" class="card text-reset text-decoration-none">
+                        <div class="card">
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-2">
@@ -132,7 +167,15 @@
                                     </div>
                                 </div>
                             </div>
-                        </a>
+                            <div class="card-footer">
+                                <div class="d-flex">
+                                    <div class="flex-fill"></div>
+                                    <a href="app.html" class="list-group-item link-primary fw-bold text-decoration-none">Ver detalhes</a>
+                                    <div class="vr mx-2"></div>
+                                    <a target="_blank" href="https://gabstep.com.br" class="list-group-item link-primary fw-bold text-decoration-none">Acessar App <i class="bi bi-box-arrow-up-right"></i></a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
