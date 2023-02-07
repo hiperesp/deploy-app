@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+        <title>upload-pages-artifact - AppOps</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous" defer=""></script>
+        <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+        <script src="scripts/custom.js" defer=""></script>
+    </head>
+    <body>
+        <header>
+            <nav class="navbar bg-primary" data-bs-theme="dark">
+                <div class="container-fluid">
+                    <a class="navbar-brand" href="index.html">AppOps</a>
+                </div>
+            </nav>
+        </header>
+        <main class="py-3">
+            <div class="container">
+                <div class="row">
+                    <div class="offset-3 col-lg-6">
+                        <div class="col-lg-12">
+                            <h1 class="fs-1">Criar um novo app</h1>
+                            <p class="fs-5 text-muted">Criaremos um repositório Git na conta selecionada e realizaremos a configuração para deploy automático a cada push. Criaremos também um app no servidor Dokku selecionado.</p>
+                        </div>
+                        <hr>
+                        <form>
+                            <div class="mb-3">
+                                <label for="exampleFormControlInput1" class="form-label">Nome do app</label>
+                                <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
+                            </div>
+                            <div class="mb-3">
+                                <label for="exampleFormControlInput1" class="form-label">Localização do app</label>
+                                <select class="form-select" aria-label="Default select example">
+                                    <option selected>Selecione o servidor para implantação do app</option>
+                                    <option value="oci">Oracle Cloud Infrastructure</option>
+                                    <option value="aws">Amazon Web Services</option>
+                                    <option value="gcp">Google Cloud Platform</option>
+                                </select>
+                            </div>
+                            <hr>
+                            <div class="mb-3">
+                                <label for="exampleFormControlTextarea1" class="form-label">Domínios do app</label>
+                                <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="exampleFormControlTextarea1" class="form-label">Mapeamento de portas</label>
+                                <textarea class="form-control" id="exampleFormControlTextarea1" rows="3">http:80:80&#13;&#10;https:443:80</textarea>
+                            </div>
+                            <hr>
+                            <div class="mb-3">
+                                <label for="exampleFormControlTextarea1" class="form-label">Variáveis de ambiente</label>
+                                <textarea class="form-control" id="exampleFormControlTextarea1" rows="3">ENV=production</textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="exampleFormControlTextarea1" class="form-label">Variáveis secretas de ambiente</label>
+                                <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                            </div>
+                            <hr>
+                            <button type="submit" class="btn btn-primary ms-auto d-block">Criar app</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </body>
+</html>
