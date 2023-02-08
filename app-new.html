@@ -47,58 +47,56 @@
                         </div>
                         <hr>
                         <form>
-                            <div class="tab-content">
-                                <div>
-                                    <h5 class="fs-5 mt-4 mb-3">Dados básicos do app</h5>
-                                    <div class="mb-3">
-                                        <label for="exampleFormControlInput1" class="form-label">Nome do app</label>
-                                        <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="exampleFormControlInput1" class="form-label">Localização do app</label>
-                                        <select class="form-select">
-                                            <option selected>Selecione o servidor para implantação do app</option>
-                                            <option value="1">OCI Server 1</option>
-                                            <option value="2">OCI Server 2</option>
-                                            <option value="3">AWS Server</option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="exampleFormControlInput1" class="form-label">Workflows</label>
-                                        <select class="form-select" aria-label="Default select example">
-                                            <option selected>Selecione uma workflow</option>
-                                            <option value="1">Deploy quando push na branch master/main</option>
-                                            <option value="2">Deploy com release quando push na branch master/main</option>
-                                        </select>
-                                    </div>
+                            <div>
+                                <h5 class="fs-5 mt-4 mb-3">Dados básicos do app</h5>
+                                <div class="mb-3">
+                                    <label class="form-label">Nome do app</label>
+                                    <input type="text" class="form-control">
                                 </div>
-                                <hr>
-                                <div>
-                                    <h5 class="fs-5 mt-4 mb-3">Acesso ao app</h5>
-                                    <div class="mb-3">
-                                        <label for="exampleFormControlTextarea1" class="form-label">Domínios do app</label>
-                                        <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="exampleFormControlTextarea1" class="form-label">Mapeamento de portas</label>
-                                        <textarea class="form-control" id="exampleFormControlTextarea1" rows="3">http:80:80&#13;&#10;https:443:80</textarea>
-                                    </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Localização do app</label>
+                                    <select class="form-select">
+                                        <option selected>Selecione o servidor para implantação do app</option>
+                                        <option value="1">OCI Server 1</option>
+                                        <option value="2">OCI Server 2</option>
+                                        <option value="3">AWS Server</option>
+                                    </select>
                                 </div>
-                                <hr>
-                                <div>
-                                    <h5 class="fs-5 mt-4 mb-3">Variáveis de ambiente</h5>
-                                    <div class="mb-3">
-                                        <label for="exampleFormControlTextarea1" class="form-label">Variáveis de ambiente</label>
-                                        <textarea class="form-control" id="exampleFormControlTextarea1" rows="3">ENV=production</textarea>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="exampleFormControlTextarea1" class="form-label">Variáveis secretas de ambiente</label>
-                                        <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-                                    </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Workflows</label>
+                                    <select class="form-select" aria-label="Default select example">
+                                        <option selected>Selecione uma workflow</option>
+                                        <option value="1">Deploy quando push na branch master/main</option>
+                                        <option value="2">Deploy com release quando push na branch master/main</option>
+                                    </select>
                                 </div>
-                                <hr>
-                                <button type="submit" class="btn btn-primary ms-auto d-block">Criar app</button>
                             </div>
+                            <hr>
+                            <div>
+                                <h5 class="fs-5 mt-4 mb-3">Acesso ao app</h5>
+                                <div class="mb-3">
+                                    <label class="form-label">Domínios do app</label>
+                                    <textarea class="form-control" rows="3"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Mapeamento de portas</label>
+                                    <textarea class="form-control" rows="3">http:80:80&#13;&#10;https:443:80</textarea>
+                                </div>
+                            </div>
+                            <hr>
+                            <div>
+                                <h5 class="fs-5 mt-4 mb-3">Variáveis de ambiente</h5>
+                                <div class="mb-3">
+                                    <label class="form-label">Variáveis de ambiente</label>
+                                    <textarea class="form-control" rows="3">ENV=production</textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Variáveis secretas de ambiente</label>
+                                    <textarea class="form-control" rows="3"></textarea>
+                                </div>
+                            </div>
+                            <hr>
+                            <button type="submit" class="btn btn-primary ms-auto d-block">Criar app</button>
                         </form>
                     </div>
                 </div>
