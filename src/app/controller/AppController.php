@@ -3,6 +3,7 @@
 namespace app\controller;
 
 use app\model\Apps;
+use app\model\Servers;
 use hiperesp\framework\system\router\attributes\Middleware;
 use hiperesp\framework\system\router\attributes\Route;
 
@@ -29,7 +30,9 @@ class AppController extends Controller {
 
     #[Route(method: Route::GET, pattern: "/new")]
     public function create(Request $request, Response $response): Response {
-        return $this->view($request)->render($response, 'pages/app/new.twig', []);
+        return $this->view($request)->render($response, 'pages/app/new.twig', [
+            "servers" => Servers::instance()->list(),
+        ]);
     }
 
     #[Route(method: Route::GET, pattern: "/{app-name}")]

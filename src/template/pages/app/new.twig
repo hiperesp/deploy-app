@@ -54,9 +54,9 @@
                                     <label class="form-label">Localização do app</label>
                                     <select class="form-select">
                                         <option selected>Selecione o servidor para implantação do app</option>
-                                        <option value="1">OCI Server 1</option>
-                                        <option value="2">OCI Server 2</option>
-                                        <option value="3">AWS Server</option>
+                                        {% for server in servers %}
+                                            <option value="{{ server.id }}">{{ server.name }}</option>
+                                        {% endfor %}
                                     </select>
                                 </div>
                                 <div class="mb-3">
