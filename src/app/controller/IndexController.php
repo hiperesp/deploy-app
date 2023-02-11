@@ -14,7 +14,10 @@ class IndexController extends Controller {
     
     public static function children(): array {
         return [
-            AuthController::class,
+            // AuthController::class,
+            AppController::class,
+            // ServerController::class,
+            // WorkflowController::class,
         ];
     }
 
