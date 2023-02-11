@@ -1,0 +1,13 @@
+version: '3'
+services:
+  web:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    container_name: appops
+    ports:
+      - "3000:80"
+    volumes:
+      - ./src:/var/www/html
+    environment:
+      - ENV=local-docker

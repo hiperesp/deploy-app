@@ -1,0 +1,21 @@
+RewriteEngine On
+
+# Caso seja a pasta well-known, o script encerra aqui.
+RewriteRule ^\.well-known/. - [L]
+
+# Caso não seja nenhum arquivo existente no servidor
+RewriteCond %{SCRIPT_FILENAME} !-f
+
+# Caso não seja nenhum arquivo .sgt.php
+RewriteCond %{SCRIPT_FILENAME} \/((?!\.sgt).)+\.php$ [OR]
+
+# Caso seja algum arquivo .DS_Store ou .gitkeep
+RewriteCond %{SCRIPT_FILENAME} \.DS_Store$ [OR]
+RewriteCond %{SCRIPT_FILENAME} \.gitkeep$ [OR]
+RewriteCond %{SCRIPT_FILENAME} \.twig$ [OR]
+
+# Caso seja algum arquivo composer.json ou composer.lock
+RewriteCond %{SCRIPT_FILENAME} composer\.json$ [OR]
+RewriteCond %{SCRIPT_FILENAME} composer\.lock$ [OR]
+
+RewriteRule ^(.*)$ index.sgt.php [QSA]
