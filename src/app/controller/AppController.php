@@ -34,8 +34,14 @@ class AppController extends Controller {
 
     #[Route(method: Route::GET, pattern: "/{app-name}")]
     public function read(Request $request, Response $response): Response {
+        $app = Apps::instance()->get($request->getAttribute("app-name"));
+        if(!$app) {
+            return $this->view($request)->render($response, 'pages/app/not-found.twig', [
+                "requestedApp" => $request->getAttribute("app-name"),
+            ]);
+        }
         return $this->view($request)->render($response, 'pages/app/info.twig', [
-            "app" => Apps::instance()->get($request->getAttribute("app-name")),
+            "app" => $app,
         ]);
     }
 

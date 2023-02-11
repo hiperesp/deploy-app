@@ -39,7 +39,7 @@ class Apps extends Model {
                 ],
             ],
             [
-                "name" => "upload-pages-artifact",
+                "name" => "upload-pages-artifact-2",
                 "description" => "Uma ação composite para empacotar e enviar um artefato que pode ser implantado no Github Pages.",
                 "status" => "stopped",
                 "publicUrl" => "https://upload-pages-artifact.appops.dev",

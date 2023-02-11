@@ -1,0 +1,12 @@
+{% extends "layout/layout.twig" %}
+{% set title %}Aplicativo não encontrado{% endset %}
+{% block content %}
+    <main class="py-3">
+        <div class="container">
+            <div>
+                <h1 class="fs-1">App não encontrado</h1>
+                <p class="fs-5 text-muted">O app "{{ requestedApp }}" não foi encontrado.</p>
+            </div>
+        </div>
+    </main>
+{% endblock %}
