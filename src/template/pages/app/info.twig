@@ -1,138 +1,114 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-        <title>upload-pages-artifact - AppOps</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous" defer=""></script>
-        <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-        <script src="scripts/custom.js" defer=""></script>
-    </head>
-    <body>
-        <header>
-            <nav class="navbar bg-primary navbar-expand-lg" data-bs-theme="dark">
-                <div class="container-fluid">
-                    <a class="navbar-brand" href="index.html">AppOps</a>
-                    <button class="navbar-toggler border-0 fs-1 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#main-nav" aria-expanded="false" aria-label="Toggle navigation">
-                        <i class="bi bi-list"></i>
-                    </button>
-                    <div class="collapse navbar-collapse" id="main-nav">
-                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                            <li class="nav-item">
-                                <a class="nav-link" href="app-list.html">Apps</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="server-list.html">Servers</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="workflow-list.html">Workflows</a>
-                            </li>
-                        </ul>
-                    </div>
+{% extends "layout/layout.twig" %}
+{% set title %}{{ app.name }}{% endset %}
+{% block content %}
+    <main class="py-3">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12 col-lg-9">
+                    <h1 class="fs-1">{{ app.name }}</h1>
+                    <p class="fs-5 text-muted">{{ app.description }}</p>
                 </div>
-            </nav>
-        </header>
-        <main class="py-3">
-            <div class="container">
-                <div class="row">
-                    <div class="col-sm-12 col-lg-9">
-                        <h1 class="fs-1">upload-pages-artifact</h1>
-                        <p class="fs-5 text-muted">Uma ação composite para empacotar e enviar um artefato que pode ser implantado no Github Pages.</p>
-                    </div>
-                    <div class="d-lg-none px-3">
-                        <hr>
-                    </div>
-                    <a href="javascript:void(0);" class="col-sm-6 col-lg-3 pt-lg-4 text-decoration-none">
+                <div class="d-lg-none px-3">
+                    <hr>
+                </div>
+                {% if app.git.latestRelease %}
+                    <a target="_blank" href="{{ app.git.latestRelease.url }}" class="col-sm-6 col-lg-3 pt-lg-4 text-decoration-none">
                         <div class="text-success fw-bold">
-                            <i class="bi bi-tags-fill"></i> Release 2.5.3
+                            <i class="bi bi-tags-fill"></i> Release {{ app.git.latestRelease.tagName }}
                         </div>
-                        <p class="text-muted fs-6">Lançado em 06/02/2023, às 02:01</p>
+                        <p class="text-muted fs-6">Lançado em {{ app.git.latestRelease.date|date("d/m/Y") }}, às {{ app.git.latestRelease.date|date("H:i") }}</p>
                     </a>
-                </div>
-                <hr class="mt-0 mb-0">
-                <div class="row">
-                    <div class="col-sm-12 col-lg-9 pt-4">
-                        <div class="card mb-4">
-                            <div class="card-body">
-                                <h5 class="card-title">Requisições nas últimas 24h</h5>
-                                <div
-                                    data-chart-data-type="requests"
-                                    data-chart-colors="[&quot;#1abc9c&quot;,&quot;#3498db&quot;,&quot;#f1c40f&quot;,&quot;#e74c3c&quot;,&quot;#95a5a6&quot;]"
-                                    data-chart-labels="[&quot;00:00 - 00:59&quot;,&quot;01:00 - 01:59&quot;,&quot;02:00 - 02:59&quot;,&quot;03:00 - 03:59&quot;,&quot;04:00 - 04:59&quot;,&quot;05:00 - 05:59&quot;,&quot;06:00 - 06:59&quot;,&quot;07:00 - 07:59&quot;,&quot;08:00 - 08:59&quot;,&quot;09:00 - 09:59&quot;,&quot;10:00 - 10:59&quot;,&quot;11:00 - 11:59&quot;,&quot;12:00 - 12:59&quot;,&quot;13:00 - 13:59&quot;,&quot;14:00 - 14:59&quot;,&quot;15:00 - 15:59&quot;,&quot;16:00 - 16:59&quot;,&quot;17:00 - 17:59&quot;,&quot;18:00 - 18:59&quot;,&quot;19:00 - 19:59&quot;,&quot;20:00 - 20:59&quot;,&quot;21:00 - 21:59&quot;,&quot;22:00 - 22:59&quot;,&quot;23:00 - 23:59&quot;]"
-                                    data-chart-data="[{&quot;name&quot;:&quot;Sucesso 2xx&quot;,&quot;data&quot;:[120,23,45,2,95,33,12,45,23,45,2,95,33,12,45,23,45,2,95,33,12,45,23,45]},{&quot;name&quot;:&quot;Redirecionamento 3xx&quot;,&quot;data&quot;:[120,23,45,2,95,33,12,45,23,45,2,95,33,12,45,23,45,2,95,33,12,45,23,45]},{&quot;name&quot;:&quot;Erro 4xx&quot;,&quot;data&quot;:[120,23,45,2,95,33,12,45,23,45,2,95,33,12,45,23,45,2,95,33,12,45,23,45]},{&quot;name&quot;:&quot;Erro 5xx&quot;,&quot;data&quot;:[120,23,45,2,95,33,12,45,23,45,2,95,33,12,45,23,45,2,95,33,12,45,23,45]},{&quot;name&quot;:&quot;Outros&quot;,&quot;data&quot;:[120,23,45,2,95,33,12,45,23,45,2,95,33,12,45,23,45,2,95,33,12,45,23,45]}]"
-                                ></div>
-                            </div>
-                        </div>
-                        <div class="card mb-4">
-                            <div class="card-body">
-                                <h5 class="card-title">Requisições nos últimos 7 dias</h5>
-                                <div
-                                    data-chart-data-type="requests"
-                                    data-chart-colors="[&quot;#1abc9c&quot;,&quot;#3498db&quot;,&quot;#f1c40f&quot;,&quot;#e74c3c&quot;,&quot;#95a5a6&quot;]"
-                                    data-chart-labels="[&quot;31/01/2023&quot;,&quot;01/02/2023&quot;,&quot;02/02/2023&quot;,&quot;03/02/2023&quot;,&quot;04/02/2023&quot;,&quot;05/02/2023&quot;,&quot;06/02/2023&quot;]"
-                                    data-chart-data="[{&quot;name&quot;:&quot;Sucesso 2xx&quot;,&quot;data&quot;:[44,55,41,37,22,43,21]},{&quot;name&quot;:&quot;Redirecionamento 3xx&quot;,&quot;data&quot;:[53,32,33,52,13,43,32]},{&quot;name&quot;:&quot;Erro 4xx&quot;,&quot;data&quot;:[12,17,11,9,15,11,20]},{&quot;name&quot;:&quot;Erro 5xx&quot;,&quot;data&quot;:[9,7,5,8,6,9,4]},{&quot;name&quot;:&quot;Outros&quot;,&quot;data&quot;:[25,12,19,32,25,24,10]}]"
-                                ></div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-12 col-xl-6">
-                                <div class="card mb-4">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Status HTTP nas últimas 24h</h5>
-                                        <div
-                                            data-chart-data-type="status"
-                                            data-chart-colors="[&quot;#1abc9c&quot;,&quot;#3498db&quot;,&quot;#f1c40f&quot;,&quot;#e74c3c&quot;,&quot;#95a5a6&quot;]"
-                                            data-chart-labels="[&quot;Sucesso 2xx&quot;,&quot;Redirecionamento 3xx&quot;,&quot;Erro 4xx&quot;,&quot;Erro 5xx&quot;,&quot;Outros&quot;]"
-                                            data-chart-data="[44,55,41,37,22]"
-                                        ></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-sm-12 col-xl-6">
-                                <div class="card mb-4">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Status HTTP nos últimos 7 dias</h5>
-                                        <div
-                                            data-chart-data-type="status"
-                                            data-chart-colors="[&quot;#1abc9c&quot;,&quot;#3498db&quot;,&quot;#f1c40f&quot;,&quot;#e74c3c&quot;,&quot;#95a5a6&quot;]"
-                                            data-chart-labels="[&quot;Sucesso 2xx&quot;,&quot;Redirecionamento 3xx&quot;,&quot;Erro 4xx&quot;,&quot;Erro 5xx&quot;,&quot;Outros&quot;]"
-                                            data-chart-data="[44,55,41,37,22]"
-                                        ></div>
-                                    </div>
-                                </div>
-                            </div>
+                {% endif %}
+            </div>
+            <hr class="mt-0 mb-0">
+            <div class="row">
+                <div class="col-sm-12 col-lg-9 pt-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Requisições nas últimas 24h</h5>
+                            <div
+                                data-chart-data-type="requests"
+                                data-chart-colors="[&quot;#1abc9c&quot;,&quot;#3498db&quot;,&quot;#f1c40f&quot;,&quot;#e74c3c&quot;,&quot;#95a5a6&quot;]"
+                                data-chart-labels="[&quot;00:00 - 00:59&quot;,&quot;01:00 - 01:59&quot;,&quot;02:00 - 02:59&quot;,&quot;03:00 - 03:59&quot;,&quot;04:00 - 04:59&quot;,&quot;05:00 - 05:59&quot;,&quot;06:00 - 06:59&quot;,&quot;07:00 - 07:59&quot;,&quot;08:00 - 08:59&quot;,&quot;09:00 - 09:59&quot;,&quot;10:00 - 10:59&quot;,&quot;11:00 - 11:59&quot;,&quot;12:00 - 12:59&quot;,&quot;13:00 - 13:59&quot;,&quot;14:00 - 14:59&quot;,&quot;15:00 - 15:59&quot;,&quot;16:00 - 16:59&quot;,&quot;17:00 - 17:59&quot;,&quot;18:00 - 18:59&quot;,&quot;19:00 - 19:59&quot;,&quot;20:00 - 20:59&quot;,&quot;21:00 - 21:59&quot;,&quot;22:00 - 22:59&quot;,&quot;23:00 - 23:59&quot;]"
+                                data-chart-data="[{&quot;name&quot;:&quot;Sucesso 2xx&quot;,&quot;data&quot;:[120,23,45,2,95,33,12,45,23,45,2,95,33,12,45,23,45,2,95,33,12,45,23,45]},{&quot;name&quot;:&quot;Redirecionamento 3xx&quot;,&quot;data&quot;:[120,23,45,2,95,33,12,45,23,45,2,95,33,12,45,23,45,2,95,33,12,45,23,45]},{&quot;name&quot;:&quot;Erro 4xx&quot;,&quot;data&quot;:[120,23,45,2,95,33,12,45,23,45,2,95,33,12,45,23,45,2,95,33,12,45,23,45]},{&quot;name&quot;:&quot;Erro 5xx&quot;,&quot;data&quot;:[120,23,45,2,95,33,12,45,23,45,2,95,33,12,45,23,45,2,95,33,12,45,23,45]},{&quot;name&quot;:&quot;Outros&quot;,&quot;data&quot;:[120,23,45,2,95,33,12,45,23,45,2,95,33,12,45,23,45,2,95,33,12,45,23,45]}]"
+                            ></div>
                         </div>
                     </div>
-                    <div class="col-sm-12 col-lg-3">
-                        <div class="sticky-lg-top pt-lg-4">
-                            <div class="card mb-4 mt-0">
-                                <div class="card-body">
-                                    <h5 class="card-title">Ações do app</h5>
-                                    <p class="card-text">
-                                        <a target="_blank" href="https://gabstep.com.br" class="text-decoration-none d-block fw-bold"><i class="bi bi bi-box-fill"></i> Acessar App</a>
-                                        <a href="javascript:void(0)" class="text-decoration-none d-block fw-bold"><i class="bi bi-git"></i> Acessar Repositório</a>
-                                        <a href="javascript:void(0)" class="text-danger text-decoration-none d-block fw-bold"><i class="bi bi-fingerprint"></i> Realizar Rollback</a>
-                                        <a href="javascript:void(0)" class="text-decoration-none d-block fw-bold"><i class="bi bi-archive-fill"></i> Logs de Acesso (NGINX)</a>
-                                        <a href="javascript:void(0)" class="text-decoration-none d-block fw-bold"><i class="bi bi-bug-fill"></i> Logs de Erro (NGINX)</a>
-                                        <a href="javascript:void(0)" class="text-decoration-none d-block fw-bold"><i class="bi bi-box-seam-fill"></i> Logs do App</a>
-                                    </p>
-                                </div>
-                            </div>
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Requisições nos últimos 7 dias</h5>
+                            <div
+                                data-chart-data-type="requests"
+                                data-chart-colors="[&quot;#1abc9c&quot;,&quot;#3498db&quot;,&quot;#f1c40f&quot;,&quot;#e74c3c&quot;,&quot;#95a5a6&quot;]"
+                                data-chart-labels="[&quot;31/01/2023&quot;,&quot;01/02/2023&quot;,&quot;02/02/2023&quot;,&quot;03/02/2023&quot;,&quot;04/02/2023&quot;,&quot;05/02/2023&quot;,&quot;06/02/2023&quot;]"
+                                data-chart-data="[{&quot;name&quot;:&quot;Sucesso 2xx&quot;,&quot;data&quot;:[44,55,41,37,22,43,21]},{&quot;name&quot;:&quot;Redirecionamento 3xx&quot;,&quot;data&quot;:[53,32,33,52,13,43,32]},{&quot;name&quot;:&quot;Erro 4xx&quot;,&quot;data&quot;:[12,17,11,9,15,11,20]},{&quot;name&quot;:&quot;Erro 5xx&quot;,&quot;data&quot;:[9,7,5,8,6,9,4]},{&quot;name&quot;:&quot;Outros&quot;,&quot;data&quot;:[25,12,19,32,25,24,10]}]"
+                            ></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12 col-xl-6">
                             <div class="card mb-4">
                                 <div class="card-body">
-                                    <h5 class="card-title">Outras ações</h5>
-                                    <p class="card-text">
-                                        <a href="app-new.html" class="text-decoration-none d-block fw-bold"><i class="bi bi-git"></i> Clonar app</a>
-                                        <a href="javascript:void(0)" class="text-danger text-decoration-none d-block fw-bold"><i class="bi bi-trash"></i> Excluir</a>
-                                    </p>
+                                    <h5 class="card-title">Status HTTP nas últimas 24h</h5>
+                                    <div
+                                        data-chart-data-type="status"
+                                        data-chart-colors="[&quot;#1abc9c&quot;,&quot;#3498db&quot;,&quot;#f1c40f&quot;,&quot;#e74c3c&quot;,&quot;#95a5a6&quot;]"
+                                        data-chart-labels="[&quot;Sucesso 2xx&quot;,&quot;Redirecionamento 3xx&quot;,&quot;Erro 4xx&quot;,&quot;Erro 5xx&quot;,&quot;Outros&quot;]"
+                                        data-chart-data="[44,55,41,37,22]"
+                                    ></div>
                                 </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-xl-6">
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <h5 class="card-title">Status HTTP nos últimos 7 dias</h5>
+                                    <div
+                                        data-chart-data-type="status"
+                                        data-chart-colors="[&quot;#1abc9c&quot;,&quot;#3498db&quot;,&quot;#f1c40f&quot;,&quot;#e74c3c&quot;,&quot;#95a5a6&quot;]"
+                                        data-chart-labels="[&quot;Sucesso 2xx&quot;,&quot;Redirecionamento 3xx&quot;,&quot;Erro 4xx&quot;,&quot;Erro 5xx&quot;,&quot;Outros&quot;]"
+                                        data-chart-data="[44,55,41,37,22]"
+                                    ></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-lg-3">
+                    <div class="sticky-lg-top pt-lg-4">
+                        <div class="card mb-4 mt-0">
+                            <div class="card-body">
+                                <h5 class="card-title">Detalhes do app</h5>
+                                <p class="card-text">
+                                    {% if app.publicUrl %}
+                                        <a target="_blank" href="{{ app.publicUrl }}" class="text-decoration-none d-block fw-bold"><i class="bi bi bi-box-fill"></i> Acessar App</a>
+                                    {% endif %}
+                                    {% if app.git %}
+                                        <a target="_blank" href="{{ app.git.repository }}" class="text-decoration-none d-block fw-bold"><i class="bi bi-git"></i> Acessar Repositório</a>
+                                    {% endif %}
+                                    <hr>
+                                    <a href="javascript:void(0)" class="text-decoration-none d-block fw-bold"><i class="bi bi-archive-fill"></i> Logs de Acesso (NGINX)</a>
+                                    <a href="javascript:void(0)" class="text-decoration-none d-block fw-bold"><i class="bi bi-bug-fill"></i> Logs de Erro (NGINX)</a>
+                                    <a href="javascript:void(0)" class="text-decoration-none d-block fw-bold"><i class="bi bi-box-seam-fill"></i> Logs do App</a>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <h5 class="card-title">Ações do app</h5>
+                                <p class="card-text">
+                                    {% if app.status == 'running' %}
+                                        <a href="javascript:void(0)" class="text-danger text-decoration-none d-block fw-bold"><i class="bi bi-stop-fill"></i> Parar App</a>
+                                    {% else %}
+                                        <a href="javascript:void(0)" class="text-decoration-none d-block fw-bold"><i class="bi bi-play-fill"></i> Iniciar App</a>
+                                        <a href="javascript:void(0)" class="text-decoration-none d-block fw-bold"><i class="bi bi-trash-fill"></i> Excluir App</a>
+                                    {% endif %}
+                                </p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </main>
-    </body>
-</html>
+        </div>
+    </main>
+{% endblock %}
