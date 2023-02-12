@@ -24,12 +24,12 @@
                             <h5 class="fs-5 mt-4 mb-3">Dados básicos do app</h5>
                             <div class="mb-3">
                                 <label class="form-label">Nome do app</label>
-                                <input type="text" class="form-control" disabled="" value="{{ app.name }}">
+                                <input type="text" class="form-control" {% if mode == "update" %}disabled="" {% endif %} value="{{ app.name }}">
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Localização do app</label>
-                                <select class="form-select" disabled="">
-                                    {% if app %}
+                                <select class="form-select" {% if mode == "update" %}disabled="" {% endif %}>
+                                    {% if mode == "update" %}
                                         <option selected>{{ app.server }}</option>
                                     {% else %}
                                         <option selected>Selecione o servidor para implantação do app</option>
@@ -47,9 +47,15 @@
                         <hr>
                         <div>
                             <h5 class="fs-5 mt-4 mb-3">Acesso ao app</h5>
-                            <div class="mb-3">
+                            <div>
                                 <label class="form-label">Domínios do app</label>
                                 <textarea class="form-control" rows="3">{{ app.domains }}</textarea>
+                            </div>
+                            <div class="mb-3">
+                                <input class="form-check-input" type="checkbox" id="ssl-check">
+                                <label class="form-check-label" for="ssl-check">
+                                    Gerar certificado SSL
+                                </label>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Mapeamento de portas</label>
