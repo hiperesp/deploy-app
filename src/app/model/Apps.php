@@ -2,6 +2,9 @@
 
 namespace app\model;
 
+use app\exceptions\UserFriendlyException;
+use app\util\DokkuServer;
+
 class Apps extends Model {
 
     public function __construct() {
@@ -51,6 +54,30 @@ class Apps extends Model {
             }
         }
         return null;
+    }
+
+    public function create(array $data): void {
+        $newApp = (object)[
+            "server" => $data["server"],
+            "name" => $data["name"],
+            "domains" => $data["domains"],
+            "enableSSL" => @$data["enableSSL"]=="on",
+            "portsMapping" => @$data["portsMapping"],
+            "enviromentVariables" => @$data["enviromentVariables"],
+        ];
+        $dokkuServer = DokkuServer::fromServer($newApp->server);
+        try {
+            $dokkuServer->connect();
+            $dokkuServer->createApp($newApp->name);
+            $dokkuServer->addDomains($newApp->name, $newApp->domains);
+            if($newApp->enableSSL) {
+                $dokkuServer->enableSSL($newApp->name);
+            }
+            $dokkuServer->setPortsMapping($newApp->name, $newApp->portsMapping);
+            $dokkuServer->setEnvironmentVariables($newApp->name, $newApp->enviromentVariables);
+        } catch(UserFriendlyException $e) {
+            throw $e;
+        }
     }
 
 }
