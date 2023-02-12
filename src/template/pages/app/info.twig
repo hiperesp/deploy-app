@@ -11,14 +11,6 @@
                 <div class="d-lg-none px-3">
                     <hr>
                 </div>
-                {% if app.git.latestRelease %}
-                    <a target="_blank" href="{{ app.git.latestRelease.url }}" class="col-sm-6 col-lg-3 pt-lg-4 text-decoration-none">
-                        <div class="text-success fw-bold">
-                            <i class="bi bi-tags-fill"></i> Release {{ app.git.latestRelease.tagName }}
-                        </div>
-                        <p class="text-muted fs-6">Lançado em {{ app.git.latestRelease.date|date("d/m/Y") }}, às {{ app.git.latestRelease.date|date("H:i") }}</p>
-                    </a>
-                {% endif %}
             </div>
             <hr class="mt-0 mb-0">
             <div class="row">
@@ -83,9 +75,6 @@
                                     {% if app.publicUrl %}
                                         <a target="_blank" href="{{ app.publicUrl }}" class="text-decoration-none d-block fw-bold"><i class="bi bi bi-box-fill"></i> Acessar App</a>
                                     {% endif %}
-                                    {% if app.git %}
-                                        <a target="_blank" href="{{ app.git.repository }}" class="text-decoration-none d-block fw-bold"><i class="bi bi-git"></i> Acessar Repositório</a>
-                                    {% endif %}
                                     <hr>
                                     <a href="javascript:void(0)" class="text-decoration-none d-block fw-bold"><i class="bi bi-archive-fill"></i> Logs de Acesso (NGINX)</a>
                                     <a href="javascript:void(0)" class="text-decoration-none d-block fw-bold"><i class="bi bi-bug-fill"></i> Logs de Erro (NGINX)</a>
@@ -97,6 +86,7 @@
                             <div class="card-body">
                                 <h5 class="card-title">Ações do app</h5>
                                 <p class="card-text">
+                                    <a href="{{ ("/apps/" ~ app.name ~ "/update")|base }}" class="text-decoration-none d-block fw-bold"><i class="bi bi-pencil-fill"></i> Editar App</a>
                                     {% if app.status == 'running' %}
                                         <a href="javascript:void(0)" class="text-danger text-decoration-none d-block fw-bold"><i class="bi bi-stop-fill"></i> Parar App</a>
                                     {% else %}

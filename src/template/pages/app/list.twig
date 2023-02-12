@@ -13,7 +13,11 @@
             <hr class="mt-0">
             <div class="row">
                 <div class="col-sm-12 col-md-6 col-xl-4 mb-4">
-                    <a href="{{ "/apps/new"|base }}" class="card bg-light text-reset text-decoration-none" style="border-style: dashed;">
+                    {% set newAppUrl = "/apps/new" %}
+                    {% if server %}
+                        {% set newAppUrl = newAppUrl ~ "?server=" ~ server.name %}
+                    {% endif %}
+                    <a href="{{ newAppUrl|base }}" class="card bg-light text-reset text-decoration-none" style="border-style: dashed;">
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-2">

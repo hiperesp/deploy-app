@@ -17,7 +17,6 @@ class IndexController extends Controller {
             // AuthController::class,
             AppController::class,
             ServerController::class,
-            // WorkflowController::class,
         ];
     }
 

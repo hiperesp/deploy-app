@@ -30,7 +30,8 @@ class AppController extends Controller {
 
     #[Route(method: Route::GET, pattern: "/new")]
     public function create(Request $request, Response $response): Response {
-        return $this->view($request)->render($response, 'pages/app/new.twig', [
+        return $this->view($request)->render($response, 'pages/app/form.twig', [
+            "mode" => "new",
             "servers" => Servers::instance()->list(),
         ]);
     }
@@ -50,7 +51,9 @@ class AppController extends Controller {
 
     #[Route(method: Route::GET, pattern: "/{app-name}/update")]
     public function update(Request $request, Response $response): Response {
-        return $this->view($request)->render($response, 'pages/app/info.twig', [
+        return $this->view($request)->render($response, 'pages/app/form.twig', [
+            "mode" => "update",
+            "app" => Apps::instance()->get($request->getAttribute("app-name")),
         ]);
     }
 
