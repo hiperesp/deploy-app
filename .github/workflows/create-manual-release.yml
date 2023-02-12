@@ -1,0 +1,31 @@
+---
+name: 'Create a new Release'
+
+on:
+  workflow_dispatch:
+    inputs:
+      release-type:
+        description: 'Release type'
+        required: true
+        default: 'patch' 
+        type: choice
+        options:
+        - patch
+        - feature
+        - release
+      release-notes:
+        description: 'Release notes'
+        default: ''
+        required: false
+
+jobs:
+
+  release:
+    name: Release
+    uses: hiperesp/actions/.github/workflows/create-manual-release.yml@main
+    with:
+      release-type: ${{ inputs.release-type }}
+      release-notes: ${{ inputs.release-notes }}
+    secrets:
+      DOKKU_SSH_URL: 'ssh://dokku@deploy.app.br:22/deploy-app'
+      DOKKU_SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}

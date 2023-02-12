@@ -1,0 +1,14 @@
+---
+name: 'Rollback'
+
+on:
+  workflow_dispatch:
+
+jobs:
+
+  rollback-deploy:
+    name: Deploy
+    uses: hiperesp/actions/.github/workflows/rollback.yml@main
+    secrets:
+      DOKKU_SSH_URL: 'ssh://dokku@deploy.app.br:22/deploy-app'
+      DOKKU_SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
