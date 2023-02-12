@@ -4,7 +4,11 @@
     <main class="py-3">
         <div class="container">
             <div>
-                <h1 class="fs-1">Aplicativos</h1>
+                {% if server %}
+                    <h1 class="fs-1">Aplicativos do servidor {{ server.name }}</h1>
+                {% else %}
+                    <h1 class="fs-1">Aplicativos</h1>
+                {% endif %}
             </div>
             <hr class="mt-0">
             <div class="row">

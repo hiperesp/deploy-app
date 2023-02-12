@@ -1,215 +1,76 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-        <title>Servers - AppOps</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous" defer=""></script>
-        <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-        <script src="scripts/custom.js" defer=""></script>
-    </head>
-    <body>
-        <header>
-            <nav class="navbar bg-primary navbar-expand-lg" data-bs-theme="dark">
-                <div class="container-fluid">
-                    <a class="navbar-brand" href="index.html">AppOps</a>
-                    <button class="navbar-toggler border-0 fs-1 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#main-nav" aria-expanded="false" aria-label="Toggle navigation">
-                        <i class="bi bi-list"></i>
-                    </button>
-                    <div class="collapse navbar-collapse" id="main-nav">
-                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                            <li class="nav-item">
-                                <a class="nav-link" href="app-list.html">Apps</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="server-list.html">Servers</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="workflow-list.html">Workflows</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </nav>
-        </header>
-        <main class="py-3">
-            <div class="container">
-                <div>
-                    <h1 class="fs-1">Servidores</h1>
-                </div>
-                <hr class="mt-0">
-                <div class="row">
-                    <div class="col-sm-12 col-md-6 col-xl-4 mb-4">
-                        <a href="server-new.html" class="card bg-light text-reset text-decoration-none" style="border-style: dashed;">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-2">
-                                        <div class="rounded-circle d-flex align-items-center justify-content-center" style="background-color: hsl(263, 90%, 80%);width:40px;height:40px">
-                                            <i class="bi bi-database-add"></i>
-                                        </div>
-                                    </div>
-                                    <div class="col-10 ps-0">
-                                        <h5 class="card-title">Adicionar um novo servidor</h5>
-                                        <p class="card-text text-muted">Adicionar um novo servidor Dokku para permitir a implantação de apps.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-sm-12 col-md-6 col-xl-4 mb-4">
-                        <a href="server-info.html" class="card text-reset text-decoration-none">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-2">
-                                        <div class="rounded-circle d-flex align-items-center justify-content-center" style="background-color: hsl(152, 69%, 70%);width:40px;height:40px">
-                                            <i class="bi bi-database-check"></i>
-                                        </div>
-                                    </div>
-                                    <div class="col-10 ps-0">
-                                        <h5 class="card-title">OCI Server 1</h5>
-                                        <div class="row text-muted">
-                                            <div class="col-md-6">
-                                                <span class="fs-6"><i class="bi bi-cpu"></i></span>
-                                                <div class="progress" style="height: 24px">
-                                                    <div class="progress-bar bg-danger" style="width: 80%"></div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <span class="fs-6"><i class="bi bi-memory"></i></span>
-                                                <div class="progress" style="height: 24px">
-                                                    <div class="progress-bar" style="width: 45%"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-sm-12 col-md-6 col-xl-4 mb-4">
-                        <a href="server-info.html" class="card text-reset text-decoration-none">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-2">
-                                        <div class="rounded-circle d-flex align-items-center justify-content-center" style="background-color: hsl(152, 69%, 70%);width:40px;height:40px">
-                                            <i class="bi bi-database-check"></i>
-                                        </div>
-                                    </div>
-                                    <div class="col-10 ps-0">
-                                        <h5 class="card-title">OCI Server 2</h5>
-                                        <div class="row text-muted">
-                                            <div class="col-md-6">
-                                                <span class="fs-6"><i class="bi bi-cpu"></i></span>
-                                                <div class="progress" style="height: 24px">
-                                                    <div class="progress-bar bg-warning" style="width: 60%"></div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <span class="fs-6"><i class="bi bi-memory"></i></span>
-                                                <div class="progress" style="height: 24px">
-                                                    <div class="progress-bar bg-warning" style="width: 75%"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-sm-12 col-md-6 col-xl-4 mb-4">
-                        <a href="server-info.html" class="card text-reset text-decoration-none">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-2">
-                                        <div class="rounded-circle d-flex align-items-center justify-content-center" style="background-color: hsl(152, 69%, 70%);width:40px;height:40px">
-                                            <i class="bi bi-database-check"></i>
-                                        </div>
-                                    </div>
-                                    <div class="col-10 ps-0">
-                                        <h5 class="card-title">AWS Server</h5>
-                                        <div class="row text-muted">
-                                            <div class="col-md-6">
-                                                <span class="fs-6"><i class="bi bi-cpu"></i></span>
-                                                <div class="progress" style="height: 24px">
-                                                    <div class="progress-bar" style="width: 10%"></div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <span class="fs-6"><i class="bi bi-memory"></i></span>
-                                                <div class="progress" style="height: 24px">
-                                                    <div class="progress-bar bg-danger" style="width: 95%"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-sm-12 col-md-6 col-xl-4 mb-4">
-                        <a href="server-info.html" class="card text-reset text-decoration-none">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-2">
-                                        <div class="rounded-circle d-flex align-items-center justify-content-center" style="background-color: hsl(0, 69%, 80%);width:40px;height:40px">
-                                            <i class="bi bi-database-x"></i>
-                                        </div>
-                                    </div>
-                                    <div class="col-10 ps-0">
-                                        <h5 class="card-title">AWS Old Server</h5>
-                                        <div class="row text-muted">
-                                            <div class="col-md-6">
-                                                <span class="fs-6"><i class="bi bi-cpu"></i></span>
-                                                <div class="progress" style="height: 24px">
-                                                    <div class="progress-bar bg-danger"></div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <span class="fs-6"><i class="bi bi-memory"></i></span>
-                                                <div class="progress" style="height: 24px">
-                                                    <div class="progress-bar"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-sm-12 col-md-6 col-xl-4 mb-4">
-                        <a href="server-info.html" class="card text-reset text-decoration-none">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-2">
-                                        <div class="rounded-circle d-flex align-items-center justify-content-center" style="background-color: hsl(0, 69%, 80%);width:40px;height:40px">
-                                            <i class="bi bi-database-x"></i>
-                                        </div>
-                                    </div>
-                                    <div class="col-10 ps-0">
-                                        <h5 class="card-title">Azure Old Server</h5>
-                                        <div class="row text-muted">
-                                            <div class="col-md-6">
-                                                <span class="fs-6"><i class="bi bi-cpu"></i></span>
-                                                <div class="progress" style="height: 24px">
-                                                    <div class="progress-bar bg-danger"></div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <span class="fs-6"><i class="bi bi-memory"></i></span>
-                                                <div class="progress" style="height: 24px">
-                                                    <div class="progress-bar"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                </div>
+{% extends "layout/layout.twig" %}
+{% set title %}Servidores{% endset %}
+{% block content %}
+    <main class="py-3">
+        <div class="container">
+            <div>
+                <h1 class="fs-1">Servidores</h1>
             </div>
-        </main>
-    </body>
-</html>
+            <hr class="mt-0">
+            <div class="row">
+                {% for server in servers %}
+                    <div class="col-sm-12 col-md-6 col-xl-4 mb-4">
+                        <a href="{{ ("/servers/" ~ server.name ~ "/apps/")|base }}" class="card text-reset text-decoration-none">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-2">
+                                        {% if server.status == "running" %}
+                                            <div class="rounded-circle d-flex align-items-center justify-content-center" style="background-color: hsl(152, 69%, 70%);width:40px;height:40px">
+                                                <i class="bi bi-database-check"></i>
+                                            </div>
+                                        {% elseif server.status == "stopped" %}
+                                            <div class="rounded-circle d-flex align-items-center justify-content-center" style="background-color: hsl(0, 69%, 80%);width:40px;height:40px">
+                                                <i class="bi bi-database-x"></i>
+                                            </div>
+                                        {% else %}
+                                            <div class="rounded-circle d-flex align-items-center justify-content-center" style="background-color: hsl(0, 0%, 80%);width:40px;height:40px">
+                                                <i class="bi bi-question-diamond-fill"></i>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-10 ps-0">
+                                        <h5 class="card-title">{{ server.name }}</h5>
+                                        <div class="row text-muted">
+                                            <div class="col-md-6">
+                                                <span class="fs-6"><i class="bi bi-cpu"></i></span>
+                                                <div class="progress" style="height: 24px">
+                                                    {% if server.metrics.cpuUsage %}
+                                                        {% if server.metrics.cpuUsage > 0.7 %}
+                                                            <div class="progress-bar bg-danger" style="width: {{ server.metrics.cpuUsage * 100 }}%"></div>
+                                                        {% elseif server.metrics.cpuUsage > 0.5 %}
+                                                            <div class="progress-bar bg-warning" style="width: {{ server.metrics.cpuUsage * 100 }}%"></div>
+                                                        {% else %}
+                                                            <div class="progress-bar" style="width: {{ server.metrics.cpuUsage * 100 }}%"></div>
+                                                        {% endif %}
+                                                    {% else %}
+                                                        <div class="progress-bar bg-secondary" style="width: 100%">Desconhecido</div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <span class="fs-6"><i class="bi bi-memory"></i></span>
+                                                <div class="progress" style="height: 24px">
+                                                    {% if server.metrics.memoryUsage %}
+                                                        {% if server.metrics.memoryUsage > 0.7 %}
+                                                            <div class="progress-bar bg-danger" style="width: {{ server.metrics.memoryUsage * 100 }}%"></div>
+                                                        {% elseif server.metrics.memoryUsage > 0.5 %}
+                                                            <div class="progress-bar bg-warning" style="width: {{ server.metrics.memoryUsage * 100 }}%"></div>
+                                                        {% else %}
+                                                            <div class="progress-bar" style="width: {{ server.metrics.memoryUsage * 100 }}%"></div>
+                                                        {% endif %}
+                                                    {% else %}
+                                                        <div class="progress-bar bg-secondary" style="width: 100%">Desconhecido</div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </main>
+{% endblock %}

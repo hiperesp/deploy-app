@@ -7,5 +7,8 @@ abstract class Model {
     public function __construct() {
 
     }
-    
+
+    public static function instance(): static {
+        return new static();
+    }
 }

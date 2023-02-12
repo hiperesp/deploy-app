@@ -11,8 +11,7 @@ class Servers extends Model {
     public function list(): array {
         return [
             [
-                "id" => 1,
-                "name" => "OCI Server 1",
+                "name" => "oci-server-1",
                 "status" => "running",
                 "metrics" => [
                     "cpuUsage" => 0.2,
@@ -20,22 +19,24 @@ class Servers extends Model {
                 ],
             ],
             [
-                "id" => 2,
-                "name" => "OCI Server 2",
+                "name" => "oci-server-2",
                 "status" => "running",
                 "metrics" => [
-                    "cpuUsage" => 0.4,
-                    "memoryUsage" => 0.3,
+                    "cpuUsage" => 0.5,
+                    "memoryUsage" => 0.8,
                 ],
             ],
             [
-                "id" => 3,
-                "name" => "AWS Server",
-                "status" => "running",
+                "name" => "aws-server",
+                "status" => "stopped",
                 "metrics" => [
-                    "cpuUsage" => 0.6,
-                    "memoryUsage" => 0.7,
+                    "cpuUsage" => 0.8,
+                    "memoryUsage" => 0.9,
                 ],
+            ],
+            [
+                "name" => "aws-server-2",
+                "status" => "unknown",
             ],
         ];
     }
@@ -47,10 +48,6 @@ class Servers extends Model {
             }
         }
         return null;
-    }
-
-    public static function instance(): Apps {
-        return new Apps();
     }
 
 }
