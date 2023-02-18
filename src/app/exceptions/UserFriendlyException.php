@@ -11,7 +11,8 @@ abstract class UserFriendlyException extends \Exception implements \JsonSerializ
     }
 
     public static function create(string $message, string $type = "danger"): UserFriendlyException {
-        return static::create(\json_encode([
+        $class = static::class;
+        return new $class(\json_encode([
             "message" => $message,
             "type" => $type,
         ]));
