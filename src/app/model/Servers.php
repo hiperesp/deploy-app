@@ -9,9 +9,17 @@ class Servers extends Model {
     }
 
     public function list(): array {
-        return [
+        return \json_decode(\json_encode([
             [
                 "name" => "oci-server-1",
+                "host" => "0.0.0.0",
+                "port" => "22",
+                "username" => "ubuntu",
+                "privateKey" => <<<SSH
+                -----BEGIN OPENSSH PRIVATE KEY-----
+                b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAABlwAAAAdzc2gtcn
+                -----END OPENSSH PRIVATE KEY-----
+                SSH,
                 "status" => "running",
                 "metrics" => [
                     "cpuUsage" => 0.2,
@@ -20,6 +28,14 @@ class Servers extends Model {
             ],
             [
                 "name" => "oci-server-2",
+                "host" => "0.0.0.0",
+                "port" => "22",
+                "username" => "ubuntu",
+                "privateKey" => <<<SSH
+                -----BEGIN OPENSSH PRIVATE KEY-----
+                b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAABlwAAAAdzc2gtcn
+                -----END OPENSSH PRIVATE KEY-----
+                SSH,
                 "status" => "running",
                 "metrics" => [
                     "cpuUsage" => 0.5,
@@ -28,6 +44,14 @@ class Servers extends Model {
             ],
             [
                 "name" => "aws-server",
+                "host" => "0.0.0.0",
+                "port" => "22",
+                "username" => "ubuntu",
+                "privateKey" => <<<SSH
+                -----BEGIN OPENSSH PRIVATE KEY-----
+                b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAABlwAAAAdzc2gtcn
+                -----END OPENSSH PRIVATE KEY-----
+                SSH,
                 "status" => "stopped",
                 "metrics" => [
                     "cpuUsage" => 0.8,
@@ -36,14 +60,22 @@ class Servers extends Model {
             ],
             [
                 "name" => "aws-server-2",
+                "host" => "0.0.0.0",
+                "port" => "22",
+                "username" => "ubuntu",
+                "privateKey" => <<<SSH
+                -----BEGIN OPENSSH PRIVATE KEY-----
+                b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAABlwAAAAdzc2gtcn
+                -----END OPENSSH PRIVATE KEY-----
+                SSH,
                 "status" => "unknown",
             ],
-        ];
+        ]));
     }
 
-    public function get(string $name): ?array {
+    public function get(string $name): ?object {
         foreach($this->list() as $app) {
-            if($app["name"] === $name) {
+            if($app->name === $name) {
                 return $app;
             }
         }

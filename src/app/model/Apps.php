@@ -12,7 +12,7 @@ class Apps extends Model {
     }
 
     public function list(): array {
-        return [
+        return \json_decode(\json_encode([
             [
                 "server" => "oci-server-1",
                 "name" => "upload-pages-artifact",
@@ -34,22 +34,22 @@ class Apps extends Model {
                 "status" => "stopped",
                 "publicUrl" => "https://upload-pages-artifact.appops.dev",
             ],
-        ];
+        ]));
     }
 
-    public function listFromServer(string $server): ?array {
+    public function listFromServer(string $server): array {
         $apps = [];
         foreach($this->list() as $app) {
-            if($app["server"] === $server) {
+            if($app->server === $server) {
                 $apps[] = $app;
             }
         }
         return $apps;
     }
 
-    public function get(string $name): ?array {
+    public function get(string $name): ?object {
         foreach($this->list() as $app) {
-            if($app["name"] === $name) {
+            if($app->name === $name) {
                 return $app;
             }
         }
