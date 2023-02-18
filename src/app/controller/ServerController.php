@@ -4,6 +4,7 @@ namespace app\controller;
 
 use app\model\Apps;
 use app\model\Servers;
+use app\util\DokkuServer;
 use hiperesp\framework\system\router\attributes\Middleware;
 use hiperesp\framework\system\router\attributes\Route;
 
@@ -25,6 +26,14 @@ class ServerController extends Controller {
         return $this->view($request)->render($response, 'pages/server/list.twig', [
             "servers" => Servers::instance()->list(),
         ]);
+    }
+    #[Route(method: Route::GET, pattern: "/test/")]
+    public function test(Request $request, Response $response): Response {
+        \ob_start();
+        $dokkuServer = DokkuServer::fromServer("oci-server-1");
+        $dokkuServer->connect();
+        $response->getBody()->write(\ob_get_clean());
+        return $response;
     }
 
     #[Route(method: Route::GET, pattern: "/{server-name}/apps/")]

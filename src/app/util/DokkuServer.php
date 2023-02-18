@@ -2,7 +2,6 @@
 
 namespace app\util;
 
-use app\exceptions\AppNameException;
 use app\exceptions\ServerConnectException;
 use app\model\Servers;
 
@@ -20,10 +19,20 @@ class DokkuServer {
     }
 
     public function connect(): void {
-        throw ServerConnectException::create(
-            message: "Falha ao conectar ao servidor {$this->server->name}",
-            type: "danger"
-        );
+        $connection = \ssh2_connect($this->server->host, (int)$this->server->port);
+        if(!$connection) {
+            throw ServerConnectException::create(
+                message: "Falha ao conectar ao servidor {$this->server->name}",
+                type: "danger"
+            );
+        }
+        if(!\ssh2_auth_pubkey_file($connection, $this->server->user, $this->server->public_key, $this->server->private_key)) {
+            throw ServerConnectException::create(
+                message: "Falha ao autenticar ao servidor {$this->server->name}",
+                type: "danger"
+            );
+        }
+        echo "Conectado ao servidor {$this->server->name}";die;
     }
     public function createApp(string $name): void {
         "dokku apps:create deploy-app";
