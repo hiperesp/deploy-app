@@ -4,10 +4,10 @@ services:
     build:
       dockerfile: Dockerfile
       context: .
-    container_name: appops
+    container_name: deploy.app.br
     ports:
       - "3000:80"
     volumes:
-      - ./src:/var/www/html
+      - ./src:/usr/local/apache2/htdocs/
     environment:
       - ENV=local-docker
