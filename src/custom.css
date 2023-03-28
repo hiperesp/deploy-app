@@ -14,4 +14,9 @@
 .breadcrumb-item > a {
     text-decoration: none;
     color: inherit;
+    font-weight: 500;
+}
+.breadcrumb-item.active > a:hover {
+    text-decoration: inherit;
+    color: var(--bs-black);
 }
