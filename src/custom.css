@@ -7,7 +7,7 @@
     border-bottom-color: var(--bs-nav-link-color);
     font-weight: 500;
 }
-.nav-tabs .nav-link:focus, .nav-tabs .nav-link:hover {
+.nav-tabs .nav-link:not(.active):focus, .nav-tabs .nav-link:not(.active):hover {
     border-color: transparent;
     border-bottom-color: var(--bs-gray-500);
 }
