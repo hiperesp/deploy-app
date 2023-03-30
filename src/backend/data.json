@@ -1,0 +1,75 @@
+{
+    "namespaces": [
+        {
+            "name": "current",
+            
+            "globalDomain": "deploy.app.br",
+        
+            "serverHost": "host3.gabstep.com.br",
+            "serverPort": 22,
+            "serverUsername": "",
+            "serverPrivateKey": "",
+
+            "apps": [
+                {
+                    "name": "",
+
+                    "domains": [
+                        "deploy.app.br",
+                        "deploy2.app.br"
+                    ],
+                    "proxyPorts": [
+                        "http:80:80",
+                        "https:443:80"
+                    ],
+
+                    "scaleWeb": 1,
+                    "scaleWorker": 1,
+
+                    "containers": [
+                        {
+                            "id": "a0b1c2d3e4f5",
+
+                            "service": "web",
+                            "instance": 1,
+
+                            "cpuUsage": 40,
+                            "memoryUsage": {
+                                "current": 1280,
+                                "max": 40221
+                            },
+                            "diskUsage": {
+                                "input": 123,
+                                "output": 456
+                            },
+                            "networkUsage": {
+                                "download": 123,
+                                "upload": 456
+                            }
+                        },
+                        {
+                            "id": "a0b1c2d3e4f5",
+
+                            "service": "web",
+                            "instance": 2,
+
+                            "cpuUsage": 40,
+                            "memoryUsage": {
+                                "current": 1280,
+                                "max": 40221
+                            },
+                            "diskUsage": {
+                                "input": 123,
+                                "output": 456
+                            },
+                            "networkUsage": {
+                                "download": 123,
+                                "upload": 456
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
