@@ -6,8 +6,8 @@ services:
       context: .
     container_name: deploy.app.br
     ports:
-      - "3000:80"
+      - "3000:3000"
     volumes:
-      - ./src:/usr/local/apache2/htdocs/
+      - ./src:/app/
     environment:
       - ENV=local-docker

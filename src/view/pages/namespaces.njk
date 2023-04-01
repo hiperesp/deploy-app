@@ -1,0 +1,60 @@
+{% extends 'layout.njk' %}
+
+{% set title %}Select a namespace{% endset %}
+{% set breadcrumb = [
+    {
+        text: "Select a namespace"
+    }
+] %}
+{% set tabs %}
+    <ul class="nav nav-tabs px-md-5 px-3">
+        <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">Namespaces</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">Settings</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link disabled">Disabled</a>
+        </li>
+    </ul>
+{% endset %}
+
+{% block content %}
+    <main>
+        <div class="container pt-3">
+            <div class="mb-3 d-flex justify-content-end">
+                <button type="button" class="btn btn-dark btn-sm ms-auto d-block">New namespace</button>
+            </div>
+            <div class="mx-2">
+                <div class="row">
+                    {% for namespace in namespaces %}
+                        <div class="col-lg-3 col-md-4 col-sm-6 col-12 p-1">
+                            <a href="/{{ namespace.name }}" class="card text-decoration-none p-0">
+                                <div class="card-body">
+                                    <div class="d-flex">
+                                        <div class="pe-2">
+                                            {% if namespace.online %}
+                                                <div class="rounded-circle d-flex align-items-center justify-content-center" style="background-color: hsl(152, 69%, 70%);width:40px;height:40px">
+                                                    <i class="bi bi-database-check"></i>
+                                                </div>
+                                            {% else %}
+                                                <div class="rounded-circle d-flex align-items-center justify-content-center" style="background-color: hsl(0, 69%, 70%);width:40px;height:40px">
+                                                    <i class="bi bi-database-x"></i>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="flex-fill">
+                                            <h5 class="card-title">{{ namespace.name }}</h5>
+                                            <h6 class="card-subtitle mb-2 text-body-secondary"><i class="bi bi-window-stack"></i> {{ namespace.apps }} apps</h6>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock %}

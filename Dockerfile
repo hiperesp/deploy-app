@@ -1,5 +1,17 @@
-FROM httpd:2.4
+# Imagem base do Node.js
+FROM node:18.15.0-alpine3.17
 
-COPY ./src/ /usr/local/apache2/htdocs/
+# Diretório de trabalho do aplicativo
+WORKDIR /app
 
-EXPOSE 80
+# Copiar arquivos do projeto para o diretório de trabalho
+COPY src /app
+
+# Instalar as dependências do Node.js
+RUN npm ci
+
+# Expor a porta 3000 para o mundo exterior
+EXPOSE 3000
+
+# Iniciar o aplicativo
+CMD ["npm", "start"]
