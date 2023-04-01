@@ -1,5 +1,10 @@
 import express from 'express'
 import nunjucks from 'nunjucks'
+import dotenv from 'dotenv'
+
+import Namespace from './model/Namespace.js';
+
+dotenv.config({path: process.cwd() + '/../.env'})
 
 const app = express()
 
@@ -19,16 +24,7 @@ nunjucks.configure('view', {
 app.get('/', function(request, response) {
     response.render('pages/namespaces.njk', {
         namespaces: [
-            {
-                name: 'namespace1',
-                online: true,
-                apps: 3,
-            },
-            {
-                name: 'namespace2',
-                online: false,
-                apps: 13,
-            },
+            Namespace.get(process.env.NAMESPACE_NAME),
         ]
     })
 })

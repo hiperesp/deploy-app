@@ -1,25 +1,28 @@
 import { NodeSSH } from "node-ssh";
-import Namespace from "./model/Namespace";
 
 export default class DokkuSSH {
 
-    #ssh: NodeSSH;
+    #ssh;
 
-    static fromNamespace(namespace: Namespace): DokkuSSH {
+    static fromNamespace(namespace) {
         if(namespace.dokkuSSH) return namespace.dokkuSSH;
         const dokkuSSH = new DokkuSSH();
 
-        dokkuSSH.#ssh = new NodeSSH();
-        dokkuSSH.#ssh.connect({
-            host: namespace.serverHost,
-            port: namespace.serverPort,
-            username: namespace.serverUsername,
-            privateKey: namespace.serverPrivateKey
-        })
+        try {
+            dokkuSSH.#ssh = new NodeSSH();
+            dokkuSSH.#ssh.connect({
+                host: namespace.serverHost,
+                port: Number(namespace.serverPort),
+                username: namespace.serverUsername,
+                privateKey: namespace.serverPrivateKey,
+            })
+        } catch (error) {
+            console.error(error);
+        }
         return dokkuSSH;
     }
 
-    async appsList(): Promise<string[]> {
+    async appsList() {
         const appsResult = await this.#ssh.execCommand('dokku apps:list');
         if (appsResult.code === 1) {
             throw new Error(appsResult.stderr);
@@ -31,7 +34,7 @@ export default class DokkuSSH {
         return apps;
     }
 
-    async proxyPorts(appName: string): Promise<string[]> {
+    async proxyPorts(appName) {
         const proxyPortsResult = await this.#ssh.execCommand(`dokku proxy:ports ${appName}`);
         if (proxyPortsResult.code === 1) {
             throw new Error(proxyPortsResult.stderr);
@@ -42,7 +45,7 @@ export default class DokkuSSH {
         // Remove the second line "    -----> scheme  host port  container port"
         proxyPorts.shift();
 
-        const output: string[] = [];
+        const output = [];
         for (const proxyPort of proxyPorts) {
             const proxyPortParts = proxyPort.trim().split(/\s+/);
             const scheme = proxyPortParts[0];

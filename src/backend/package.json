@@ -1,5 +1,0 @@
-{
-  "dependencies": {
-    "node-ssh": "^13.0.1"
-  }
-}
