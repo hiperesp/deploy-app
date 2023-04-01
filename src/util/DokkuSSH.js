@@ -15,6 +15,7 @@ export default class DokkuSSH {
                 port: Number(namespace.serverPort),
                 username: namespace.serverUsername,
                 privateKey: namespace.serverPrivateKey,
+                debug: console.log
             })
         } catch (error) {
             console.error(error);
