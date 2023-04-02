@@ -7,6 +7,10 @@ export default class DokkuSSH {
     #username;
     #privateKey;
 
+    async ping() {
+        await this.#execCommand('version');
+    }
+
     async appsList() {
         const appsResult = await this.#execCommand('apps:list');
         const apps = appsResult.split('\n');

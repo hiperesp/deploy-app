@@ -34,9 +34,15 @@
                                 <div class="card-body">
                                     <div class="d-flex">
                                         <div class="pe-2">
-                                            <div class="rounded-circle d-flex align-items-center justify-content-center" style="background-color: hsl(152, 69%, 70%);width:40px;height:40px">
-                                                <i class="bi bi-database-check"></i>
-                                            </div>
+                                            {% if namespace.online %}
+                                                <div class="rounded-circle d-flex align-items-center justify-content-center" style="background-color: hsl(152, 69%, 70%);width:40px;height:40px">
+                                                    <i class="bi bi-database-check"></i>
+                                                </div>
+                                            {% else %}
+                                                <div class="rounded-circle d-flex align-items-center justify-content-center" style="background-color: hsl(0, 69%, 70%);width:40px;height:40px">
+                                                    <i class="bi bi-database-x"></i>
+                                                </div>
+                                            {% endif %}
                                         </div>
                                         <div class="flex-fill">
                                             <h5 class="card-title">{{ namespace.name }}</h5>
