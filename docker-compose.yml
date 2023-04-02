@@ -2,7 +2,7 @@ version: '3'
 services:
   web:
     build:
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile-local
       context: .
     container_name: deploy.app.br
     ports:
