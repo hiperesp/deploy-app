@@ -29,7 +29,7 @@
             <div class="mx-2">
                 <div class="row">
                     {% for namespace in namespaces %}
-                        <div class="col-lg-3 col-md-4 col-sm-6 col-12 p-1" data-json="{{ namespace | dump }}">
+                        <div class="col-lg-3 col-md-4 col-sm-6 col-12 p-1">
                             <a href="/{{ namespace.name }}" class="card text-decoration-none p-0">
                                 <div class="card-body">
                                     <div class="d-flex">
@@ -40,6 +40,9 @@
                                         </div>
                                         <div class="flex-fill">
                                             <h5 class="card-title">{{ namespace.name }}</h5>
+                                            <h6 class="card-subtitle mb-2 text-body-secondary">
+                                                <i class="bi bi-app-indicator"></i> {{ namespace.apps.length }} apps
+                                            </h6>
                                         </div>
                                     </div>
                                 </div>

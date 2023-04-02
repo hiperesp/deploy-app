@@ -28,7 +28,7 @@ export default class System extends Model {
             await namespace.refresh();
         }
         this.#lastRefreshTime = Date.now();
-        setTimeout(this.refresh, refreshInterval);
+        setTimeout(this.refresh.bind(this), refreshInterval);
     }
 
     static #instance

@@ -24,7 +24,11 @@ export default class Namespace extends Model {
     }
 
     async refresh() {
-        this.#apps = await this[kRefreshApps]();
+        try {
+            this.#apps = await this[kRefreshApps]();
+        } catch (e) {
+            console.error("Error refreshing apps", e);
+        }
     }
 
     get #dokku() {
@@ -53,7 +57,7 @@ export default class Namespace extends Model {
         return {
             name: this.name,
             globalDomain: this.globalDomain,
-            apps: this.apps.length
+            apps: this.apps.map(app => app.toJson()),
         }
     }
 }
