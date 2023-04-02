@@ -94,11 +94,12 @@ export default class DokkuSSH {
 
     #execCommand(command) {
         return new Promise((resolve, reject) => {
+            try {
             exec(`
-            TMP_FILE=$(mktemp)
-            echo "${this.#privateKey.replace(/\r?\n/g, '\\\\n')}" >> $TMP_FILE
-            chmod 600 $TMP_FILE
-            ssh ${this.#username}@${this.#host} -p ${this.#port} -i $TMP_FILE 'shell' <<EOF
+TMP_FILE=$(mktemp)
+echo "${this.#privateKey.replace(/\r?\n/g, '\\\\n')}" >> $TMP_FILE
+chmod 600 $TMP_FILE
+ssh ${this.#username}@${this.#host} -p ${this.#port} -i $TMP_FILE 'shell' <<EOF
 ${command}
 EOF
             `, (error, stdout, stderr) => {
@@ -109,6 +110,9 @@ EOF
                     resolve(stdout);
                 }
             });
+            } catch (error) {
+                console.log(error);
+            }
         });
     }
 
