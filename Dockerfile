@@ -1,5 +1,5 @@
 # Imagem base do Node.js
-FROM node:18.15.0-alpine3.17
+FROM node:18.15.0
 
 # Diretório de trabalho do aplicativo
 WORKDIR /app
