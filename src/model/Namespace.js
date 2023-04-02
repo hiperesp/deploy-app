@@ -1,16 +1,21 @@
 import DokkuSSH from '../util/DokkuSSH.js';
 import App from './App.js'
 
+const kServerHost = Symbol('serverHost');
+const kServerPort = Symbol('serverPort');
+const kServerUsername = Symbol('serverUsername');
+const kServerPrivateKey = Symbol('serverPrivateKey');
+
 export default class Namespace {
 
     name;
 
     globalDomain;
 
-    serverHost;
-    serverPort;
-    serverUsername;
-    serverPrivateKey;
+    [kServerHost];
+    [kServerPort];
+    [kServerUsername];
+    [kServerPrivateKey];
 
     dokkuSSH;
 
@@ -37,12 +42,17 @@ export default class Namespace {
 
             namespace.globalDomain = process.env.NAMESPACE_GLOBAL_DOMAIN
 
-            namespace.serverHost = process.env.NAMESPACE_SERVER_HOST
-            namespace.serverPort = process.env.NAMESPACE_SERVER_PORT
-            namespace.serverUsername = process.env.NAMESPACE_SERVER_USERNAME
-            namespace.serverPrivateKey = process.env.NAMESPACE_SERVER_PRIVATE_KEY
+            namespace[kServerHost] = process.env.NAMESPACE_SERVER_HOST
+            namespace[kServerPort] = process.env.NAMESPACE_SERVER_PORT
+            namespace[kServerUsername] = process.env.NAMESPACE_SERVER_USERNAME
+            namespace[kServerPrivateKey] = process.env.NAMESPACE_SERVER_PRIVATE_KEY
 
-            namespace.dokkuSSH = DokkuSSH.fromNamespace(namespace);
+            namespace.dokkuSSH = DokkuSSH.create({
+                host: namespace[kServerHost],
+                port: namespace[kServerPort],
+                username: namespace[kServerUsername],
+                privateKey: namespace[kServerPrivateKey],
+            });
 
             Namespace.instances[name] = namespace;
         }

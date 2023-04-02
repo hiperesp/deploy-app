@@ -1,42 +1,63 @@
-import { NodeSSH } from "node-ssh";
+import { exec } from 'child_process';
 
 export default class DokkuSSH {
 
-    #ssh;
+    #host;
+    #port;
+    #username;
+    #privateKey;
 
-    static fromNamespace(namespace) {
-        if(namespace.dokkuSSH) return namespace.dokkuSSH;
+    static create(serverConnectionInfo) {
         const dokkuSSH = new DokkuSSH();
 
-        try {
-            dokkuSSH.#ssh = new NodeSSH();
-            dokkuSSH.#ssh.connect({
-                host: namespace.serverHost,
-                port: Number(namespace.serverPort),
-                username: namespace.serverUsername,
-                privateKey: namespace.serverPrivateKey,
-                debug: console.log
-            })
-        } catch (error) {
-            console.error(error);
-        }
+        dokkuSSH.#host = serverConnectionInfo.host;
+        dokkuSSH.#port = Number(serverConnectionInfo.port);
+        dokkuSSH.#username = serverConnectionInfo.username;
+        dokkuSSH.#privateKey = serverConnectionInfo.privateKey;
+
         return dokkuSSH;
     }
 
+    execCommand(command) {
+        return new Promise(resolve => {
+            exec(`
+            TMP_FILE=$(mktemp)
+            echo "${this.#privateKey.replace(/\r?\n/g, '\\\\n')}" >> $TMP_FILE
+            chmod 600 $TMP_FILE
+            ssh ${this.#username}@${this.#host} -p ${this.#port} -i $TMP_FILE ${command}
+            `, (error, stdout, stderr) => {
+                if (error) {
+                    resolve({
+                        code: error.code,
+                        stdout,
+                        stderr,
+                    });
+                } else {
+                    resolve({
+                        code: 0,
+                        stdout,
+                        stderr,
+                    });
+                }
+            });
+        });
+    }
+
     async appsList() {
-        const appsResult = await this.#ssh.execCommand('dokku apps:list');
-        if (appsResult.code === 1) {
+        const appsResult = await this.execCommand('apps:list');
+        
+        if (appsResult.code !== 0) {
             throw new Error(appsResult.stderr);
         }
         
         const apps = appsResult.stdout.split('\n');
-        // Remove the first line "=====> My Apps"
-        apps.shift();
+        apps.shift();// Remove the first line "=====> My Apps"
+        apps.pop();// Remove the last line ""
         return apps;
     }
 
     async proxyPorts(appName) {
-        const proxyPortsResult = await this.#ssh.execCommand(`dokku proxy:ports ${appName}`);
+        const proxyPortsResult = await this.execCommand(`dokku proxy:ports ${appName}`);
         if (proxyPortsResult.code === 1) {
             throw new Error(proxyPortsResult.stderr);
         }
