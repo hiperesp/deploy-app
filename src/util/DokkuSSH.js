@@ -103,6 +103,7 @@ ${command}
 EOF
             `, (error, stdout, stderr) => {
                 if (error) {
+                    console.log(JSON.stringify(error, stdout, stderr));
                     reject(error.code, stderr);
                 } else {
                     resolve(stdout);
