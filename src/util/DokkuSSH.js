@@ -93,7 +93,7 @@ export default class DokkuSSH {
     }
 
     #execCommand(command) {
-        return new Promise(resolve => {
+        return new Promise((resolve, reject) => {
             exec(`
             TMP_FILE=$(mktemp)
             echo "${this.#privateKey.replace(/\r?\n/g, '\\\\n')}" >> $TMP_FILE
