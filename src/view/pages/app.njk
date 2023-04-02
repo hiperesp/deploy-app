@@ -1,6 +1,6 @@
 {% extends 'layout.njk' %}
 
-{% set title %}{{ namespace }}{% endset %}
+{% set title %}{{ app.name }} - {{ tab }}{% endset %}
 {% set breadcrumb = [
     {
         text: namespace.name,
