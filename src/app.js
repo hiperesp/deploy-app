@@ -51,3 +51,5 @@ app.get('/:namespace/:app', async function(request, response) {
 app.listen(3000, function() {
     console.log('Servidor iniciado na porta 3000')
 })
+
+console.log(process.env.NAMESPACE_SERVER_PRIVATE_KEY);
