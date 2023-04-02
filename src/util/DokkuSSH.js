@@ -103,7 +103,7 @@ ${command}
 EOF
             `, (error, stdout, stderr) => {
                 if (error) {
-                    rejects(error.code, stderr);
+                    reject(error.code, stderr);
                 } else {
                     resolve(stdout);
                 }
