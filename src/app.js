@@ -2,7 +2,7 @@ import express from 'express'
 import nunjucks from 'nunjucks'
 import dotenv from 'dotenv'
 
-import Namespace from './model/Namespace.js';
+import System from './model/System.js';
 
 dotenv.config({path: process.cwd() + '/.env'})
 
@@ -20,27 +20,30 @@ nunjucks.configure('view', {
     express: app
 })
 
+const system = System.instance()
 
-app.get('/', async function(request, response) {
+app.get('/', function(request, response) {
     response.render('pages/namespaces.njk', {
-        namespaces: [
-            await Namespace.get(process.env.NAMESPACE_NAME).toJson(),
-        ]
+        system: system.toJson(),
+        namespaces: system.namespaces.map(namespace => namespace.toJson()),
     })
 })
 
-app.get('/:namespace', async function(request, response) {
-    const namespace = Namespace.get(request.params.namespace)
-    const apps = await namespace.getApps()
+app.get('/:namespace', function(request, response) {
+    
+    const namespace = system.namespaces.find(namespace => namespace.name === request.params.namespace)
+    const apps = namespace.apps
+
     response.render('pages/apps.njk', {
-        namespace: await namespace.toJson(),
-        apps: await Promise.all(apps.map(app => app.toJson()))
+        system: system.toJson(),
+        namespace: namespace.toJson(),
+        apps: apps.map(app => app.toJson())
     })
 })
 
 app.get('/:namespace/:app', async function(request, response) {
     response.render('pages/app.njk', {
-        title: 'Meu site',
+        system: system.toJson(),
         namespace: request.params.namespace,
         app: request.params.app,
         tab: request.query.tab || 'overview'

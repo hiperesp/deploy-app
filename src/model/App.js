@@ -13,6 +13,11 @@ export default class App extends Model {
         this.namespace = namespace
     }
 
+    async refresh({proxyPorts, psScale}) {
+        this.proxyPorts = proxyPorts;
+        this.psScale = psScale;
+    }
+
     getContainers() {
         return []
     }
@@ -24,7 +29,7 @@ export default class App extends Model {
         };
     }
 
-    async toJson() {
+    toJson() {
         return {
             name: this.name,
             proxyPorts: this.proxyPorts,

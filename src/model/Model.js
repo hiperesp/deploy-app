@@ -1,5 +1,10 @@
 export default class Model {
-    async toJson() {
+
+    async refresh() {
+        throw new Error('refresh not implemented');
+    }
+
+    toJson() {
         throw new Error('toJson not implemented');
     }
 }
