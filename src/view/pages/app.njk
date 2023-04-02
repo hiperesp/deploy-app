@@ -44,35 +44,7 @@
             </div>
             <div class="mx-2">
                 <div class="row">
-                    {% for app in apps %}
-                        <div class="col-lg-3 col-md-4 col-sm-6 col-12 p-1">
-                            <a href="/{{ namespace }}/{{ app.name }}" class="card text-decoration-none p-0">
-                                <div class="card-body">
-                                    <div class="d-flex">
-                                        <div class="pe-2">
-                                            {% if app.online %}
-                                                <div class="rounded-circle d-flex align-items-center justify-content-center" style="background-color: hsl(152, 69%, 70%);width:40px;height:40px">
-                                                    <i class="bi bi-window"></i>
-                                                </div>
-                                            {% else %}
-                                                <div class="rounded-circle d-flex align-items-center justify-content-center" style="background-color: hsl(0, 69%, 70%);width:40px;height:40px">
-                                                    <i class="bi bi-window-x"></i>
-                                                </div>
-                                            {% endif %}
-                                        </div>
-                                        <div class="flex-fill">
-                                            <h5 class="card-title">{{ app.name }}</h5>
-                                            <h6 class="card-subtitle mb-2 text-body-secondary">
-                                                {% if app.replicas %}
-                                                    <i class="bi bi-terminal"></i> {{ app.replicas }} replicas
-                                                {% endif %}
-                                            </h6>
-                                        </div>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                    {% endfor %}
+                    
                 </div>
             </div>
         </div>

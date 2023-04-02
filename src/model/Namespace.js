@@ -1,12 +1,17 @@
 import DokkuSSH from '../util/DokkuSSH.js';
 import App from './App.js'
+import Model from './Model.js';
 
 const kServerHost = Symbol('serverHost');
 const kServerPort = Symbol('serverPort');
 const kServerUsername = Symbol('serverUsername');
 const kServerPrivateKey = Symbol('serverPrivateKey');
 
-export default class Namespace {
+export default class Namespace extends Model {
+
+    constructor() {
+        super()
+    }
 
     name;
 
@@ -20,11 +25,16 @@ export default class Namespace {
     dokkuSSH;
 
     async getApps() {
-        const appsNames = await this.dokkuSSH.appsList();
+        const appsList = await this.dokkuSSH.appsList();
+        const proxyPorts = await this.dokkuSSH.proxyPorts(appsList);
+        const psScale = await this.dokkuSSH.psScale(appsList);
+
         const apps = [];
-        for (const appName of appsNames) {
+        for (const appName of appsList) {
             const app = new App(this);
             app.name = appName;
+            app.proxyPorts = proxyPorts[appName];
+            app.psScale = psScale[appName];
             apps.push(app);
         }
         return apps;
@@ -57,5 +67,12 @@ export default class Namespace {
             Namespace.instances[name] = namespace;
         }
         return Namespace.instances[name];
+    }
+
+    async toJson() {
+        return {
+            name: this.name,
+            globalDomain: this.globalDomain,
+        }
     }
 }

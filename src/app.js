@@ -21,33 +21,24 @@ nunjucks.configure('view', {
 })
 
 
-app.get('/', function(request, response) {
+app.get('/', async function(request, response) {
     response.render('pages/namespaces.njk', {
         namespaces: [
-            Namespace.get(process.env.NAMESPACE_NAME),
+            await Namespace.get(process.env.NAMESPACE_NAME).toJson(),
         ]
     })
 })
 
-app.get('/:namespace', function(request, response) {
+app.get('/:namespace', async function(request, response) {
+    const namespace = Namespace.get(request.params.namespace)
+    const apps = await namespace.getApps()
     response.render('pages/apps.njk', {
-        namespace: request.params.namespace,
-        apps: [
-            {
-                name: 'app1',
-                online: true,
-                replicas: 3,
-            },
-            {
-                name: 'app2',
-                online: false,
-                replicas: 13,
-            },
-        ]
+        namespace: await namespace.toJson(),
+        apps: await Promise.all(apps.map(app => app.toJson()))
     })
 })
 
-app.get('/:namespace/:app', function(request, response) {
+app.get('/:namespace/:app', async function(request, response) {
     response.render('pages/app.njk', {
         title: 'Meu site',
         namespace: request.params.namespace,
