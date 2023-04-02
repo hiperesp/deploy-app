@@ -110,9 +110,6 @@ EOF
                     resolve(stdout);
                 }
             });
-            } catch (error) {
-                console.log(error);
-            }
         });
     }
 
