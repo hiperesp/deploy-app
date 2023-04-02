@@ -102,12 +102,17 @@ ssh -o StrictHostKeyChecking=no ${this.#username}@${this.#host} -p ${this.#port}
 ${command}
 EOF
             `, (error, stdout, stderr) => {
+                console.log("execCommand:", JSON.stringify(error, stdout, stderr));
                 if (error) {
+                    reject(error.code, stderr);
                     reject(error.code, stderr);
                 } else {
                     resolve(stdout);
                 }
             });
+            } catch (error) {
+                console.log(error);
+            }
         });
     }
 
