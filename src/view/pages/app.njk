@@ -3,13 +3,13 @@
 {% set title %}{{ namespace }}{% endset %}
 {% set breadcrumb = [
     {
-        text: namespace,
-        href: '/' + namespace
+        text: namespace.name,
+        href: '/' + namespace.name
     },
     {
-        text: app,
+        text: app.name,
         active: true,
-        ehref: '//' + app + '.deploy.app.br'
+        ehref: '//' + app.name + '.deploy.app.br'
     }
 ] %}
 {% set tabs %}
@@ -38,7 +38,7 @@
 {% block content %}
     <main>
         <div class="container pt-3">
-            <div class="mb-3 d-flex justify-content-end">
+            <div class="mb-3 d-flex justify-content-end gap-1">
                 <button type="button" class="btn btn-light btn-sm"><i class="bi bi-pencil-fill"></i> Edit</button>
                 <button type="button" class="btn btn-dark btn-sm"><i class="bi bi-window-plus"></i> Scale</button>
             </div>

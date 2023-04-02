@@ -32,6 +32,8 @@ app.get('/', function(request, response) {
 app.get('/:namespace', function(request, response) {
     
     const namespace = system.namespaces.find(namespace => namespace.name === request.params.namespace)
+    if(!namespace) return response.status(404).send('Namespace not found')
+
     const apps = namespace.apps
 
     response.render('pages/apps.njk', {
@@ -42,10 +44,17 @@ app.get('/:namespace', function(request, response) {
 })
 
 app.get('/:namespace/:app', async function(request, response) {
+
+    const namespace = system.namespaces.find(namespace => namespace.name === request.params.namespace)
+    if(!namespace) return response.status(404).send('Namespace not found')
+
+    const app = namespace.apps.find(app => app.name === request.params.app)
+    if(!app) return response.status(404).send('App not found')
+
     response.render('pages/app.njk', {
         system: system.toJson(),
-        namespace: request.params.namespace,
-        app: request.params.app,
+        namespace: namespace,
+        app: app,
         tab: request.query.tab || 'overview'
     })
 })
