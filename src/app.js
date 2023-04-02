@@ -1,6 +1,7 @@
 import express from 'express'
 import nunjucks from 'nunjucks'
 import dotenv from 'dotenv'
+import cookieParser from 'cookie-parser'
 
 import System from './model/System.js';
 
@@ -18,6 +19,22 @@ app.set('view engine', 'njk')
 nunjucks.configure('view', {
     autoescape: true,
     express: app
+})
+
+// Configurar o cookie parser
+app.use(cookieParser())
+
+// Configurar o middleware de autenticação
+app.use((request, response, next) => {
+    if(!process.env.AUTH_USER || !process.env.AUTH_PASSWORD) {
+        response.status(500).send('Missing authentication credentials in .env file: AUTH_USER and AUTH_PASSWORD')
+        return
+    }
+    if(request.cookies?.user === process.env.AUTH_USER && request.cookies?.password === process.env.AUTH_PASSWORD) {
+        next()
+        return
+    }
+    response.status(401).send('Unauthorized')
 })
 
 const system = System.instance()
