@@ -102,8 +102,8 @@ export default class DokkuSSH {
 ${command}
 EOF
             `, (error, stdout, stderr) => {
+                console.log("execCommand:", JSON.stringify(error, stdout, stderr));
                 if (error) {
-                    console.log(JSON.stringify(error, stdout, stderr));
                     reject(error.code, stderr);
                 } else {
                     resolve(stdout);
