@@ -101,10 +101,8 @@ chmod 600 $TMP_FILE
 ssh -o StrictHostKeyChecking=no ${this.#username}@${this.#host} -p ${this.#port} -i $TMP_FILE 'shell' <<EOF
 ${command}
 EOF
-            `, (error, stdout, stderr) => {
-                console.log("execCommand:", JSON.stringify(error, stdout, stderr));
+            `.trim(), (error, stdout, stderr) => {
                 if (error) {
-                    reject(error.code, stderr);
                     reject(error.code, stderr);
                 } else {
                     resolve(stdout);

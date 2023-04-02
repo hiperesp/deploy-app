@@ -4,7 +4,7 @@ import dotenv from 'dotenv'
 
 import Namespace from './model/Namespace.js';
 
-dotenv.config({path: process.cwd() + '/../.env'})
+dotenv.config({path: process.cwd() + '/.env'})
 
 const app = express()
 
