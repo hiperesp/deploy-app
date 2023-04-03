@@ -1,0 +1,54 @@
+{% extends 'layout.njk' %}
+
+{% set title %}Deploy.app.br - Login{% endset %}
+{% set hideHeader = true %}
+
+{% block content %}
+    <style>
+        body {
+            height: 100vh;
+        }
+    </style>
+    <div class="row m-0 h-100">
+        <div class="col-lg-8 col-md-12 d-flex flex-column justify-content-center align-items-center h-100">
+            <div class="d-lg-none d-flex align-items-center justify-content-between mb-5 w-100">
+                <span class="d-block flex-fill me-5 bg-body-secondary" style="height: 1px;"></span>
+                <img src="/assets/images/logo.svg" alt="Deploy.app.br" style="height: 64px">
+                <h2 class="ps-2">Deploy.app.br</h2>
+                <span class="d-block flex-fill ms-5 bg-body-secondary" style="height: 1px;"></span>
+            </div>
+            <form action="/login" method="post" class="card border-0" style="max-width: 400px;width:400px;">
+
+                <input type="hidden" name="redirect" value="{{ originalUrl }}">
+                <div class="card-body">
+
+                    <h3 class="mb-2">Sign in</h3>
+                    <p class="mb-4 text-muted">Please sign in to continue.</p>
+
+                    <div class="form-group mb-3">
+                        <label for="username" class="fw-bold">Username</label>
+                        <input type="username" class="form-control" id="username" name="username">
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label for="password" class="fw-bold">Password</label>
+                        <input type="password" class="form-control" id="password" name="password">
+                    </div>
+
+                    <button type="submit" class="btn btn-dark w-100">Sign in</button>
+
+                </div>
+            </form>
+        </div>
+        <div class="col-lg-4 d-lg-flex d-none">
+            <div class="d-flex flex-column justify-content-between align-items-center h-100">
+                <span class="d-block flex-fill mb-5 bg-body-secondary" style="width: 1px;"></span>
+                <img src="/assets/images/logo.svg" alt="Deploy.app.br" style="height: 64px">
+                <span class="d-block flex-fill mt-5 bg-body-secondary" style="width: 1px;"></span>
+            </div>
+            <div class="flex-fill d-flex align-items-center">
+                <h2 class="ps-2">Deploy.app.br</h2>
+            </div>
+        </div>
+    </div>
+{% endblock %}

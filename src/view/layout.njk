@@ -11,7 +11,9 @@
         <link rel="shortcut icon" href="/assets/img/favicon.png" type="image/png">
     </head>
     <body>
-        {% include 'components/header.njk' %}
+        {% if not hideHeader %}
+            {% include 'components/header.njk' %}
+        {% endif %}
         {% block content %}{% endblock %}
     </body>
 </html>

@@ -9,6 +9,9 @@ dotenv.config({path: process.cwd() + '/.env'})
 
 const app = express()
 
+// Configurar o Express para receber dados do formulário via POST
+app.use(express.urlencoded({extended: true}))
+
 // Configurar pasta de assets estáticos
 app.use(express.static('view/static'));
 
@@ -30,14 +33,43 @@ app.use((request, response, next) => {
         response.status(500).send('Missing authentication credentials in .env file: AUTH_USER and AUTH_PASSWORD')
         return
     }
-    if(request.cookies?.user === process.env.AUTH_USER && request.cookies?.password === process.env.AUTH_PASSWORD) {
+
+    if(request.path === '/login') {
         next()
         return
     }
-    response.status(401).send('Unauthorized')
+
+    const authData = {
+        username: request.cookies?.username,
+        password: request.cookies?.password,
+    }
+
+    if(authData.username === process.env.AUTH_USER && authData.password === process.env.AUTH_PASSWORD) {
+        response.cookie('username', authData.username)
+        response.cookie('password', authData.password)
+        next()
+        return
+    }
+
+    response.status(401).render('pages/login.njk', {
+        originalUrl: request.originalUrl,
+    })
 })
 
 const system = System.instance()
+
+app.post('/login', (request, response) => {
+    const authData = {
+        username: request.body?.username,
+        password: request.body?.password,
+    }
+
+    response.cookie('username', authData.username)
+    response.cookie('password', authData.password)
+
+    const redirect = request.body?.redirect || '/'
+    response.redirect(redirect);
+})
 
 app.get('/', function(request, response) {
     response.render('pages/namespaces.njk', {
