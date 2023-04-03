@@ -70,6 +70,11 @@ app.post('/login', (request, response) => {
     const redirect = request.body?.redirect || '/'
     response.redirect(redirect);
 })
+app.get('/logout', (request, response) => {
+    response.clearCookie('username')
+    response.clearCookie('password')
+    response.redirect('/');
+})
 
 app.get('/', function(request, response) {
     response.render('pages/namespaces.njk', {
