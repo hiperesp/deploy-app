@@ -1,6 +1,18 @@
 {% extends 'layout.njk' %}
 
-{% set title %}{{ app.name }} - {{ tab }}{% endset %}
+{% set tabs = {
+    overview: "Overview",
+    access_logs: "Access Logs",
+    error_logs: "Error Logs",
+    app_logs: "App Logs",
+    settings: "Settings"
+} %}
+{% if tab not in tabs %}
+    {% set tab = "overview" %}
+{% endif %}
+
+{% set title %}{{ app.name }} - {{ tabs[tab] }}{% endset %}
+
 {% set breadcrumb = [
     {
         text: namespace.name,
@@ -14,21 +26,17 @@
 ] %}
 {% set tabs %}
     <ul class="nav nav-tabs px-md-5 px-3">
-        <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#">Overview</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#">Access Logs</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#">Error Logs</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#">App Logs</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#">Settings</a>
-        </li>
+        {% for key, value in tabs %}
+            {% if tab === key %}
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="?tab={{ key }}">{{ value }}</a>
+                </li>
+            {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="?tab={{ key }}">{{ value }}</a>
+                </li>
+            {% endif %}
+        {% endfor %}
         <li class="nav-item">
             <a class="nav-link disabled">Disabled</a>
         </li>
@@ -43,9 +51,15 @@
                 <button type="button" class="btn btn-dark btn-sm"><i class="bi bi-window-plus"></i> Scale</button>
             </div>
             <div class="mx-2">
-                <div class="row">
-                    
-                </div>
+                {% if tab == "overview" %}
+                    Overview
+                {% elseif tab == "access_logs" or tab == "error_logs" or tab == "app_logs" %}
+                    <div class="row">
+                        <pre class="bg-black text-white w-100 p-3 border-dark rounded" style="height: 400px;" data-logs="{{ tab }}">{{ tab }}</pre>
+                    </div>
+                {% elseif tab == "settings" %}
+                    Settings tab
+                {% endif %}
             </div>
         </div>
     </main>
