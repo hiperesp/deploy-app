@@ -1,26 +1,29 @@
+{% set breadcrumb %}
+    <ol class="breadcrumb mb-0">
+        {% for breadcrumbItem in breadcrumb %}
+            <li class="breadcrumb-item {% if breadcrumbItem.active %}active{% endif %}" aria-current="page">
+                {% if breadcrumbItem.href %}
+                    <a href="{{ breadcrumbItem.href }}">{{ breadcrumbItem.text }}</a>
+                {% else %}
+                    {{ breadcrumbItem.text }}
+                {% endif %}
+                {% if breadcrumbItem.ehref %}
+                    <a href="{{ breadcrumbItem.ehref }}" target="_blank">
+                        <i class="bi bi-link-45deg"></i>
+                    </a>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ol>
+{% endset %}
 <header class="bg-light">
     <nav class="navbar">
         <div class="container-fluid">
             <a class="navbar-brand mx-3" href="/">
                 <img src="/assets/images/logo.svg" alt="deploy.app.br logo" width="32" height="32" class="rounded-circle">
             </a>
-            <nav aria-label="breadcrumb" class="navbar-brand me-auto">
-                <ol class="breadcrumb mb-0">
-                    {% for breadcrumbItem in breadcrumb %}
-                        <li class="breadcrumb-item {% if breadcrumbItem.active %}active{% endif %}" aria-current="page">
-                            {% if breadcrumbItem.href %}
-                                <a href="{{ breadcrumbItem.href }}">{{ breadcrumbItem.text }}</a>
-                            {% else %}
-                                {{ breadcrumbItem.text }}
-                            {% endif %}
-                            {% if breadcrumbItem.ehref %}
-                                <a href="{{ breadcrumbItem.ehref }}" target="_blank">
-                                    <i class="bi bi-link-45deg"></i>
-                                </a>
-                            {% endif %}
-                        </li>
-                    {% endfor %}
-                </ol>
+            <nav aria-label="breadcrumb" class="navbar-brand me-auto d-none d-sm-block">
+                {{ breadcrumb | safe }}
             </nav>
             <div class="dropdown">
                 <button class="btn btn-link" type="button" data-bs-toggle="dropdown">
@@ -32,6 +35,11 @@
                     <li><a class="dropdown-item" href="/logout">Logout</a></li>
                 </ul>
             </div>
+        </div>
+        <div class="container-fluid d-sm-none">
+            <nav aria-label="breadcrumb" class="navbar-brand mx-auto d-block d-sm-none">
+                {{ breadcrumb | safe }}
+            </nav>
         </div>
     </nav>
     {{ tabs | safe }}
