@@ -45,8 +45,6 @@ app.use((request, response, next) => {
     }
 
     if(authData.username === process.env.AUTH_USER && authData.password === process.env.AUTH_PASSWORD) {
-        response.cookie('username', authData.username)
-        response.cookie('password', authData.password)
         next()
         return
     }
