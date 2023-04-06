@@ -21,7 +21,7 @@
     {
         text: app.name,
         active: true,
-        ehref: '//' + app.name + '.deploy.app.br'
+        ehref: '//' + (app.domains.app[0] or app.domains.global[0])
     }
 ] %}
 {% set tabs %}
@@ -58,7 +58,45 @@
                         <pre class="bg-black text-white w-100 p-3 border-dark rounded" style="height: 400px;" data-logs="{{ tab }}">{{ tab }}</pre>
                     </div>
                 {% elseif tab == "settings" %}
-                    Settings tab
+
+                    <div class="row">
+                        <div class="col-md-3">
+                        </div>
+
+                        <div class="col-md-6">
+                            <form>
+                                <h4 class="mb-2">General</h4>
+                                <p class="mb-4 text-muted">General settings for your app.</p>
+
+                                <div class="form-group mb-3">
+                                    <label for="name" class="fw-bold">App name</label>
+                                    <input type="name" class="form-control" id="name" name="name" value="{{ app.name }}">
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="proxy-ports" class="fw-bold">Proxy Ports</label>
+                                    <textarea class="form-control" id="proxy-ports" name="proxy-ports" rows="{{ app.proxyPorts.length + 1 }}">{% for proxyPorts in app.proxyPorts %}{{ proxyPorts + "\n" }}{% endfor %}</textarea>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="domains" class="fw-bold">Domains</label>
+                                    <textarea class="form-control" id="domains" name="domains" rows="{{ app.domains.app.length + 1 }}">{% for domain in app.domains.app %}{{ domain + "\n" }}{% endfor %}</textarea>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label class="fw-bold">Domains (Global)</label>
+                                    <textarea class="form-control" rows="{{ app.domains.global.length }}" disabled="" resize="none">{% for domain in app.domains.global %}{{ domain }}{{ "\n" if not loop.last }}{% endfor %}</textarea>
+                                </div>
+
+                                <button type="submit" class="btn btn-dark w-100">Sign in</button>
+
+                            </form>
+                        </div>
+                    </div>
+
+                    <hr>
+                    App dump:
+                    {{ app | dump }}
                 {% endif %}
             </div>
         </div>

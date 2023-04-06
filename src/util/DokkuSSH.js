@@ -1,18 +1,73 @@
 import { exec } from 'child_process';
 
+const kHost = Symbol('host');
+const kPort = Symbol('port');
+const kUsername = Symbol('username');
+const kPrivateKey = Symbol('privateKey');
+
+const kExecCommand = Symbol('execCommand');
+const kExecAppCommands = Symbol('execAppCommands');
+const kNormalizeAppNames = Symbol('normalizeAppNames');
+const kExecMultipleCommands = Symbol('execMultipleCommands');
+const kCreateCommand = Symbol('kCreateCommand');
+
 export default class DokkuSSH {
 
-    #host;
-    #port;
-    #username;
-    #privateKey;
+    [kHost];
+    [kPort];
+    [kUsername];
+    [kPrivateKey];
 
     async ping() {
-        await this.#execCommand('version');
+        await this[kExecCommand]('version');
+    }
+
+    async domainsReport(appOrApps) {
+        const domainsResult = await this[kExecAppCommands](appOrApps, 'domains:report %app%');
+        const output = {};
+        for(const app in domainsResult) {
+
+            const domainsConfigs = domainsResult[app].split('\n');
+            domainsConfigs.shift(); // remove header
+            domainsConfigs.pop(); // remove last empty line
+
+            const configs = {
+                app: {
+                    enabled: false,
+                    vhosts: [],
+                },
+                global: {
+                    enabled: false,
+                    vhosts: [],
+                },
+            };
+            for(const domainConfig of domainsConfigs) {
+                const [type, config, configValue] = domainConfig.trim().replace(/Domains (app|global) (enabled|vhosts):\s+/g, '$1,$2,').split(',');
+                if(config === 'vhosts') {
+                    configs[type][config] = configValue.split(' ');
+                } else {
+                    configs[type][config] = configValue === 'true';
+                }
+            }
+            const appOutput = {
+                app: [],
+                global: [],
+            };
+            if(configs.app.enabled) {
+                appOutput.app.push(...configs.app.vhosts);
+            }
+            if(configs.global.enabled) {
+                for(const vhost of configs.global.vhosts) {
+                    appOutput.global.push(`${app}.${vhost}`);
+                }
+            }
+            output[app] = appOutput;
+        }
+        return output;
     }
 
     async appsList() {
-        const appsResult = await this.#execCommand('apps:list');
+        const appsResult = await this[kExecCommand]('apps:list');
         const apps = appsResult.split('\n');
         apps.shift(); // remove header
         apps.pop(); // remove last empty line
@@ -22,7 +77,7 @@ export default class DokkuSSH {
 
     async proxyPorts(appOrApps) {
         const output = {};
-        const proxyPortsResult = await this.#execAppCommands(appOrApps, 'proxy:ports %app%');
+        const proxyPortsResult = await this[kExecAppCommands](appOrApps, 'proxy:ports %app%');
         for(const app in proxyPortsResult) {
             const proxyPorts = proxyPortsResult[app].split('\n');
             proxyPorts.shift(); // remove header
@@ -41,7 +96,7 @@ export default class DokkuSSH {
 
     async psScale(appOrApps) {
         const output = {};
-        const psScaleResult = await this.#execAppCommands(appOrApps, 'ps:scale %app%');
+        const psScaleResult = await this[kExecAppCommands](appOrApps, 'ps:scale %app%');
         for(const app in psScaleResult) {
             const psScaleLines = psScaleResult[app].split('\n');
             psScaleLines.shift(); // remove header
@@ -58,9 +113,9 @@ export default class DokkuSSH {
         return output;
     }
 
-    async #execAppCommands(appOrApps, command, appNameVar = '%app%') {
-        const apps = this.#normalizeAppNames(appOrApps);
-        const responses = await this.#execMultipleCommands(this.#createCommand(apps, command, appNameVar));
+    async [kExecAppCommands](appOrApps, command, appNameVar = '%app%') {
+        const apps = this[kNormalizeAppNames](appOrApps);
+        const responses = await this[kExecMultipleCommands](this[kCreateCommand](apps, command, appNameVar));
 
         const output = {};
         for (let i = 0; i < apps.length; i++) {
@@ -70,39 +125,39 @@ export default class DokkuSSH {
         return output;
     }
 
-    #normalizeAppNames(appOrApps) {
+    [kNormalizeAppNames](appOrApps) {
         if(typeof appOrApps === 'string') {
-            return this.#normalizeAppNames([appOrApps]);
+            return this[kNormalizeAppNames]([appOrApps]);
         }
         if(appOrApps && appOrApps?.name) {
-            return this.#normalizeAppNames(appOrApps.name);
+            return this[kNormalizeAppNames](appOrApps.name);
         }
         return appOrApps.map(app => app.trim()).filter(app => !!app);
     }
 
-    #createCommand(apps, command, appNameVar = '%app%') {
+    [kCreateCommand](apps, command, appNameVar = '%app%') {
         return apps.map(app => app.trim()).filter(app => !!app).map(app => command.replace(appNameVar, app));
     }
 
-    async #execMultipleCommands(commands) {
+    async [kExecMultipleCommands](commands) {
         const newCommands = [];
         for (const command of commands) {
             newCommands.push(command);
             newCommands.push('version');
         }
-        let response = await this.#execCommand(newCommands.join('\n'));
+        let response = await this[kExecCommand](newCommands.join('\n'));
         response = response.split(/^dokku version \d+\.\d+\.\d+\n/gm);
         response.pop();// remove the last empty line
         return response;
     }
 
-    #execCommand(command) {
+    [kExecCommand](command) {
         return new Promise((resolve, reject) => {
             exec(`
 TMP_FILE=$(mktemp)
-echo "${this.#privateKey.replace(/\r?\n/g, '\\\\n')}" >> $TMP_FILE
+echo "${this[kPrivateKey].replace(/\r?\n/g, '\\\\n')}" >> $TMP_FILE
 chmod 600 $TMP_FILE
-ssh -o StrictHostKeyChecking=no ${this.#username}@${this.#host} -p ${this.#port} -i $TMP_FILE 'shell' <<EOF
+ssh -o StrictHostKeyChecking=no ${this[kUsername]}@${this[kHost]} -p ${this[kPort]} -i $TMP_FILE 'shell' <<EOF
 ${command}
 EOF
             `.trim(), (error, stdout, stderr) => {
@@ -118,10 +173,10 @@ EOF
     static create(serverConnectionInfo) {
         const dokkuSSH = new DokkuSSH();
 
-        dokkuSSH.#host = serverConnectionInfo.host;
-        dokkuSSH.#port = Number(serverConnectionInfo.port);
-        dokkuSSH.#username = serverConnectionInfo.username;
-        dokkuSSH.#privateKey = serverConnectionInfo.privateKey;
+        dokkuSSH[kHost] = serverConnectionInfo.host;
+        dokkuSSH[kPort] = Number(serverConnectionInfo.port);
+        dokkuSSH[kUsername] = serverConnectionInfo.username;
+        dokkuSSH[kPrivateKey] = serverConnectionInfo.privateKey;
 
         return dokkuSSH;
     }

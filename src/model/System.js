@@ -3,7 +3,6 @@ import Model from "./Model.js";
 import Namespace from "./Namespace.js";
 
 const refreshInterval = 1000 * 60 * 1; // 1 minutes
-const kDokku = Symbol('dokku');
 
 export default class System extends Model {
 
@@ -36,15 +35,19 @@ export default class System extends Model {
         if(!System.#instance) {
             const instance = new System()
 
-            const namespace = new Namespace(kDokku)
-            namespace.name = process.env.NAMESPACE_NAME
-            namespace[kDokku] = DokkuSSH.create({
-                host: process.env.NAMESPACE_SERVER_HOST,
-                port: process.env.NAMESPACE_SERVER_PORT,
-                username: process.env.NAMESPACE_SERVER_USERNAME,
-                privateKey: process.env.NAMESPACE_SERVER_PRIVATE_KEY
-            });
-            instance.#namespaces.push(namespace)
+            const namespacesData = JSON.parse(process.env.NAMESPACES)
+            for(const namespaceData of namespacesData) {
+                const namespace = new Namespace({
+                    name: namespaceData.name,
+                    dokkuSSH: DokkuSSH.create({
+                        host: namespaceData.server_host,
+                        port: namespaceData.server_port,
+                        username: namespaceData.server_username,
+                        privateKey: namespaceData.server_privateKey,
+                    })
+                })
+                instance.#namespaces.push(namespace)
+            }
 
             instance.refresh();
 

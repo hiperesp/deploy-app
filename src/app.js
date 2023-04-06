@@ -105,8 +105,8 @@ app.get('/:namespace/:app', async function(request, response) {
 
     response.render('pages/app.njk', {
         system: system.toJson(),
-        namespace: namespace,
-        app: app,
+        namespace: namespace.toJson(),
+        app: app.toJson(),
         tab: request.query.tab || 'overview'
     })
 })

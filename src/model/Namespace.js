@@ -2,26 +2,30 @@ import App from './App.js'
 import Model from './Model.js';
 
 const kRefreshApps = Symbol('refreshApps');
-const kDokkuKey = Symbol('dokkuKey');
+const kDokku = Symbol('dokku');
 const kPing = Symbol('ping');
 
 export default class Namespace extends Model {
 
-    [kDokkuKey];
+    [kDokku]
 
-    name;
-
-    globalDomain;
-
+    #name;
+    #globalDomains;
     #online = false;
-
     #apps = [];
 
-    constructor(dokkuKey) {
+    constructor(options) {
         super()
-        this[kDokkuKey] = dokkuKey;
+        this.#name = options.name;
+        this[kDokku] = options.dokkuSSH;
     }
 
+    get name() {
+        return this.#name;
+    }
+    get globalDomains() {
+        return this.#globalDomains;
+    }
     get online() {
         return this.#online;
     }
@@ -38,13 +42,9 @@ export default class Namespace extends Model {
         }
     }
 
-    get #dokku() {
-        return this[this[kDokkuKey]];
-    }
-
     async [kPing]() {
         try {
-            await this.#dokku.ping();
+            await this[kDokku].ping();
             this.#online = true;
         } catch (e) {
             this.#online = false;
@@ -53,9 +53,10 @@ export default class Namespace extends Model {
     }
 
     async [kRefreshApps]() {
-        const appsList = await this.#dokku.appsList();
-        const proxyPorts = await this.#dokku.proxyPorts(appsList);
-        const psScale = await this.#dokku.psScale(appsList);
+        const appsList = await this[kDokku].appsList();
+        const proxyPorts = await this[kDokku].proxyPorts(appsList);
+        const domainsReport = await this[kDokku].domainsReport(appsList);
+        const psScale = await this[kDokku].psScale(appsList);
 
         //remove apps that are not in appsList
         for(const app of this.apps) {
@@ -67,8 +68,9 @@ export default class Namespace extends Model {
         //add apps that are in appsList but not in this.apps
         for (const appName of appsList) {
             if(!this.apps.find(app => app.name === appName)) {
-                const app = new App(this);
-                app.name = appName;
+                const app = new App(this, {
+                    name: appName,
+                });
                 this.apps.push(app);
             }
         }
@@ -76,6 +78,7 @@ export default class Namespace extends Model {
         //refresh apps
         for(const app of this.apps) {
             await app.refresh({
+                domains: domainsReport[app.name],
                 proxyPorts: proxyPorts[app.name],
                 psScale: psScale[app.name],
             });
