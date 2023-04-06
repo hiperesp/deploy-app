@@ -2,8 +2,6 @@ import DokkuSSH from "../util/DokkuSSH.js";
 import Model from "./Model.js";
 import Namespace from "./Namespace.js";
 
-const refreshInterval = 1000 * 60 * 1; // 1 minutes
-
 export default class System extends Model {
 
     #namespaces = [];
@@ -27,7 +25,7 @@ export default class System extends Model {
             await namespace.refresh();
         }
         this.#lastRefreshTime = Date.now();
-        setTimeout(this.refresh.bind(this), refreshInterval);
+        setTimeout(this.refresh.bind(this), (process.env.REFRESH_INTERVAL || 60) * 1000);
     }
 
     static #instance
