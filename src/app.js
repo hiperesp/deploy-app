@@ -111,6 +111,41 @@ app.get('/:namespace/:app', async function(request, response) {
     })
 })
 
+app.get('/:namespace/:app/api/server-sent-events/logs/:type', async function(request, response) {
+    const updateInterval = Math.min(Math.max(parseInt(request.query?.updateInterval) || 1000, 500), 10000)
+
+    const namespace = system.namespaces.find(namespace => namespace.name === request.params.namespace)
+    if(!namespace) return response.status(404).send('Namespace not found')
+
+    const app = namespace.apps.find(app => app.name === request.params.app)
+    if(!app) return response.status(404).send('App not found')
+
+    let lastSentLogLine = "";
+    async function sendLog() {
+        const log = await app.getLogs(request.params.type)
+        const logLines = log.split("\n");
+        const newLogLines = logLines.slice(logLines.indexOf(lastSentLogLine) + 1);
+        if(newLogLines.length === 0) return;
+        lastSentLogLine = logLines[logLines.length - 1];
+        
+        const logData = newLogLines.join("\n");
+        response.write(`data: ${JSON.stringify(logData)}\n\n`)
+    }
+
+    response.writeHead(200, {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+    })
+
+    const interval = setInterval(sendLog, updateInterval);sendLog();
+
+    request.on('close', () => {
+        console.log("closed");
+        clearInterval(interval)
+    });
+});
+
 // Iniciar o servidor
 app.listen(3000, function() {
     console.log('Servidor iniciado na porta 3000')

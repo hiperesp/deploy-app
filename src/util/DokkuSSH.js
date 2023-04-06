@@ -18,6 +18,45 @@ export default class DokkuSSH {
     [kUsername];
     [kPrivateKey];
 
+    async nginxAccessLogs(appOrApps) {
+        const result = await this[kExecAppCommands](appOrApps, 'nginx:access-logs %app%');
+
+        const output = {};
+        for(const app in result) {
+            const logLines = result[app].split('\n');
+            logLines.pop(); // remove last empty line
+            output[app] = logLines.join('\n');
+        }
+
+        return output;
+    }
+
+    async nginxErrorLogs(appOrApps) {
+        const result = await this[kExecAppCommands](appOrApps, 'nginx:error-logs %app%');
+
+        const output = {};
+        for(const app in result) {
+            const logLines = result[app].split('\n');
+            logLines.pop(); // remove last empty line
+            output[app] = logLines.join('\n');
+        }
+
+        return output;
+    }
+
+    async logs(appOrApps) {
+        const result = await this[kExecAppCommands](appOrApps, 'logs %app%');
+
+        const output = {};
+        for(const app in result) {
+            const logLines = result[app].split('\n');
+            logLines.pop(); // remove last empty line
+            output[app] = logLines.join('\n');
+        }
+
+        return output;
+    }
+
     async ping() {
         await this[kExecCommand]('version');
     }

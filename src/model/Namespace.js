@@ -85,6 +85,16 @@ export default class Namespace extends Model {
         }
     }
 
+    async getAppLogs(appOrApps, type) {
+        if(type === 'access_logs')
+            return await this[kDokku].nginxAccessLogs(appOrApps);
+        if(type === 'error_logs')
+            return await this[kDokku].nginxErrorLogs(appOrApps);
+        if(type === 'app_logs')
+            return await this[kDokku].logs(appOrApps);
+        throw new Error("Invalid log type");
+    }
+
     toJson() {
         return {
             name: this.name,

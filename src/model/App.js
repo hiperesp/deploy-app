@@ -56,6 +56,10 @@ export default class App extends Model {
         };
     }
 
+    async getLogs(type) {
+        return (await this.#namespace.getAppLogs(this.name, type))[this.name];
+    }
+
     getContainers() {
         return []
     }
