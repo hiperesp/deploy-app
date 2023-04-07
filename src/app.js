@@ -107,7 +107,8 @@ app.get('/:namespace/:app', async function(request, response) {
         system: system.toJson(),
         namespace: namespace.toJson(),
         app: app.toJson(),
-        tab: request.query.tab || 'overview'
+        tab: request.query.tab || 'overview',
+        subtab: request.query.subtab || 'general',
     })
 })
 

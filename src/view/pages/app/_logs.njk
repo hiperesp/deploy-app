@@ -1,0 +1,126 @@
+<div class="w-100 p-3 flex-fill mb-0 bg-black text-white" style="overflow: scroll;">
+    <div style="width:max-content;min-width:100%" data-sse-base="/{{ namespace.name }}/{{ app.name }}/api/server-sent-events/logs/" data-logs="{{ tab }}"></div>
+</div>
+<script>
+(function() {
+    const body = document.body
+    body.classList.add("d-flex", "flex-column")
+    body.style.height = "100vh"
+
+    const logOutputList = document.querySelectorAll('[data-logs]');
+
+    logOutputList.forEach(function(logOutput) {
+        const sseBase = logOutput.dataset.sseBase;
+        const logType = logOutput.dataset.logs;
+
+        const eventSource = new EventSource(`${sseBase}${logType}`, {
+            withCredentials: true
+        });
+        eventSource.addEventListener('message', function (e) {
+            const data = JSON.parse(e.data);
+
+            if(data.type === 'ping') {
+                return;
+            }
+
+            if(data.type === 'log') {
+                const group = createNewTerminalOutputGroup(data.data);
+                return;
+            }
+
+            if(data.type === 'error') {
+                const group = createNewTerminalOutputGroup(data.data);
+                group.classList.remove('bg-dark');
+                group.classList.add('bg-danger');
+                return;
+            }
+        });
+        eventSource.addEventListener('error', function (e) {
+            const group = createNewTerminalOutputGroup("The connection to the server was lost.");
+            group.classList.remove('bg-dark');
+            group.classList.add('bg-danger');
+        });
+        eventSource.addEventListener('open', function (e) {
+            const group = createNewTerminalOutputGroup("The connection to the server was established.");
+            group.classList.remove('bg-dark');
+            group.classList.add('bg-success');
+        });
+
+        function createNewTerminalOutputGroup(str) {
+
+            const group = document.createElement('div');
+            group.classList.add('mt-3', 'py-2', 'px-3', 'rounded', 'bg-dark');
+            group.style.position = 'relative';
+            group.style.width = 'fit-content';
+
+            const badge = document.createElement('div');
+            badge.classList.add('badge', 'bg-secondary', 'mb-2');
+            badge.style.position = 'sticky';
+            badge.style.left = '0';
+            badge.innerText = new Date().toLocaleTimeString();
+            group.appendChild(badge);
+
+            const pre = document.createElement('pre');
+            pre.classList.add('d-block', 'mb-0', 'text-white');
+            pre.innerHTML = terminalOutputToHtml(str);
+            group.appendChild(pre);
+
+            logOutput.append(group);
+
+            group.scrollIntoViewIfNeeded();
+
+            return group;
+        }
+
+        function terminalOutputToHtml(outputStr) {
+            function escapeHTML(str) {
+                var p = document.createElement("p");
+                p.appendChild(document.createTextNode(str));
+                return p.innerHTML;
+            }
+            function colorsHTML(str) {
+                let output = "";
+                let color = "";
+                let isDefiningColor = false;
+                let isTagOpen = false;
+
+                for (let i = 0; i < str.length; i++) {
+
+                    const char = str[i]
+                    const nextChar = str[i + 1]
+
+                    if (char == "\x1b" && nextChar == "[") {
+                        isDefiningColor = true;
+                        color = "";
+                        i++;
+                        continue;
+                    }
+                    if (isDefiningColor) {
+                        if (char == "m") {
+                            isDefiningColor = false;
+                            if(isTagOpen) {
+                                output += "</span>"
+                            }
+                            output+= "<span class='ansi-" + color + "'>";
+                            isTagOpen = true;
+                            continue;
+                        }
+                        color += char;
+                        continue;
+                    }
+                    output += char;
+                }
+                if(isTagOpen) {
+                    output += "</span>"
+                }
+                return output;
+            }
+            let output = escapeHTML(outputStr)
+            output = colorsHTML(output)
+            output = output.replace(/\n/g, '<br>')
+            return output;
+        }
+    })
+
+})();
+</script>

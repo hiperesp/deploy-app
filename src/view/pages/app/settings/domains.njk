@@ -1,0 +1,19 @@
+<div class="col-md-6 pt-3">
+    <form>
+        <h4 class="mb-2">Domains Settings</h4>
+        <p class="mb-4 text-muted">Domains settings for your app.</p>
+
+        <div class="form-group mb-3">
+            <label for="domains" class="fw-bold">Domains</label>
+            <textarea class="form-control" id="domains" name="domains" rows="{{ app.domains.app.length + 1 }}">{% for domain in app.domains.app %}{{ domain + "\n" }}{% endfor %}</textarea>
+        </div>
+
+        <div class="form-group mb-3">
+            <label class="fw-bold">Domains (Global)</label>
+            <textarea class="form-control" rows="{{ app.domains.global.length }}" disabled="" resize="none">{% for domain in app.domains.global %}{{ domain }}{{ "\n" if not loop.last }}{% endfor %}</textarea>
+        </div>
+
+        <button type="submit" class="btn btn-dark w-100">Save</button>
+
+    </form>
+</div>

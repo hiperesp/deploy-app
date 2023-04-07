@@ -1,3 +1,23 @@
+.ansi-30 { color: #000000; }
+.ansi-90 { color: #808080; }
+.ansi-31, .ansi-91 { color: #ff0000; }
+.ansi-32, .ansi-92 { color: #00ff00; }
+.ansi-33, .ansi-93 { color: #ffff00; }
+.ansi-34, .ansi-94 { color: #0000ff; }
+.ansi-35, .ansi-95 { color: #ff00ff; }
+.ansi-36, .ansi-96 { color: #00ffff; }
+.ansi-37, .ansi-97 { color: #ffffff; }
+
+.ansi-40 { background-color: #000000; }
+.ansi-100 { background-color: #808080; }
+.ansi-41, .ansi-101 { background-color: #ff0000; }
+.ansi-42, .ansi-102 { background-color: #00ff00; }
+.ansi-43, .ansi-103 { background-color: #ffff00; }
+.ansi-44, .ansi-104 { background-color: #0000ff; }
+.ansi-45, .ansi-105 { background-color: #ff00ff; }
+.ansi-46, .ansi-106 { background-color: #00ffff; }
+.ansi-47, .ansi-107 { background-color: #ffffff; }
+
 .nav-tabs .nav-link {
     color: inherit;
 }
@@ -19,4 +39,19 @@
 .breadcrumb-item.active > a:hover {
     text-decoration: inherit;
     color: var(--bs-black);
+}
+
+.btn-toggle {
+    padding: .25rem .5rem;
+    color: var(--bs-emphasis-color);
+    background-color: transparent;
+}
+.btn-toggle:hover,
+.btn-toggle:focus,
+.btn-toggle.active {
+    color: rgba(var(--bs-emphasis-color-rgb), .8);
+    background-color: var(--bs-tertiary-bg);
+}
+.btn-toggle.active {
+    font-weight: bold;
 }

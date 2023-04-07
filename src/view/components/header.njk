@@ -1,7 +1,7 @@
 {% set breadcrumb %}
     <ol class="breadcrumb mb-0">
         {% for breadcrumbItem in breadcrumb %}
-            <li class="breadcrumb-item {% if breadcrumbItem.active %}active{% endif %}" aria-current="page">
+            <li class="breadcrumb-item {{ "active" if breadcrumbItem.active }}" aria-current="page">
                 {% if breadcrumbItem.href %}
                     <a href="{{ breadcrumbItem.href }}">{{ breadcrumbItem.text }}</a>
                 {% else %}

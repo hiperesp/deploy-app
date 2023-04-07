@@ -1,0 +1,14 @@
+<div class="col-md-6 pt-3">
+    <form>
+        <h4 class="mb-2">Ports Settings</h4>
+        <p class="mb-4 text-muted">Proxy ports settings for your app.</p>
+
+        <div class="form-group mb-3">
+            <label for="proxy-ports" class="fw-bold">Proxy Ports</label>
+            <textarea class="form-control" id="proxy-ports" name="proxy-ports" rows="{{ app.proxyPorts.length + 1 }}">{% for proxyPorts in app.proxyPorts %}{{ proxyPorts + "\n" }}{% endfor %}</textarea>
+        </div>
+
+        <button type="submit" class="btn btn-dark w-100">Save</button>
+
+    </form>
+</div>

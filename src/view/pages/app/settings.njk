@@ -1,0 +1,47 @@
+{% set subtabs = {
+    "General": {
+        general: "General Settings",
+        scale  : "Scale App"
+    },
+    "Environment": {
+        env     : "Environment Variables"
+    },
+    "Access": {
+        ports   : "Ports",
+        domains : "Domains"
+    },
+    "Others": {
+        cron    : "Cron"
+    }
+} %}
+{% set validSubtab = false %}
+{% for category, list in subtabs %}
+    {% if not validSubtab %}
+        {% if subtab in list %}
+            {% set validSubtab = true %}
+        {% endif %}
+    {% endif %}
+{% endfor %}
+{% if not validSubtab %}
+    {% set subtab = "general" %}
+{% endif %}
+
+<main>
+    <div class="container pt-3">
+        <div class="mx-2">
+            <div class="row">
+                <div class="col-md-3">
+                    {% for category, list in subtabs %}
+                        <ul class="list-unstyled pb-2 mb-1">
+                            <li class="pt-2 pb-1 small fw-bold">{{ category }}</li>
+                            {% for key, value in list %}
+                                <li><a href="?tab={{ tab }}&subtab={{ key }}" class="mb-1 btn-toggle text-decoration-none d-block rounded {{ "active" if subtab == key }}">{{ value }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    {% endfor %}
+                </div>
+                {% include 'pages/app/settings/' + subtab + '.njk' %}
+            </div>
+        </div>
+    </div>
+</main>
