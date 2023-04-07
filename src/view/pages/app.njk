@@ -49,7 +49,7 @@
 .ansi-30 { color: #000000; } .ansi-31 { color: #ff0000; } .ansi-32 { color: #00ff00; } .ansi-33 { color: #ffff00; } .ansi-34 { color: #0000ff; } .ansi-35 { color: #ff00ff; } .ansi-36 { color: #00ffff; } .ansi-37 { color: #ffffff; } .ansi-90 { color: #808080; } .ansi-91 { color: #ff0000; } .ansi-92 { color: #00ff00; } .ansi-93 { color: #ffff00; } .ansi-94 { color: #0000ff; } .ansi-95 { color: #ff00ff; } .ansi-96 { color: #00ffff; } .ansi-97 { color: #ffffff; } .ansi-40 { background-color: #000000; } .ansi-41 { background-color: #ff0000; } .ansi-42 { background-color: #00ff00; } .ansi-43 { background-color: #ffff00; } .ansi-44 { background-color: #0000ff; } .ansi-45 { background-color: #ff00ff; } .ansi-46 { background-color: #00ffff; } .ansi-47 { background-color: #ffffff; } .ansi-100 { background-color: #808080; } .ansi-101 { background-color: #ff0000; } .ansi-102 { background-color: #00ff00; } .ansi-103 { background-color: #ffff00; } .ansi-104 { background-color: #0000ff; } .ansi-105 { background-color: #ff00ff; } .ansi-106 { background-color: #00ffff; } .ansi-107 { background-color: #ffffff; }
         </style>
         <div class="w-100 p-3 flex-fill mb-0 bg-black text-white" style="overflow: scroll;">
-            <div style="width:max-content" data-logs="{{ tab }}"></div>
+            <div style="width:max-content;min-width:100%" data-logs="{{ tab }}"></div>
         </div>
         <script>
             const body = document.body
@@ -96,39 +96,45 @@
                 function colorsHTML(str) {
                     let output = "";
                     let color = "";
-                    let colorOpen = false;
+                    let isDefiningColor = false;
+                    let isTagOpen = false;
 
                     for (let i = 0; i < str.length; i++) {
-                        if (str[i] == "\u001b") {
-                            if (str[i + 1] == "[") {
-                                colorOpen = true;
-                                color = "";
-                                i += 2;
-                            }
-                        }
-                        if (colorOpen) {
-                            if (str[i] == "m") {
-                                colorOpen = false;
-                                if (color == "0") {
-                                    output += "</span>";
-                                } else {
-                                    output += "</span><span class='ansi-" + color + "'>";
-                                }
-                            } else {
-                                color += str[i];
-                            }
-                        } else {
-                            output += str[i];
-                        }
-                    }
 
+                        const char = str[i]
+                        const nextChar = str[i + 1]
+
+                        if (char == "\x1b" && nextChar == "[") {
+                            isDefiningColor = true;
+                            color = "";
+                            i++;
+                            continue;
+                        }
+                        if (isDefiningColor) {
+                            if (char == "m") {
+                                isDefiningColor = false;
+                                if(isTagOpen) {
+                                    output += "</span>"
+                                }
+                                output+= "<span class='ansi-" + color + "'>";
+                                isTagOpen = true;
+                                continue;
+                            }
+                            color += char;
+                            continue;
+                        }
+                        output += char;
+                    }
+                    if(isTagOpen) {
+                        output += "</span>"
+                    }
+                    console.log(output);
                     return output;
                 }
                 let output = escapeHTML(outputStr)
                 output = colorsHTML(output)
                 output = output.replace(/\n/g, '<br>')
                 return output;
-
             }
         </script>
     {% else %}
