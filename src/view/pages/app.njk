@@ -62,13 +62,41 @@
                 withCredentials: true
             });
             eventSource.addEventListener('message', function (e) {
-                const newLines = JSON.parse(e.data);
+                const data = JSON.parse(e.data);
 
-                console.log("m");
+                if(data.type === 'ping') {
+                    return;
+                }
+
+                if(data.type === 'log') {
+                    const group = createNewTerminalOutputGroup(data.data);
+                    return;
+                }
+
+                if(data.type === 'error') {
+                    const group = createNewTerminalOutputGroup(data.data);
+                    group.classList.remove('bg-dark');
+                    group.classList.add('bg-danger');
+                    return;
+                }
+            });
+            eventSource.addEventListener('error', function (e) {
+                const group = createNewTerminalOutputGroup("The connection to the server was lost.");
+                group.classList.remove('bg-dark');
+                group.classList.add('bg-danger');
+            });
+            eventSource.addEventListener('open', function (e) {
+                const group = createNewTerminalOutputGroup("The connection to the server was established.");
+                group.classList.remove('bg-dark');
+                group.classList.add('bg-success');
+            });
+
+            function createNewTerminalOutputGroup(str) {
 
                 const group = document.createElement('div');
-                group.classList.add('w-100', 'mt-3', 'p-2', 'rounded', 'bg-dark');
+                group.classList.add('mt-3', 'py-2', 'px-3', 'rounded', 'bg-dark');
                 group.style.position = 'relative';
+                group.style.width = 'fit-content';
 
                 const badge = document.createElement('div');
                 badge.classList.add('badge', 'bg-secondary', 'mb-2');
@@ -79,15 +107,15 @@
 
                 const pre = document.createElement('pre');
                 pre.classList.add('d-block', 'mb-0', 'text-white');
-                pre.innerHTML = terminalOutputToHtml(newLines);
+                pre.innerHTML = terminalOutputToHtml(str);
                 group.appendChild(pre);
 
                 logOutput.append(group);
 
-                if(logOutput.scrollHeight > logOutput.clientHeight) {
-                    logOutput.scrollTop = logOutput.scrollHeight - logOutput.clientHeight;
-                }
-            });
+                group.scrollIntoViewIfNeeded();
+
+                return group;
+            }
 
             function terminalOutputToHtml(outputStr) {
                 function escapeHTML(str) {

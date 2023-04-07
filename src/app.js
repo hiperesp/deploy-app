@@ -122,14 +122,25 @@ app.get('/:namespace/:app/api/server-sent-events/logs/:type', async function(req
 
     let lastSentLogLine = "";
     async function sendLog() {
-        const log = await app.getLogs(request.params.type)
-        const logLines = log.split("\n");
-        const newLogLines = logLines.slice(logLines.indexOf(lastSentLogLine) + 1);
-        if(newLogLines.length === 0) return;
-        lastSentLogLine = logLines[logLines.length - 1];
-        
-        const logData = newLogLines.join("\n");
-        response.write(`data: ${JSON.stringify(logData)}\n\n`)
+        const dataToSend = {
+            "type": "ping",
+        }
+        try {
+            const log = await app.getLogs(request.params.type)
+            const logLines = log.split("\n");
+            const newLogLines = logLines.slice(logLines.indexOf(lastSentLogLine) + 1);
+
+            if(newLogLines.length) {
+                lastSentLogLine = logLines[logLines.length - 1];
+                
+                dataToSend.type = "log"
+                dataToSend.data = newLogLines.join("\n")
+            }
+        } catch(e) {
+            dataToSend.type = "error"
+            dataToSend.data = e.message
+        }
+        response.write(`data: ${JSON.stringify(dataToSend)}\n\n`)
     }
 
     response.writeHead(200, {
