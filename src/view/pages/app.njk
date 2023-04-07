@@ -5,7 +5,8 @@
     access_logs: "Access Logs",
     error_logs: "Error Logs",
     app_logs: "App Logs",
-    settings: "Settings"
+    settings: "Settings",
+    api_action_logs: false
 } %}
 {% if tab not in tabs %}
     {% set tab = "overview" %}
@@ -27,14 +28,16 @@
 {% set tabs %}
     <ul class="nav nav-tabs px-md-5 px-3">
         {% for key, value in tabs %}
-            {% if tab === key %}
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="?tab={{ key }}">{{ value }}</a>
-                </li>
-            {% else %}
-                <li class="nav-item">
-                    <a class="nav-link" href="?tab={{ key }}">{{ value }}</a>
-                </li>
+            {% if value %}
+                {% if tab === key %}
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="/{{ namespace.name }}/{{ app.name }}?tab={{ key }}">{{ value }}</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/{{ namespace.name }}/{{ app.name }}?tab={{ key }}">{{ value }}</a>
+                    </li>
+                {% endif %}
             {% endif %}
         {% endfor %}
         <li class="nav-item">

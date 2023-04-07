@@ -60,6 +60,11 @@ export default class App extends Model {
         return (await this.#namespace.getAppLogs(this.name, type))[this.name];
     }
 
+    async scale(options, onLog = null) {
+        const {web, worker} = options;
+        await this.#namespace.scaleApp(this, {web, worker}, onLog);
+    }
+
     getContainers() {
         return []
     }

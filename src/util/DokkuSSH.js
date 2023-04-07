@@ -6,6 +6,7 @@ const kUsername = Symbol('username');
 const kPrivateKey = Symbol('privateKey');
 
 const kExecCommand = Symbol('execCommand');
+const kExecCommandBuffer = Symbol('execCommandBuffer');
 const kExecAppCommands = Symbol('execAppCommands');
 const kNormalizeAppNames = Symbol('normalizeAppNames');
 const kExecMultipleCommands = Symbol('execMultipleCommands');
@@ -17,6 +18,14 @@ export default class DokkuSSH {
     [kPort];
     [kUsername];
     [kPrivateKey];
+
+    async actionPsScale(appObject, scaling, onLog = null) {
+        const scalingParams = [];
+        for(const type in scaling) {
+            scalingParams.push(`${type}=${scaling[type]}`);
+        }
+        await this[kExecCommandBuffer](`ps:scale ${appObject.name} ${scalingParams.join(' ')}`, onLog);
+    }
 
     async nginxAccessLogs(appOrApps) {
         const result = await this[kExecAppCommands](appOrApps, 'nginx:access-logs %app%');
@@ -51,7 +60,22 @@ export default class DokkuSSH {
         for(const app in result) {
             const logLines = result[app].split('\n');
             logLines.pop(); // remove last empty line
-            output[app] = logLines.join('\n');
+
+            const instancesLogs = {};
+            for(const logLine of logLines) {
+                const instanceName = /^\u001b\[\d*m\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z (((?!:).)+)/.exec(logLine)[1];
+                if(!instancesLogs[instanceName]) {
+                    instancesLogs[instanceName] = [];
+                }
+                instancesLogs[instanceName].push(logLine);
+            }
+
+            //sort by instance name
+            const instancesLogsSorted = {};
+            Object.keys(instancesLogs).sort().forEach(function(key) {
+                instancesLogsSorted[key] = instancesLogs[key];
+            });
+            output[app] = Object.values(instancesLogsSorted).map(instanceLogs => instanceLogs.join('\n')).join('\n');
         }
 
         return output;
@@ -190,7 +214,10 @@ export default class DokkuSSH {
         return response;
     }
 
-    [kExecCommand](command) {
+    async [kExecCommand](command) {
+        return await this[kExecCommandBuffer](command);
+    }
+    [kExecCommandBuffer](command, onLog = null) {
         return new Promise((resolve, reject) => {
             exec(`
 TMP_FILE=$(mktemp)
@@ -205,9 +232,15 @@ EOF
                 } else {
                     resolve(stdout);
                 }
+            }).stdout.on('data', function(data) {
+                if(onLog) {
+                    console.log(command, data);
+                    onLog(data);
+                }
             });
         });
     }
+            
 
     static create(serverConnectionInfo) {
         const dokkuSSH = new DokkuSSH();

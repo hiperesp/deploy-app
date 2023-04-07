@@ -1,5 +1,5 @@
 <div class="w-100 p-3 flex-fill mb-0 bg-black text-white" style="overflow: scroll;">
-    <div style="width:max-content;min-width:100%" data-sse-base="/{{ namespace.name }}/{{ app.name }}/api/server-sent-events/logs/" data-logs="{{ tab }}"></div>
+    <div style="width:max-content;min-width:100%" data-sse-logs="{{ sseUrl }}"></div>
 </div>
 <script>
 (function() {
@@ -7,13 +7,12 @@
     body.classList.add("d-flex", "flex-column")
     body.style.height = "100vh"
 
-    const logOutputList = document.querySelectorAll('[data-logs]');
+    const logOutputList = document.querySelectorAll('[data-sse-logs]');
 
     logOutputList.forEach(function(logOutput) {
-        const sseBase = logOutput.dataset.sseBase;
-        const logType = logOutput.dataset.logs;
+        const sseLogs = logOutput.dataset.sseLogs;
 
-        const eventSource = new EventSource(`${sseBase}${logType}`, {
+        const eventSource = new EventSource(`${sseLogs}`, {
             withCredentials: true
         });
         eventSource.addEventListener('message', function (e) {
@@ -24,6 +23,7 @@
             }
 
             if(data.type === 'log') {
+                if(!data.data.trim()) return;
                 const group = createNewTerminalOutputGroup(data.data);
                 return;
             }
@@ -32,6 +32,14 @@
                 const group = createNewTerminalOutputGroup(data.data);
                 group.classList.remove('bg-dark');
                 group.classList.add('bg-danger');
+                return;
+            }
+
+            if(data.type === 'done') {
+                const group = createNewTerminalOutputGroup(data.data);
+                group.classList.remove('bg-dark');
+                group.classList.add('bg-success');
+                eventSource.close();
                 return;
             }
         });

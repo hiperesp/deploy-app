@@ -112,6 +112,59 @@ app.get('/:namespace/:app', async function(request, response) {
     })
 })
 
+app.post('/:namespace/:app/api/logs-view', async function(request, response) {
+    const namespace = system.namespaces.find(namespace => namespace.name === request.params.namespace)
+    if(!namespace) return response.status(404).send('Namespace not found')
+
+    const app = namespace.apps.find(app => app.name === request.params.app)
+    if(!app) return response.status(404).send('App not found')
+
+    response.render('pages/app.njk', {
+        system: system.toJson(),
+        namespace: namespace.toJson(),
+        app: app.toJson(),
+        tab: 'api_action_logs',
+        data: request.body,
+        dataQueryParams: (new URLSearchParams(request.body)).toString(),
+    })
+});
+
+app.get('/:namespace/:app/api/server-sent-events/actions/scale', async function(request, response) {
+    const namespace = system.namespaces.find(namespace => namespace.name === request.params.namespace)
+    if(!namespace) return response.status(404).send('Namespace not found')
+
+    const app = namespace.apps.find(app => app.name === request.params.app)
+    if(!app) return response.status(404).send('App not found')
+
+    const webScale = parseInt(request.query?.web)
+    const workerScale = parseInt(request.query?.worker)
+
+    response.writeHead(200, {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+    })
+
+    await app.scale({
+        web: webScale,
+        worker: workerScale,
+    }, function(output) {
+        const dataToSend = {
+            "type": "log",
+            "data": output,
+        }
+        response.write(`data: ${JSON.stringify(dataToSend)}\n\n`)
+    });
+
+    const dataToSend = {
+        "type": "done",
+        "data": "Done!",
+    }
+    response.write(`data: ${JSON.stringify(dataToSend)}\n\n`)
+    response.end()
+});
+
+
 app.get('/:namespace/:app/api/server-sent-events/logs/:type', async function(request, response) {
     const updateInterval = Math.min(Math.max(parseInt(request.query?.updateInterval) || 1000, 500), 10000)
 

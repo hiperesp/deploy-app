@@ -38,7 +38,7 @@
                         <ul class="list-unstyled pb-2 mb-1">
                             <li class="pt-2 pb-1 small fw-bold">{{ category }}</li>
                             {% for key, value in list %}
-                                <li><a href="?tab={{ tab }}&subtab={{ key }}" class="mb-1 btn-toggle text-decoration-none d-block rounded {{ "active" if subtab == key }}">{{ value }}</a></li>
+                                <li><a href="/{{ namespace.name }}/{{ app.name }}?tab={{ tab }}&subtab={{ key }}" class="mb-1 btn-toggle text-decoration-none d-block rounded {{ "active" if subtab == key }}">{{ value }}</a></li>
                             {% endfor %}
                         </ul>
                     {% endfor %}
