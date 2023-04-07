@@ -152,7 +152,6 @@ app.get('/:namespace/:app/api/server-sent-events/logs/:type', async function(req
     const interval = setInterval(sendLog, updateInterval);sendLog();
 
     request.on('close', () => {
-        console.log("closed");
         clearInterval(interval)
     });
 });
