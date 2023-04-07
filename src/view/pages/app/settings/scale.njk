@@ -1,8 +1,21 @@
 <div class="col-md-6 pt-3">
     <form>
-        <h4 class="mb-2">Scale Settings</h4>
-        <p class="mb-4 text-muted">Scale settings for your app.</p>
+        <input type="hidden" name="redirect" value="{{ originalUrl }}">
 
+        <h4 class="mb-2">Horizontal Scaling Settings</h4>
+        <p class="mb-4 text-muted">Horizontal Scaling settings for your app.</p>
+
+        <div class="row">
+            <div class="col-md-6 form-group mb-3">
+                <label for="web" class="fw-bold">Number of web instances</label>
+                <input type="number" class="form-control" id="web" name="web" value="{{ web }}" min="0" max="20" required>
+            </div>
+
+            <div class="col-md-6 form-group mb-3">
+                <label for="web" class="fw-bold">Number of worker instances</label>
+                <input type="number" class="form-control" id="worker" name="worker" value="{{ worker }}" min="0" max="20" required>
+            </div>
+        </div>
 
         <button type="submit" class="btn btn-dark w-100">Scale</button>
 
