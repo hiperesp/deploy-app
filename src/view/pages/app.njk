@@ -64,6 +64,8 @@
             eventSource.addEventListener('message', function (e) {
                 const newLines = JSON.parse(e.data);
 
+                console.log("m");
+
                 const group = document.createElement('div');
                 group.classList.add('w-100', 'mt-3', 'p-2', 'rounded', 'bg-dark');
                 group.style.position = 'relative';
@@ -128,7 +130,6 @@
                     if(isTagOpen) {
                         output += "</span>"
                     }
-                    console.log(output);
                     return output;
                 }
                 let output = escapeHTML(outputStr)
