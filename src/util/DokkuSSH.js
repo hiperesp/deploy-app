@@ -149,8 +149,8 @@ export default class DokkuSSH {
 
             const proxyPortsApp = [];
             for(const proxyPort of proxyPorts) {
-                const [protocol, acessiblePort, exposedPort] = proxyPort.trim().replace(/\s+/g, ':').split(':');
-                proxyPortsApp.push(`${protocol}:${acessiblePort}:${exposedPort}`);
+                const [protocol, acessiblePort, containerPort] = proxyPort.trim().replace(/\s+/g, ':').split(':');
+                proxyPortsApp.push(`${protocol}:${acessiblePort}:${containerPort}`);
             }
             output[app] = proxyPortsApp;
         }
