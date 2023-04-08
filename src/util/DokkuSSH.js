@@ -9,7 +9,7 @@ const kExecCommand = Symbol('execCommand');
 const kExecAppCommands = Symbol('execAppCommands');
 const kNormalizeAppNames = Symbol('normalizeAppNames');
 const kExecMultipleCommands = Symbol('execMultipleCommands');
-const kCreateCommand = Symbol('kCreateCommand');
+const kCreateAppCommand = Symbol('createAppCommand');
 
 export default class DokkuSSH {
 
@@ -178,7 +178,7 @@ export default class DokkuSSH {
 
     async [kExecAppCommands](appOrApps, command, onLog = null, appNameVar = '%app%') {
         const apps = this[kNormalizeAppNames](appOrApps);
-        const responses = await this[kExecMultipleCommands](this[kCreateCommand](apps, command, appNameVar), onLog ? function(log, index) {
+        const responses = await this[kExecMultipleCommands](this[kCreateAppCommand](apps, command, appNameVar), onLog ? function(log, index) {
             onLog(log, apps[index]);
         } : null);
 
@@ -202,7 +202,7 @@ export default class DokkuSSH {
         return apps;
     }
 
-    [kCreateCommand](apps, command, appNameVar = '%app%') {
+    [kCreateAppCommand](apps, command, appNameVar = '%app%') {
         return apps.map(app => app.trim()).filter(app => !!app).map(app => command.replace(appNameVar, app));
     }
 
@@ -215,10 +215,8 @@ export default class DokkuSSH {
 
         const newCommands = [];
         for (const command of commands) {
-            if(newCommands.length) {
-                newCommands.push(separator.command);
-            }
             newCommands.push(command);
+            newCommands.push(separator.command);
         }
         let logIndex = 0;
         let response = await this[kExecCommand](newCommands.join('\n'), onLog ? function(data) {
@@ -228,8 +226,8 @@ export default class DokkuSSH {
             }
             logIndex += data.length - 1;
         } : null);
+        
         response = response.split(separator.regex);
-        response.pop();// remove the last empty line
         return response;
     }
 
