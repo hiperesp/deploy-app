@@ -48,11 +48,12 @@
                                         <div class="flex-fill">
                                             <h5 class="card-title">{{ app.name }}</h5>
                                             <h6 class="card-subtitle text-body-secondary">
-                                                <i class="bi bi-window-stack"></i> {{ app.replicas.web }} web
-                                                {% if app.replicas.worker %}
-                                                    <i class="bi bi-dot"></i>
-                                                    <i class="bi bi-terminal"></i> {{ app.replicas.worker }} {% if app.replicas.worker > 1 %}workers{% else %}worker{% endif %}
-                                                {% endif %}
+                                                <i class="bi bi-window-stack"></i>
+                                                {% set replicas = 0 %}
+                                                {% for key, value in app.replicas %}
+                                                    {% set replicas = replicas + value %}
+                                                {% endfor %}
+                                                {{ replicas }} replicas
                                             </h6>
                                         </div>
                                     </div>

@@ -6,7 +6,6 @@ const kUsername = Symbol('username');
 const kPrivateKey = Symbol('privateKey');
 
 const kExecCommand = Symbol('execCommand');
-const kExecCommandBuffer = Symbol('execCommandBuffer');
 const kExecAppCommands = Symbol('execAppCommands');
 const kNormalizeAppNames = Symbol('normalizeAppNames');
 const kExecMultipleCommands = Symbol('execMultipleCommands');
@@ -19,12 +18,13 @@ export default class DokkuSSH {
     [kUsername];
     [kPrivateKey];
 
-    async actionPsScale(appObject, scaling, onLog = null) {
+    async actionPsScale(appOrApps, scaling, onLog = null) {
         const scalingParams = [];
         for(const type in scaling) {
-            scalingParams.push(`${type}=${scaling[type]}`);
+            this.mustBeValidResourceName(type);
+            scalingParams.push(`${type}=${parseInt(scaling[type])}`);
         }
-        await this[kExecCommandBuffer](`ps:scale ${appObject.name} ${scalingParams.join(' ')}`, onLog);
+        await this[kExecAppCommands](appOrApps, `ps:scale %app% ${scalingParams.join(' ')}`, onLog);
     }
 
     async nginxAccessLogs(appOrApps) {
@@ -176,9 +176,11 @@ export default class DokkuSSH {
         return output;
     }
 
-    async [kExecAppCommands](appOrApps, command, appNameVar = '%app%') {
+    async [kExecAppCommands](appOrApps, command, onLog = null, appNameVar = '%app%') {
         const apps = this[kNormalizeAppNames](appOrApps);
-        const responses = await this[kExecMultipleCommands](this[kCreateCommand](apps, command, appNameVar));
+        const responses = await this[kExecMultipleCommands](this[kCreateCommand](apps, command, appNameVar), onLog ? function(log, index) {
+            onLog(log, apps[index]);
+        } : null);
 
         const output = {};
         for (let i = 0; i < apps.length; i++) {
@@ -195,29 +197,43 @@ export default class DokkuSSH {
         if(appOrApps && appOrApps?.name) {
             return this[kNormalizeAppNames](appOrApps.name);
         }
-        return appOrApps.map(app => app.trim()).filter(app => !!app);
+        const apps = appOrApps.map(app => app.trim()).filter(app => !!app);
+        this.mustBeValidResourceNameArr(apps);
+        return apps;
     }
 
     [kCreateCommand](apps, command, appNameVar = '%app%') {
         return apps.map(app => app.trim()).filter(app => !!app).map(app => command.replace(appNameVar, app));
     }
 
-    async [kExecMultipleCommands](commands) {
+    async [kExecMultipleCommands](commands, onLog = null) {
+
+        const separator = {
+            command: 'version',
+            regex: /^dokku version \d+\.\d+\.\d+\n/gm,
+        }
+
         const newCommands = [];
         for (const command of commands) {
+            if(newCommands.length) {
+                newCommands.push(separator.command);
+            }
             newCommands.push(command);
-            newCommands.push('version');
         }
-        let response = await this[kExecCommand](newCommands.join('\n'));
-        response = response.split(/^dokku version \d+\.\d+\.\d+\n/gm);
+        let logIndex = 0;
+        let response = await this[kExecCommand](newCommands.join('\n'), onLog ? function(data) {
+            data = data.split(separator.regex)
+            for(const key in data) {
+                onLog(data[key], logIndex+parseInt(key));
+            }
+            logIndex += data.length - 1;
+        } : null);
+        response = response.split(separator.regex);
         response.pop();// remove the last empty line
         return response;
     }
 
-    async [kExecCommand](command) {
-        return await this[kExecCommandBuffer](command);
-    }
-    [kExecCommandBuffer](command, onLog = null) {
+    [kExecCommand](command, onLog = null) {
         return new Promise((resolve, reject) => {
             exec(`
 TMP_FILE=$(mktemp)
@@ -234,7 +250,6 @@ EOF
                 }
             }).stdout.on('data', function(data) {
                 if(onLog) {
-                    console.log(command, data);
                     onLog(data);
                 }
             });
@@ -251,5 +266,30 @@ EOF
         dokkuSSH[kPrivateKey] = serverConnectionInfo.privateKey;
 
         return dokkuSSH;
+    }
+
+    mustBeValidResourceNameArr(resourceNameArr) {
+        for(const resourceName of resourceNameArr) {
+            this.mustBeValidResourceName(resourceName);
+        }
+    }
+
+    mustBeValidResourceName(resourceName) {
+        if(!this.isValidResourceName(resourceName)) {
+            throw new Error(`Invalid resource name: ${resourceName}`);
+        }
+    }
+
+    isValidResourceName(resourceName) {
+        //must contain only letters, numbers, and hyphens.
+        //must not start with a hyphen.
+        //must not end with a hyphen.
+        //must not contain consecutive hyphens.
+        if(!resourceName.match(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)) return false;
+
+        //must be between 2 and 63 characters long.
+        if(resourceName.length > 63 || resourceName.length < 2) return false;
+
+        return true;
     }
 }

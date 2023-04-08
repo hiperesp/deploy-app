@@ -5,18 +5,21 @@
         <h4 class="mb-2">Horizontal Scaling Settings</h4>
         <p class="mb-4 text-muted">Horizontal Scaling settings for your app.</p>
 
-        <div class="row">
-            <div class="col-md-6 form-group mb-3">
-                <label for="web" class="fw-bold">Number of web instances</label>
-                <input type="number" class="form-control" id="web" name="web" value="{{ app.replicas.web }}" min="0" max="20" required>
-            </div>
-
-            <div class="col-md-6 form-group mb-3">
-                <label for="web" class="fw-bold">Number of worker instances</label>
-                <input type="number" class="form-control" id="worker" name="worker" value="{{ app.replicas.worker }}" min="0" max="20" required>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Replicas</h5>
+                <h6 class="card-subtitle mb-2 text-body-secondary">Replicas are the number of instances of your app that are running.</h6>
+                <div class="row">
+                    {% for key, value in app.replicas %}
+                        <div class="col-md-4 form-group mb-3">
+                            <label for="replicas-{{ key }}" class="fw-bold">{{ key }} instances</label>
+                            <input type="number" class="form-control" id="replicas-{{ key }}" name="process[{{ key }}]" value="{{ value }}" min="0" required>
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
         </div>
 
-        <button type="submit" class="btn btn-dark w-100">Scale</button>
+        <button type="submit" class="btn btn-dark w-100 mt-3">Scale</button>
     </form>
 </div>

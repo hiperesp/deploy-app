@@ -95,8 +95,8 @@ export default class Namespace extends Model {
         throw new Error("Invalid log type");
     }
 
-    async scaleApp(appObject, scaling, onLog = null) {
-        const response = await this[kDokku].actionPsScale(appObject, scaling, onLog)
+    async scaleApp(appOrApps, scaling, onLog = null) {
+        const response = await this[kDokku].actionPsScale(appOrApps, scaling, onLog)
         this.refresh();
         return response;
     }

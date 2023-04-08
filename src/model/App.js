@@ -33,10 +33,7 @@ export default class App extends Model {
     }
 
     get replicas() {
-        return {
-            web: this.#psScale.web,
-            worker: this.#psScale.worker,
-        };
+        return this.#psScale;
     }
 
     get online() {
@@ -50,10 +47,7 @@ export default class App extends Model {
     async refresh({proxyPorts, domains, psScale}) {
         this.#proxyPorts = proxyPorts;
         this.#domains = domains;
-        this.#psScale = {
-            web: psScale.web || 0,
-            worker: psScale.worker || 0,
-        };
+        this.#psScale = psScale;
     }
 
     async getLogs(type) {
@@ -61,8 +55,7 @@ export default class App extends Model {
     }
 
     async scale(options, onLog = null) {
-        const {web, worker} = options;
-        await this.#namespace.scaleApp(this, {web, worker}, onLog);
+        await this.#namespace.scaleApp(this.name, options, onLog);
     }
 
     getContainers() {

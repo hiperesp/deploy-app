@@ -4,6 +4,7 @@ import dotenv from 'dotenv'
 import cookieParser from 'cookie-parser'
 
 import System from './model/System.js';
+import buildSearchParams from './helpers/buildSearchParams.js';
 
 dotenv.config({path: process.cwd() + '/.env'})
 
@@ -125,7 +126,7 @@ app.post('/:namespace/:app/api/logs-view', async function(request, response) {
         app: app.toJson(),
         tab: 'api_action_logs',
         data: request.body,
-        dataQueryParams: (new URLSearchParams(request.body)).toString(),
+        dataQueryParams: buildSearchParams(request.body),
     })
 });
 
@@ -136,19 +137,14 @@ app.get('/:namespace/:app/api/server-sent-events/actions/scale', async function(
     const app = namespace.apps.find(app => app.name === request.params.app)
     if(!app) return response.status(404).send('App not found')
 
-    const webScale = parseInt(request.query?.web)
-    const workerScale = parseInt(request.query?.worker)
-
     response.writeHead(200, {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
         'Connection': 'keep-alive',
     })
 
-    await app.scale({
-        web: webScale,
-        worker: workerScale,
-    }, function(output) {
+    const scaling = request.query?.process;
+    await app.scale(scaling, function(output) {
         const dataToSend = {
             "type": "log",
             "data": output,
