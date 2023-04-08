@@ -1,30 +1,38 @@
 {
     "namespaces": [
         {
-            "name": "current",
+            "name": "gabstep-cloud",
             
             "globalDomain": "deploy.app.br",
-        
-            "serverHost": "host3.gabstep.com.br",
-            "serverPort": 22,
-            "serverUsername": "",
-            "serverPrivateKey": "",
+
+            "online": true,
 
             "apps": [
                 {
-                    "name": "",
+                    "name": "deploy-app",
 
-                    "domains": [
-                        "deploy.app.br",
-                        "deploy2.app.br"
-                    ],
+                    "online": true,
+
                     "proxyPorts": [
                         "http:80:80",
                         "https:443:80"
                     ],
 
-                    "scaleWeb": 1,
-                    "scaleWorker": 1,
+                    "replicas": {
+                        "web": 2,
+                        "worker": 1,
+                        "test": 0
+                    },
+
+                    "domains": {
+                        "app": [
+                            "deploy.app.br",
+                            "www.deploy.app.br"
+                        ],
+                        "global": [
+                            "deploy-app.deploy.app.br"
+                        ]
+                    },
 
                     "containers": [
                         {
