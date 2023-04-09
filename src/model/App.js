@@ -10,6 +10,8 @@ export default class App extends Model {
     #domains;
     #psScale;
 
+    #lastRefreshTime = 0;
+
     constructor(namespace, options) {
         super()
         this.#namespace = namespace
@@ -27,7 +29,6 @@ export default class App extends Model {
     get proxyPorts() {
         return this.#proxyPorts;
     }
-
     get domains() {
         return this.#domains;
     }
@@ -44,10 +45,15 @@ export default class App extends Model {
         return replicas > 0;
     }
 
+    get lastRefreshTime() {
+        return this.#lastRefreshTime;
+    }
+
     async refresh({proxyPorts, domains, psScale}) {
         this.#proxyPorts = proxyPorts;
         this.#domains = domains;
         this.#psScale = psScale;
+        this.#lastRefreshTime = Date.now();
     }
 
     async getLogs(type) {
@@ -69,6 +75,8 @@ export default class App extends Model {
             proxyPorts: this.proxyPorts,
             replicas: this.replicas,
             domains: this.domains,
+
+            _lastRefreshTime: this.lastRefreshTime,
         }
     }
 }

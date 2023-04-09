@@ -11,7 +11,10 @@ export default class Namespace extends Model {
 
     #name;
     #globalDomains;
+
     #online = false;
+    #lastRefreshTime = 0;
+
     #apps = [];
 
     constructor(options) {
@@ -29,6 +32,9 @@ export default class Namespace extends Model {
     get online() {
         return this.#online;
     }
+    get lastRefreshTime() {
+        return this.#lastRefreshTime;
+    }
     get apps() {
         return this.#apps;
     }
@@ -40,6 +46,7 @@ export default class Namespace extends Model {
         } catch (e) {
             console.error("Error refreshing namespace", e);
         }
+        this.#lastRefreshTime = Date.now();
     }
 
     async [kPing]() {
@@ -107,6 +114,8 @@ export default class Namespace extends Model {
             globalDomain: this.globalDomain,
             online: this.online,
             apps: this.apps.map(app => app.toJson()),
+
+            _lastRefreshTime: this.lastRefreshTime,
         }
     }
 }

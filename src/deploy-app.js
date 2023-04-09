@@ -20,10 +20,43 @@ app.use(express.static('view/static'));
 app.set('view engine', 'njk')
 
 // Configurar a pasta onde estão armazenados os templates do Nunjucks
-nunjucks.configure('view', {
+const nunjucksEnv = nunjucks.configure('view', {
     autoescape: true,
     express: app
 })
+
+nunjucksEnv.addFilter('timeago', function(time) {
+    if(!time) return 'never';
+    const seconds = Math.floor((Date.now() - time) / 1000);
+    if(seconds < 10) {
+        return 'just now';
+    }
+    if(seconds < 60) {
+        return `${seconds} seconds ago`;
+    }
+    const minutes = Math.floor(seconds / 60);
+    if(minutes < 60) {
+        return `${minutes} minutes ago`;
+    }
+    const hours = Math.floor(minutes / 60);
+    if(hours < 24) {
+        return `${hours} hours ago`;
+    }
+    const days = Math.floor(hours / 24);
+    if(days < 7) {
+        return `${days} days ago`;
+    }
+    const weeks = Math.floor(days / 7);
+    if(weeks < 4) {
+        return `${weeks} weeks ago`;
+    }
+    const months = Math.floor(days / 30);
+    if(months < 12) {
+        return `${months} months ago`;
+    }
+    const years = Math.floor(days / 365);
+    return `${years} years ago`;
+});
 
 // Configurar o cookie parser
 app.use(cookieParser())
@@ -78,7 +111,6 @@ app.get('/logout', (request, response) => {
 app.get('/', function(request, response) {
     response.render('pages/namespaces.njk', {
         system: system.toJson(),
-        namespaces: system.namespaces.map(namespace => namespace.toJson()),
     })
 })
 
@@ -92,7 +124,6 @@ app.get('/:namespace', function(request, response) {
     response.render('pages/apps.njk', {
         system: system.toJson(),
         namespace: namespace.toJson(),
-        apps: apps.map(app => app.toJson())
     })
 })
 
@@ -108,6 +139,7 @@ app.get('/:namespace/:app', async function(request, response) {
         system: system.toJson(),
         namespace: namespace.toJson(),
         app: app.toJson(),
+
         tab: request.query.tab || 'overview',
         subtab: request.query.subtab || 'general',
     })
@@ -124,6 +156,7 @@ app.post('/:namespace/:app/api/logs-view', async function(request, response) {
         system: system.toJson(),
         namespace: namespace.toJson(),
         app: app.toJson(),
+
         tab: 'api_action_logs',
         data: request.body,
         dataQueryParams: buildSearchParams(request.body),
