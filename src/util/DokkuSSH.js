@@ -55,7 +55,7 @@ export default class DokkuSSH {
     async logs(appName, onStdout, onStderr) {
         this.mustBeValidResourceName(appName);
 
-        const instance = await this[kExecCommandRealTimeOutput](`logs ${appName} -t -n 1`, null, null, onStdout, onStderr);
+        const instance = await this[kExecCommandRealTimeOutput](`logs ${appName} -t`, null, null, onStdout, onStderr);
 
         return {
             kill: (code = 0) => {
