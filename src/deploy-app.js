@@ -182,20 +182,20 @@ app.get('/:namespace/:app/api/server-sent-events/actions/scale', async function(
     })
 
     const scaling = request.query?.process;
-    await app.scale(scaling, function(output) {
-        const dataToSend = {
-            "type": "log",
-            "data": output,
-        }
-        response.write(`data: ${JSON.stringify(dataToSend)}\n\n`)
+    app.scale(scaling, function(output) {
+        response.write(`event: log\n`)
+        response.write(`data: ${JSON.stringify(output)}\n`)
+        response.write(`\n`)
+    }).catch(function(error) {
+        response.write(`event: error\n`)
+        response.write(`data: ${JSON.stringify(error)}\n`)
+        response.write(`\n`)
+    }).finally(function() {
+        response.write(`event: done\n`)
+        response.write(`data: ${JSON.stringify("Done!")}\n`)
+        response.write(`\n`)
+        response.end()
     });
-
-    const dataToSend = {
-        "type": "done",
-        "data": "Done!",
-    }
-    response.write(`data: ${JSON.stringify(dataToSend)}\n\n`)
-    response.end()
 });
 
 
@@ -221,17 +221,13 @@ app.get('/:namespace/:app/api/server-sent-events/logs/:type', async function(req
     if(!method) return response.status(404).send('Log type not found')
 
     const logging = await app[method](function(stdout) {
-        const dataToSend = {
-            "type": "log",
-            "data": stdout,
-        }
-        response.write(`data: ${JSON.stringify(dataToSend)}\n\n`)
+        response.write(`event: log\n`)
+        response.write(`data: ${JSON.stringify(stdout)}\n`)
+        response.write(`\n`)
     }, function(stderr) {
-        const dataToSend = {
-            "type": "error",
-            "data": stderr,
-        }
-        response.write(`data: ${JSON.stringify(dataToSend)}\n\n`)
+        response.write(`event: error\n`)
+        response.write(`data: ${JSON.stringify(stderr)}\n`)
+        response.write(`\n`)
     });
 
     request.on('close', () => {

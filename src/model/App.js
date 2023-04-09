@@ -56,8 +56,8 @@ export default class App extends Model {
         this.#lastRefreshTime = Date.now();
     }
 
-    async scale(options, onLog = null) {
-        await this.#namespace.scaleApp(this.name, options, onLog);
+    async scale(options, onStdout = null, onStderr) {
+        await this.#namespace.scaleApp(this.name, options, onStdout, onStderr);
     }
 
     getContainers() {

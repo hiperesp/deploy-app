@@ -19,13 +19,13 @@ export default class DokkuSSH {
     [kUsername];
     [kPrivateKey];
 
-    async actionPsScale(appOrApps, scaling, onLog = null) {
+    async actionPsScale(appOrApps, scaling, onStdout = null, onStderr = null) {
         const scalingParams = [];
         for(const type in scaling) {
             this.mustBeValidResourceName(type);
             scalingParams.push(`${type}=${parseInt(scaling[type])}`);
         }
-        await this[kExecAppCommands](appOrApps, `ps:scale %app% ${scalingParams.join(' ')}`, onLog);
+        await this[kExecAppCommands](appOrApps, `ps:scale %app% ${scalingParams.join(' ')}`, onStdout, onStderr);
     }
 
     async nginxAccessLogs(appName, onStdout, onStderr) {
@@ -159,10 +159,12 @@ export default class DokkuSSH {
         return output;
     }
 
-    async [kExecAppCommands](appOrApps, command, onLog = null, appNameVar = '%app%') {
+    async [kExecAppCommands](appOrApps, command, onStdout = null, onStderr = null, appNameVar = '%app%') {
         const apps = this[kNormalizeAppNames](appOrApps);
-        const responses = await this[kExecMultipleCommands](this[kCreateAppCommand](apps, command, appNameVar), onLog ? function(log, index) {
-            onLog(log, apps[index]);
+        const responses = await this[kExecMultipleCommands](this[kCreateAppCommand](apps, command, appNameVar), onStdout ? function(log, index) {
+            onStdout(log, apps[index]);
+        } : null, onStderr ? function(log, index) {
+            onStderr(log, apps[index]);
         } : null);
 
         const output = {};
@@ -189,7 +191,7 @@ export default class DokkuSSH {
         return apps.map(app => app.trim()).filter(app => !!app).map(app => command.replace(appNameVar, app));
     }
 
-    async [kExecMultipleCommands](commands, onLog = null) {
+    async [kExecMultipleCommands](commands, onStdout = null, onStderr = null) {
 
         const separator = {
             command: 'version',
@@ -202,21 +204,23 @@ export default class DokkuSSH {
             newCommands.push(separator.command);
         }
         let logIndex = 0;
-        let response = await this[kExecCommand](newCommands.join('\n'), onLog ? function(data) {
+        let response = await this[kExecCommand](newCommands.join('\n'), onStdout ? function(data) {
             data = data.split(separator.regex)
             for(const key in data) {
-                onLog(data[key], logIndex+parseInt(key));
+                onStdout(data[key], logIndex+parseInt(key));
             }
             logIndex += data.length - 1;
+        } : null, onStderr ? function(data) {
+            onStderr(data, logIndex);
         } : null);
         
         response = response.split(separator.regex);
         return response;
     }
 
-    [kExecCommand](command, onLog = null) {
+    [kExecCommand](command, onStdout = null, onStderr = null) {
         return new Promise((resolve, reject) => {
-            this[kExecCommandRealTimeOutput](command, resolve, reject, onLog, null);
+            this[kExecCommandRealTimeOutput](command, resolve, reject, onStdout, onStderr);
         });
     }
     

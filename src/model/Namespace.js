@@ -92,8 +92,8 @@ export default class Namespace extends Model {
         }
     }
 
-    async scaleApp(appOrApps, scaling, onLog = null) {
-        const response = await this[kDokku].actionPsScale(appOrApps, scaling, onLog)
+    async scaleApp(appOrApps, scaling, onStdout = null, onStderr) {
+        const response = await this[kDokku].actionPsScale(appOrApps, scaling, onStdout, onStderr);
         this.refresh();
         return response;
     }
