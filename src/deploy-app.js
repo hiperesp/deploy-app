@@ -126,8 +126,6 @@ app.get('/:namespace', function(request, response) {
     const namespace = system.namespaces.find(namespace => namespace.name === request.params.namespace)
     if(!namespace) return response.status(404).send('Namespace not found')
 
-    const apps = namespace.apps
-
     response.render('pages/apps.njk', {
         system: system.toJson(),
         namespace: namespace.toJson(),
