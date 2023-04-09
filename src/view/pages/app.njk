@@ -12,7 +12,7 @@
     {% set tab = "overview" %}
 {% endif %}
 
-{% set title %}{{ app.name }} - {{ tabs[tab] }}{% endset %}
+{% set title %}{{ app.name }}{% if tabs[tab] %} - {{ tabs[tab] }}{% endif %}{% endset %}
 
 {% set breadcrumb = [
     {
