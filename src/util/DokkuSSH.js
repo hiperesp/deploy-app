@@ -232,7 +232,7 @@ SSH_EOF
             `.trim(), (error, stdout, stderr) => {
                 if (error) {
                     if(fullStderr) {
-                        fullStderr(error.code, stderr);
+                        fullStderr(stderr, error);
                     }
                 } else {
                     if(fullStdout) {

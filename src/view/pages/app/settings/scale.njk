@@ -7,16 +7,112 @@
 
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title">Replicas</h5>
+                <div class="card-title d-flex justify-content-between">
+                    <h5>Replicas</h5>
+                    <a href="javascript:void(0)" class="small" data-id="add-new-replica">Add new replica</a>
+                </div>
                 <h6 class="card-subtitle mb-2 text-body-secondary">Replicas are the number of instances of your app that are running.</h6>
-                <div class="row">
+                <div class="row" data-id="replica-list">
+                    {% set replicas = 0 %}
                     {% for key, value in app.replicas %}
-                        <div class="col-md-4 form-group mb-3">
-                            <label for="replicas-{{ key }}" class="fw-bold">{{ key }} instances</label>
-                            <input type="number" class="form-control" id="replicas-{{ key }}" name="process[{{ key }}]" value="{{ value }}" min="0" required>
-                        </div>
+                        {% if value > 0 %}
+                            {% set replicas = replicas + value %}
+                            <div class="col-md-4 form-group mb-3">
+                                <label for="replicas-{{ key }}" class="fw-bold">{{ key }} instances</label>
+                                <input type="number" class="form-control" id="replicas-{{ key }}" name="process[{{ key }}]" value="{{ value }}" min="0" required>
+                            </div>
+                        {% endif %}
                     {% endfor %}
                 </div>
+                <div data-id="no-replicas">
+                    <div class="display-5 text-body-secondary my-3">No replicas running</div>
+                    <div class="small text-body-secondary">You can add a new replica by clicking the button above.</div>
+                </div>
+                <div data-id="has-replicas">
+                    <div class="small text-body-secondary">If you've mistyped the process name or need to eliminate, just assign it a value of zero.</div>
+                </div>
+                <script>
+(function() {
+    const currentReplicas = [];
+
+    document.querySelectorAll('[data-id="replica-list"] input').forEach(el => {
+        currentReplicas.push(el.name);
+    });
+
+    const addNewReplicaEl = document.querySelector('[data-id="add-new-replica"]');
+    const replicaListEl = document.querySelector('[data-id="replica-list"]');
+    const noReplicasEl = document.querySelector('[data-id="no-replicas"]');
+    const hasReplicasEl = document.querySelector('[data-id="has-replicas"]');
+    
+    addNewReplicaEl.addEventListener('click', addNewReplica);
+    updateHasReplicasInfo();
+
+    async function addNewReplica() {
+        const processName = await promptDialog("Please enter the name of the process", "", "Process name");
+
+        if(!processName) {
+            return;
+        }
+
+        const key = `process[${processName}]`;
+        if(currentReplicas.includes(key)) {
+            return alertDialog("A process with this name already exists", "Process already exists");
+        }
+
+        if(!isValidResourceName(processName)) {
+            return alertDialog("- Must contain only letters, numbers, and hyphens.\n- Must not start with a hyphen.\n- Must not end with a hyphen.\n- Must not contain consecutive hyphens.\n- Must be between 2 and 63 characters long.", "Please enter a valid process name.");
+        }
+
+        currentReplicas.push(key);
+
+        const replicaEl = document.createElement('div');
+        replicaEl.classList.add('col-md-4', 'form-group', 'mb-3');
+
+        const labelEl = document.createElement('label');
+        labelEl.classList.add('fw-bold');
+        labelEl.htmlFor = 'replicas-'+processName;
+        labelEl.innerText = `${processName} instances`;
+
+        const inputEl = document.createElement('input');
+        inputEl.type = 'number';
+        inputEl.classList.add('form-control');
+        inputEl.id = labelEl.htmlFor;
+        inputEl.name = key;
+        inputEl.min = 0;
+        inputEl.value = 0;
+        inputEl.required = true;
+
+        replicaEl.appendChild(labelEl);
+        replicaEl.appendChild(inputEl);
+
+        replicaListEl.appendChild(replicaEl);
+        updateHasReplicasInfo();
+    }
+
+    function updateHasReplicasInfo() {
+        if(currentReplicas.length > 0) {
+            noReplicasEl.classList.add('d-none');
+            hasReplicasEl.classList.remove('d-none');
+        } else {
+            noReplicasEl.classList.remove('d-none');
+            hasReplicasEl.classList.add('d-none');
+        }
+    }
+
+    function isValidResourceName(resourceName) {
+        //must contain only letters, numbers, and hyphens.
+        //must not start with a hyphen.
+        //must not end with a hyphen.
+        //must not contain consecutive hyphens.
+        if(!resourceName.match(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)) return false;
+
+        //must be between 2 and 63 characters long.
+        if(resourceName.length > 63 || resourceName.length < 2) return false;
+
+        return true;
+    }
+})();
+                </script>
             </div>
         </div>
 
