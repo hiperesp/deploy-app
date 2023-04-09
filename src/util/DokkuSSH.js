@@ -5,6 +5,7 @@ const kPort = Symbol('port');
 const kUsername = Symbol('username');
 const kPrivateKey = Symbol('privateKey');
 
+const kExecCommandRealTimeOutput = Symbol('execCommandRealTimeOutput');
 const kExecCommand = Symbol('execCommand');
 const kExecAppCommands = Symbol('execAppCommands');
 const kNormalizeAppNames = Symbol('normalizeAppNames');
@@ -27,58 +28,40 @@ export default class DokkuSSH {
         await this[kExecAppCommands](appOrApps, `ps:scale %app% ${scalingParams.join(' ')}`, onLog);
     }
 
-    async nginxAccessLogs(appOrApps) {
-        const result = await this[kExecAppCommands](appOrApps, 'nginx:access-logs %app%');
+    async nginxAccessLogs(appName, onStdout, onStderr) {
+        this.mustBeValidResourceName(appName);
 
-        const output = {};
-        for(const app in result) {
-            const logLines = result[app].split('\n');
-            logLines.pop(); // remove last empty line
-            output[app] = logLines.join('\n');
-        }
+        const instance = await this[kExecCommandRealTimeOutput](`nginx:access-logs ${appName} -t`, null, null, onStdout, onStderr);
 
-        return output;
-    }
-
-    async nginxErrorLogs(appOrApps) {
-        const result = await this[kExecAppCommands](appOrApps, 'nginx:error-logs %app%');
-
-        const output = {};
-        for(const app in result) {
-            const logLines = result[app].split('\n');
-            logLines.pop(); // remove last empty line
-            output[app] = logLines.join('\n');
-        }
-
-        return output;
-    }
-
-    async logs(appOrApps) {
-        const result = await this[kExecAppCommands](appOrApps, 'logs %app%');
-
-        const output = {};
-        for(const app in result) {
-            const logLines = result[app].split('\n');
-            logLines.pop(); // remove last empty line
-
-            const instancesLogs = {};
-            for(const logLine of logLines) {
-                const instanceName = /^\u001b\[\d*m\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z (((?!:).)+)/.exec(logLine)[1];
-                if(!instancesLogs[instanceName]) {
-                    instancesLogs[instanceName] = [];
-                }
-                instancesLogs[instanceName].push(logLine);
+        return {
+            kill: (code = 0) => {
+                instance.kill(code);
             }
-
-            //sort by instance name
-            const instancesLogsSorted = {};
-            Object.keys(instancesLogs).sort().forEach(function(key) {
-                instancesLogsSorted[key] = instancesLogs[key];
-            });
-            output[app] = Object.values(instancesLogsSorted).map(instanceLogs => instanceLogs.join('\n')).join('\n');
         }
+    }
 
-        return output;
+    async nginxErrorLogs(appName, onStdout, onStderr) {
+        this.mustBeValidResourceName(appName);
+
+        const instance = await this[kExecCommandRealTimeOutput](`nginx:error-logs ${appName} -t`, null, null, onStdout, onStderr);
+
+        return {
+            kill: (code = 0) => {
+                instance.kill(code);
+            }
+        }
+    }
+
+    async logs(appName, onStdout, onStderr) {
+        this.mustBeValidResourceName(appName);
+
+        const instance = await this[kExecCommandRealTimeOutput](`logs ${appName} -t -n 1`, null, null, onStdout, onStderr);
+
+        return {
+            kill: (code = 0) => {
+                instance.kill(code);
+            }
+        }
     }
 
     async ping() {
@@ -233,27 +216,44 @@ export default class DokkuSSH {
 
     [kExecCommand](command, onLog = null) {
         return new Promise((resolve, reject) => {
-            exec(`
+            this[kExecCommandRealTimeOutput](command, resolve, reject, onLog, null);
+        });
+    }
+    
+    [kExecCommandRealTimeOutput](command, fullStdout = null, fullStderr = null, onStdout = null, onStderr = null) {
+        return new Promise((resolve, reject) => {
+            const child = exec(`
 TMP_FILE=$(mktemp)
 echo "${this[kPrivateKey].replace(/\r?\n/g, '\\\\n')}" >> $TMP_FILE
 chmod 600 $TMP_FILE
-ssh -o StrictHostKeyChecking=no ${this[kUsername]}@${this[kHost]} -p ${this[kPort]} -i $TMP_FILE 'shell' <<EOF
+ssh -t -o StrictHostKeyChecking=no ${this[kUsername]}@${this[kHost]} -p ${this[kPort]} -i $TMP_FILE 'shell' <<'SSH_EOF'
 ${command}
-EOF
+SSH_EOF
             `.trim(), (error, stdout, stderr) => {
                 if (error) {
-                    reject(error.code, stderr);
+                    if(fullStderr) {
+                        fullStderr(error.code, stderr);
+                    }
                 } else {
-                    resolve(stdout);
-                }
-            }).stdout.on('data', function(data) {
-                if(onLog) {
-                    onLog(data);
+                    if(fullStdout) {
+                        fullStdout(stdout);
+                    }
                 }
             });
+            if(onStdout) {
+                child.stdout.on('data', function(stdout) {
+                    onStdout(stdout);
+                });
+            }
+            if(onStderr) {
+                child.stderr.on('data', function(stderr) {
+                    onStderr(stderr);
+                });
+            }
+
+            resolve(child);
         });
     }
-            
 
     static create(serverConnectionInfo) {
         const dokkuSSH = new DokkuSSH();

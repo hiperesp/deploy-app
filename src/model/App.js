@@ -56,10 +56,6 @@ export default class App extends Model {
         this.#lastRefreshTime = Date.now();
     }
 
-    async getLogs(type) {
-        return (await this.#namespace.getAppLogs(this.name, type))[this.name];
-    }
-
     async scale(options, onLog = null) {
         await this.#namespace.scaleApp(this.name, options, onLog);
     }
@@ -79,4 +75,16 @@ export default class App extends Model {
             _lastRefreshTime: this.lastRefreshTime,
         }
     }
+
+
+    async realTimeAppLogs(onStdout, onStderr) {
+        return this.namespace.getAppLogs(this.name, onStdout, onStderr);
+    }
+    async realTimeAccessLogs(onStdout, onStderr) {
+        return this.namespace.getNginxAccessLogs(this.name, onStdout, onStderr);
+    }
+    async realTimeErrorLogs(onStdout, onStderr) {
+        return this.namespace.getNginxErrorLogs(this.name, onStdout, onStderr);
+    }
+
 }

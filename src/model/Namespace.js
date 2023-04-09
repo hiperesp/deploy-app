@@ -92,16 +92,6 @@ export default class Namespace extends Model {
         }
     }
 
-    async getAppLogs(appOrApps, type) {
-        if(type === 'access_logs')
-            return await this[kDokku].nginxAccessLogs(appOrApps);
-        if(type === 'error_logs')
-            return await this[kDokku].nginxErrorLogs(appOrApps);
-        if(type === 'app_logs')
-            return await this[kDokku].logs(appOrApps);
-        throw new Error("Invalid log type");
-    }
-
     async scaleApp(appOrApps, scaling, onLog = null) {
         const response = await this[kDokku].actionPsScale(appOrApps, scaling, onLog)
         this.refresh();
@@ -117,5 +107,15 @@ export default class Namespace extends Model {
 
             _lastRefreshTime: this.lastRefreshTime,
         }
+    }
+
+    async getAppLogs(appName, onStdout, onStderr) {
+        return await this[kDokku].logs(appName, onStdout, onStderr);
+    }
+    async getNginxAccessLogs(appName, onStdout, onStderr) {
+        return await this[kDokku].nginxAccessLogs(appName, onStdout, onStderr);
+    }
+    async getNginxErrorLogs(appName, onStdout, onStderr) {
+        return await this[kDokku].nginxErrorLogs(appName, onStdout, onStderr);
     }
 }

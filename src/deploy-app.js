@@ -200,36 +200,11 @@ app.get('/:namespace/:app/api/server-sent-events/actions/scale', async function(
 
 
 app.get('/:namespace/:app/api/server-sent-events/logs/:type', async function(request, response) {
-    const updateInterval = Math.min(Math.max(parseInt(request.query?.updateInterval) || 1000, 500), 10000)
-
     const namespace = system.namespaces.find(namespace => namespace.name === request.params.namespace)
     if(!namespace) return response.status(404).send('Namespace not found')
 
     const app = namespace.apps.find(app => app.name === request.params.app)
     if(!app) return response.status(404).send('App not found')
-
-    let lastSentLogLine = "";
-    async function sendLog() {
-        const dataToSend = {
-            "type": "ping",
-        }
-        try {
-            const log = await app.getLogs(request.params.type)
-            const logLines = log.split("\n");
-            const newLogLines = logLines.slice(logLines.indexOf(lastSentLogLine) + 1);
-
-            if(newLogLines.length) {
-                lastSentLogLine = logLines[logLines.length - 1];
-                
-                dataToSend.type = "log"
-                dataToSend.data = newLogLines.join("\n")
-            }
-        } catch(e) {
-            dataToSend.type = "error"
-            dataToSend.data = e.message
-        }
-        response.write(`data: ${JSON.stringify(dataToSend)}\n\n`)
-    }
 
     response.writeHead(200, {
         'Content-Type': 'text/event-stream',
@@ -237,10 +212,31 @@ app.get('/:namespace/:app/api/server-sent-events/logs/:type', async function(req
         'Connection': 'keep-alive',
     })
 
-    const interval = setInterval(sendLog, updateInterval);sendLog();
+    const method = ({
+        "app_logs": "realTimeAppLogs",
+        "access_logs": "realTimeAccessLogs",
+        "error_logs": "realTimeErrorLogs",
+    })[request.params.type];
+
+    if(!method) return response.status(404).send('Log type not found')
+
+    const logging = await app[method](function(stdout) {
+        const dataToSend = {
+            "type": "log",
+            "data": stdout,
+        }
+        response.write(`data: ${JSON.stringify(dataToSend)}\n\n`)
+    }, function(stderr) {
+        const dataToSend = {
+            "type": "error",
+            "data": stderr,
+        }
+        response.write(`data: ${JSON.stringify(dataToSend)}\n\n`)
+    });
 
     request.on('close', () => {
-        clearInterval(interval)
+        logging.kill()
+        response.end()
     });
 });
 
