@@ -29,32 +29,37 @@
             </div>
             <div class="mx-2">
                 <div class="row">
-                    {% for app in apps %}
+                    {% for app in namespace.apps %}
                         <div class="col-lg-3 col-md-4 col-sm-6 col-12 p-1">
                             <a href="/{{ namespace.name }}/{{ app.name }}" class="card text-decoration-none p-0">
                                 <div class="card-body">
-                                    <div class="d-flex">
-                                        <div class="pe-2">
-                                            {% if app.online %}
-                                                <div class="rounded-circle d-flex align-items-center justify-content-center" style="background-color: hsl(152, 69%, 70%);width:40px;height:40px">
-                                                    <i class="bi bi-window"></i>
-                                                </div>
+                                    <div class="card-title h5">
+                                        {{ app.name }}
+                                        {% if app.online %}
+                                            <span class="online"></span>
+                                        {% else %}
+                                            <span class="offline"></span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="text-body-secondary">
+                                        <div class="fs-6">
+                                            {% set replicas = 0 %}
+                                            {% for key, value in app.replicas %}
+                                                {% set replicas = replicas + value %}
+                                            {% endfor %}
+                                            {% if replicas == 0 %}
+                                                <i class="bi bi-window-x"></i>
+                                                No replicas
+                                            {% elseif replicas == 1 %}
+                                                <i class="bi bi-window"></i>
+                                                {{ replicas }} replica
                                             {% else %}
-                                                <div class="rounded-circle d-flex align-items-center justify-content-center" style="background-color: hsl(0, 69%, 70%);width:40px;height:40px">
-                                                    <i class="bi bi-window-x"></i>
-                                                </div>
+                                                <i class="bi bi-window-stack"></i>
+                                                {{ replicas }} replicas
                                             {% endif %}
                                         </div>
-                                        <div class="flex-fill">
-                                            <h5 class="card-title">{{ app.name }}</h5>
-                                            <h6 class="card-subtitle text-body-secondary">
-                                                <i class="bi bi-window-stack"></i>
-                                                {% set replicas = 0 %}
-                                                {% for key, value in app.replicas %}
-                                                    {% set replicas = replicas + value %}
-                                                {% endfor %}
-                                                {{ replicas }} replicas
-                                            </h6>
+                                        <div class="small mt-2">
+                                            <i class="bi bi-clock"></i> Updated {{ namespace._lastRefreshTime | timeago }}
                                         </div>
                                     </div>
                                 </div>

@@ -49,9 +49,30 @@
 .btn-toggle:hover,
 .btn-toggle:focus,
 .btn-toggle.active {
-    color: rgba(var(--bs-emphasis-color-rgb), .8);
+    color: rgba(var(--bs-emphasis-color), .8);
     background-color: var(--bs-tertiary-bg);
 }
 .btn-toggle.active {
     font-weight: bold;
+}
+
+@keyframes blink {
+    0% { box-shadow: 0 0 0rem var(--on-off-color); }
+    50% { box-shadow: 0 0 0.5rem var(--on-off-color); }
+    100% { box-shadow: 0 0 1rem rgba(var(--on-off-color), 0); }
+}
+.online, .offline {
+    width: 0.5rem;
+    height: 0.5rem;
+    display: inline-block;
+    border-radius: 0.25rem;
+    vertical-align: top;
+    background-color: var(--on-off-color);
+    animation: blink 2s linear infinite;
+}
+.online {
+    --on-off-color: var(--bs-primary);
+}
+.offline {
+    --on-off-color: var(--bs-danger);
 }

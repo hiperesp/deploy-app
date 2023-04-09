@@ -28,27 +28,24 @@
             </div>
             <div class="mx-2">
                 <div class="row">
-                    {% for namespace in namespaces %}
+                    {% for namespace in system.namespaces %}
                         <div class="col-lg-3 col-md-4 col-sm-6 col-12 p-1">
                             <a href="/{{ namespace.name }}" class="card text-decoration-none p-0">
                                 <div class="card-body">
-                                    <div class="d-flex">
-                                        <div class="pe-2">
-                                            {% if namespace.online %}
-                                                <div class="rounded-circle d-flex align-items-center justify-content-center" style="background-color: hsl(152, 69%, 70%);width:40px;height:40px">
-                                                    <i class="bi bi-database-check"></i>
-                                                </div>
-                                            {% else %}
-                                                <div class="rounded-circle d-flex align-items-center justify-content-center" style="background-color: hsl(0, 69%, 70%);width:40px;height:40px">
-                                                    <i class="bi bi-database-x"></i>
-                                                </div>
-                                            {% endif %}
+                                    <div class="card-title h5">
+                                        {{ namespace.name }}
+                                        {% if namespace.online %}
+                                            <span class="online"></span>
+                                        {% else %}
+                                            <span class="offline"></span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="text-body-secondary">
+                                        <div class="fs-6">
+                                            <i class="bi bi-app-indicator"></i> {{ namespace.apps.length }} apps
                                         </div>
-                                        <div class="flex-fill">
-                                            <h5 class="card-title">{{ namespace.name }}</h5>
-                                            <h6 class="card-subtitle text-body-secondary">
-                                                <i class="bi bi-app-indicator"></i> {{ namespace.apps.length }} apps
-                                            </h6>
+                                        <div class="small mt-2">
+                                            <i class="bi bi-clock"></i> Updated {{ namespace._lastRefreshTime | timeago }}
                                         </div>
                                     </div>
                                 </div>

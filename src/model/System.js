@@ -37,7 +37,6 @@ export default class System extends Model {
 
             const namespacesData = JSON.parse(process.env.NAMESPACES)
             for(const namespaceData of namespacesData) {
-                if(namespaceData.name == "evve") continue;
                 const namespace = new Namespace({
                     name: namespaceData.name,
                     dokkuSSH: DokkuSSH.create({
