@@ -48,7 +48,7 @@
     updateHasReplicasInfo();
 
     async function addNewReplica() {
-        const processName = await promptDialog("Please enter the name of the process", "", "Process name");
+        const processName = await promptDialog("Please enter the process name", "", "Process name", "Such as 'web', 'worker' or anything else you've defined in your Procfile.");
 
         if(!processName) {
             return;
