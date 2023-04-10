@@ -28,13 +28,12 @@ const nunjucksEnv = nunjucks.configure('view', {
 nunjucksEnv.addFilter('timeago', function(time) {
     if(!time) return 'never';
     const seconds = Math.floor((Date.now() - time) / 1000);
-    if(seconds < 10) {
-        return 'just now';
-    }
-    if(seconds < 60) {
-        const scale = seconds === 1 ? 'second' : 'seconds';
-        return `${seconds} ${scale} ago`;
-    }
+    if(seconds < 1) return 'just now';
+    if(seconds < 60) return 'a few seconds ago';
+    // if(seconds < 60) {
+    //     const scale = seconds === 1 ? 'second' : 'seconds';
+    //     return `${seconds} ${scale} ago`;
+    // }
     const minutes = Math.floor(seconds / 60);
     if(minutes < 60) {
         const scale = minutes === 1 ? 'minute' : 'minutes';
