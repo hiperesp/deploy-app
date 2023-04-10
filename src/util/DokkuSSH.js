@@ -73,7 +73,7 @@ export default class DokkuSSH {
         const output = {};
         for(const app in domainsResult) {
 
-            const domainsConfigs = domainsResult[app].split('\n');
+            const domainsConfigs = domainsResult[app].split(/\r?\n/);
             domainsConfigs.shift(); // remove header
             domainsConfigs.pop(); // remove last empty line
 
@@ -114,7 +114,7 @@ export default class DokkuSSH {
 
     async appsList() {
         const appsResult = await this[kExecCommand]('apps:list');
-        const apps = appsResult.split('\n');
+        const apps = appsResult.split(/\r?\n/);
         apps.shift(); // remove header
         apps.pop(); // remove last empty line
         apps.pop(); // remove last empty line
@@ -125,7 +125,7 @@ export default class DokkuSSH {
         const output = {};
         const proxyPortsResult = await this[kExecAppCommands](appOrApps, 'proxy:ports %app%');
         for(const app in proxyPortsResult) {
-            const proxyPorts = proxyPortsResult[app].split('\n');
+            const proxyPorts = proxyPortsResult[app].split(/\r?\n/);
             proxyPorts.shift(); // remove header
             proxyPorts.shift(); // remove second header
             proxyPorts.pop(); // remove last empty line
@@ -144,7 +144,7 @@ export default class DokkuSSH {
         const output = {};
         const psScaleResult = await this[kExecAppCommands](appOrApps, 'ps:scale %app%');
         for(const app in psScaleResult) {
-            const psScaleLines = psScaleResult[app].split('\n');
+            const psScaleLines = psScaleResult[app].split(/\r?\n/);
             psScaleLines.shift(); // remove header
             psScaleLines.shift(); // remove table header
             psScaleLines.shift(); // remove table header separator
@@ -195,7 +195,7 @@ export default class DokkuSSH {
 
         const separator = {
             command: 'version',
-            regex: /^dokku version \d+\.\d+\.\d+\n/gm,
+            regex: /^dokku version \d+\.\d+\.\d+\r?\n/gm,
         }
 
         const newCommands = [];
