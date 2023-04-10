@@ -181,16 +181,19 @@ app.get('/:namespace/:app/api/server-sent-events/actions/scale', async function(
         'Connection': 'keep-alive',
     })
 
-    const scaling = request.query?.process;
-    app.scale(scaling, function(output) {
-        response.write(`event: log\n`)
+    let eventId = 0;
+    app.scale(request.query?.process, function(output) {
+        response.write(`id: ${eventId++}\n`)
+        response.write(`event: stdout\n`)
         response.write(`data: ${JSON.stringify(output)}\n`)
         response.write(`\n`)
     }).catch(function(error) {
-        response.write(`event: error\n`)
+        response.write(`id: ${eventId++}\n`)
+        response.write(`event: stderr\n`)
         response.write(`data: ${JSON.stringify(error)}\n`)
         response.write(`\n`)
     }).finally(function() {
+        response.write(`id: ${eventId++}\n`)
         response.write(`event: done\n`)
         response.write(`data: ${JSON.stringify("Done!")}\n`)
         response.write(`\n`)
@@ -220,12 +223,15 @@ app.get('/:namespace/:app/api/server-sent-events/logs/:type', async function(req
 
     if(!method) return response.status(404).send('Log type not found')
 
+    let eventId = 0;
     const logging = await app[method](function(stdout) {
-        response.write(`event: log\n`)
+        response.write(`id: ${eventId++}\n`)
+        response.write(`event: stdout\n`)
         response.write(`data: ${JSON.stringify(stdout)}\n`)
         response.write(`\n`)
     }, function(stderr) {
-        response.write(`event: error\n`)
+        response.write(`id: ${eventId++}\n`)
+        response.write(`event: stderr\n`)
         response.write(`data: ${JSON.stringify(stderr)}\n`)
         response.write(`\n`)
     });

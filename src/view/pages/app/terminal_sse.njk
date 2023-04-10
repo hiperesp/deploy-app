@@ -1,0 +1,10 @@
+<div class="w-100 p-3 flex-fill mb-0 bg-black text-white terminal-container">
+    <div class="terminal-screen" data-terminal-sse="{{ sseUrl }}"></div>
+</div>
+<script>
+(function() {
+    const body = document.body
+    body.classList.add("d-flex", "flex-column")
+    body.style.height = "100vh"
+})();
+</script>

@@ -1,22 +1,19 @@
-.ansi-30 { color: #000000; }
-.ansi-90 { color: #808080; }
-.ansi-31, .ansi-91 { color: #ff0000; }
-.ansi-32, .ansi-92 { color: #00ff00; }
-.ansi-33, .ansi-93 { color: #ffff00; }
-.ansi-34, .ansi-94 { color: #0000ff; }
-.ansi-35, .ansi-95 { color: #ff00ff; }
-.ansi-36, .ansi-96 { color: #00ffff; }
-.ansi-37, .ansi-97 { color: #ffffff; }
-
-.ansi-40 { background-color: #000000; }
-.ansi-100 { background-color: #808080; }
-.ansi-41, .ansi-101 { background-color: #ff0000; }
-.ansi-42, .ansi-102 { background-color: #00ff00; }
-.ansi-43, .ansi-103 { background-color: #ffff00; }
-.ansi-44, .ansi-104 { background-color: #0000ff; }
-.ansi-45, .ansi-105 { background-color: #ff00ff; }
-.ansi-46, .ansi-106 { background-color: #00ffff; }
-.ansi-47, .ansi-107 { background-color: #ffffff; }
+.terminal-log {
+    padding-left: 8px;
+    border-left: 8px solid var(--bs-secondary);
+}
+.terminal-log-stdout {
+    border-left-color: var(--bs-primary);
+    background-color: #0d6efd30; /* concat(var(--bs-primary), '30') */
+}
+.terminal-log-stderr {
+    border-left-color: var(--bs-danger);
+    background-color: #dc354530; /* concat(var(--bs-danger), '30') */
+}
+.terminal-log-success {
+    border-left-color: var(--bs-success);
+    background-color: #19875430; /* concat(var(--bs-success), '30') */
+}
 
 .nav-tabs .nav-link {
     color: inherit;
@@ -49,7 +46,6 @@
 .btn-toggle:hover,
 .btn-toggle:focus,
 .btn-toggle.active {
-    color: rgba(var(--bs-emphasis-color), .8);
     background-color: var(--bs-tertiary-bg);
 }
 .btn-toggle.active {
@@ -59,7 +55,7 @@
 @keyframes blink {
     0% { box-shadow: 0 0 0rem var(--on-off-color); }
     50% { box-shadow: 0 0 0.5rem var(--on-off-color); }
-    100% { box-shadow: 0 0 1rem rgba(var(--on-off-color), 0); }
+    100% { box-shadow: 0 0 1rem transparent; }
 }
 .online, .offline {
     width: 0.5rem;
@@ -75,4 +71,14 @@
 }
 .offline {
     --on-off-color: var(--bs-danger);
+}
+
+.terminal-container {
+    overflow: scroll;
+}
+.terminal-screen {
+    width: max-content;
+    min-width: 100%;
+    font-family: 'Fira Code', monospace;
+    white-space: pre-wrap;
 }
