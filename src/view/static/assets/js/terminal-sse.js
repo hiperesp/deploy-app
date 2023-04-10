@@ -23,7 +23,7 @@
         });
 
         eventSource.addEventListener('error', function (e) {
-            appendLog('error', "The connection to the server was lost.");
+            appendLog('stderr', "The connection to the server was lost.");
         });
         function appendLog(type, message) {
             // Only scroll to bottom if we are already at the bottom
