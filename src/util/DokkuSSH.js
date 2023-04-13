@@ -19,6 +19,41 @@ export default class DokkuSSH {
     [kUsername];
     [kPrivateKey];
 
+    async letsEncryptList(appOrApps) {
+        const output = {};
+
+        const appsNames = this[kNormalizeAppNames](appOrApps);
+        const letsEncryptListResult = await this[kExecCommand]('letsencrypt:list');
+        const letsEncryptListLines = letsEncryptListResult.split(/\r?\n/);
+        letsEncryptListLines.shift(); // remove header
+
+        for(const letsEncryptListLine of letsEncryptListLines) {
+            const [ appName, expirationDate, _remainingTimeToExpire, remainingTimeToRenew ] = letsEncryptListLine.split(/\s\s+/);
+
+            if(!appsNames.includes(appName)) continue;
+
+            const expirationTime = (new Date(expirationDate)).getTime();
+
+            const renewDays    = (remainingTimeToRenew.match(/(\d\d)d(?:, )?/) || [0, 0])[1];
+            const renewHours   = (remainingTimeToRenew.match(/(\d\d)h(?:, )?/) || [0, 0])[1];
+            const renewMinutes = (remainingTimeToRenew.match(/(\d\d)m(?:, )?/) || [0, 0])[1];
+            const renewSeconds = (remainingTimeToRenew.match(/(\d\d)s(?:, )?/) || [0, 0])[1];
+            
+            const renewDate = new Date();
+            renewDate.setDate(renewDate.getDate() + parseInt(renewDays));
+            renewDate.setHours(renewDate.getHours() + parseInt(renewHours));
+            renewDate.setMinutes(renewDate.getMinutes() + parseInt(renewMinutes));
+            renewDate.setSeconds(renewDate.getSeconds() + parseInt(renewSeconds));
+            const renewTime = renewDate.getTime();
+
+            output[appName] = {
+                expirationTime,
+                renewTime,
+            };
+        }
+        return output;
+    }
+
     async actionPsScale(appOrApps, scaling, onStdout = null, onStderr = null) {
         const scalingParams = [];
         for(const type in scaling) {

@@ -64,6 +64,7 @@ export default class Namespace extends Model {
         const proxyPorts = await this[kDokku].proxyPorts(appsList);
         const domainsReport = await this[kDokku].domainsReport(appsList);
         const psScale = await this[kDokku].psScale(appsList);
+        const letsEncrypt = await this[kDokku].letsEncryptList(appsList);
 
         //remove apps that are not in appsList
         for(const app of this.apps) {
@@ -88,6 +89,7 @@ export default class Namespace extends Model {
                 domains: domainsReport[app.name],
                 proxyPorts: proxyPorts[app.name],
                 psScale: psScale[app.name],
+                ssl: letsEncrypt[app.name],
             });
         }
     }

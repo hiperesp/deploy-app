@@ -9,6 +9,7 @@ export default class App extends Model {
     #proxyPorts;
     #domains;
     #psScale;
+    #ssl;
 
     #lastRefreshTime = 0;
 
@@ -32,6 +33,9 @@ export default class App extends Model {
     get domains() {
         return this.#domains;
     }
+    get ssl() {
+        return this.#ssl;
+    }
 
     get replicas() {
         return this.#psScale;
@@ -49,10 +53,11 @@ export default class App extends Model {
         return this.#lastRefreshTime;
     }
 
-    async refresh({proxyPorts, domains, psScale}) {
+    async refresh({proxyPorts, domains, psScale, ssl}) {
         this.#proxyPorts = proxyPorts;
         this.#domains = domains;
         this.#psScale = psScale;
+        this.#ssl = ssl;
         this.#lastRefreshTime = Date.now();
     }
 
@@ -68,9 +73,11 @@ export default class App extends Model {
         return {
             name: this.name,
             online: this.online,
+
             proxyPorts: this.proxyPorts,
             replicas: this.replicas,
             domains: this.domains,
+            ssl: this.ssl,
 
             _lastRefreshTime: this.lastRefreshTime,
         }

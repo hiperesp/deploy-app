@@ -1,0 +1,39 @@
+<div class="col-md-6 pt-3">
+    <form>
+        <input type="hidden" name="redirect" value="{{ originalUrl }}">
+
+        <h4 class="mb-2">SSL Settings</h4>
+        <p class="mb-4 text-body-secondary">SSL settings for your app.</p>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="card-title d-flex justify-content-between">
+                    <h5>Current SSL</h5>
+                </div>
+                <h6 class="card-subtitle mb-2 text-body-secondary">Current SSL expiry times.</h6>
+                <div class="row">
+                    <div class="col-md-6 form-group mb-3">
+                        <label class="fw-bold">Will expire</label>
+                        <div class="input-group">
+                            <input type="datetime-local" class="form-control px-0 text-center" disabled value="{{ app.ssl.expirationTime|datetimeInput }}" style="width:75px">
+                            <input type="text"           class="form-control px-0 text-center" disabled value="{{ app.ssl.expirationTime|friendlyTime }}">
+                        </div>
+                    </div>
+                    <div class="col-md-6 form-group mb-3">
+                        <label class="fw-bold">Will be renewed</label>
+                        <div class="input-group">
+                            <input type="datetime-local" class="form-control px-0 text-center" disabled value="{{ app.ssl.renewTime|datetimeInput }}" style="width:75px">
+                            <input type="text"           class="form-control px-0 text-center" disabled value="{{ app.ssl.renewTime|friendlyTime }}">
+                        </div>
+                    </div>
+                </div>
+                <div data-id="no-ssl" class="d-none">
+                    <div class="display-5 text-body-secondary my-3">No replicas running</div>
+                    <div class="small text-body-secondary">You can add a new replica by clicking the button above.</div>
+                </div>
+                <div data-id="has-ssl">
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

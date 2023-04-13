@@ -25,44 +25,58 @@ const nunjucksEnv = nunjucks.configure('view', {
     express: app
 })
 
-nunjucksEnv.addFilter('timeago', function(time) {
+nunjucksEnv.addFilter('friendlyTime', function(time) {
     if(!time) return 'never';
-    const seconds = Math.floor((Date.now() - time) / 1000);
-    if(seconds < 1) return 'just now';
-    if(seconds < 60) return 'a few seconds ago';
-    // if(seconds < 60) {
-    //     const scale = seconds === 1 ? 'second' : 'seconds';
-    //     return `${seconds} ${scale} ago`;
-    // }
+    const now = Date.now();
+
+    const isFuture = time > now;
+    const isPast = time < now;
+    const relative = (time, scale) => {
+        let prefix = '';
+        let suffix = ' ago';
+        if(isFuture) {
+            prefix = 'in ';
+            suffix = '';
+        }
+        return `${prefix}${time} ${scale}${time === 1 ? '' : 's'}${suffix}`;
+    }
+
+    if(!isFuture && !isPast) return 'just now';
+
+    const seconds = Math.floor((isFuture ? time - now : now - time) / 1000);
+    if(seconds < 60) return relative("few", "seconds");
+
     const minutes = Math.floor(seconds / 60);
     if(minutes < 60) {
-        const scale = minutes === 1 ? 'minute' : 'minutes';
-        return `${minutes} ${scale} ago`;
+        return relative(minutes, "minute");
     }
     const hours = Math.floor(minutes / 60);
     if(hours < 24) {
-        const scale = hours === 1 ? 'hour' : 'hours';
-        return `${hours} ${scale} ago`;
+        return relative(hours, "hour");
     }
     const days = Math.floor(hours / 24);
     if(days < 7) {
-        const scale = days === 1 ? 'day' : 'days';
-        return `${days} ${scale} ago`;
+        return relative(days, "day");
     }
     const weeks = Math.floor(days / 7);
     if(weeks < 4) {
-        const scale = weeks === 1 ? 'week' : 'weeks';
-        return `${weeks} ${scale} ago`;
+        return relative(weeks, "week");
     }
     const months = Math.floor(days / 30);
     if(months < 12) {
-        const scale = months === 1 ? 'month' : 'months';
-        return `${months} ${scale} ago`;
+        return relative(months, "month");
     }
     const years = Math.floor(days / 365);
-    const scale = years === 1 ? 'year' : 'years';
-    return `${years} ${scale} ago`;
+    return relative(years, "year");
 });
+
+nunjucksEnv.addFilter('datetime', function(time, timeZone = 'UTC', language = 'en-US') {
+    return (new Date(time)).toLocaleString(language, { timeZone });
+});
+nunjucksEnv.addFilter('datetimeInput', function(time) {
+    return (new Date(time)).toISOString().split('.')[0];
+});
+
 
 // Configurar o cookie parser
 app.use(cookieParser())
