@@ -30,7 +30,7 @@
             const needScroll = terminalContainer.scrollHeight - terminalContainer.scrollTop === terminalContainer.clientHeight;
 
             const lineGroup = document.createElement('div');
-            lineGroup.classList.add('terminal-log', `terminal-log-${type}`);
+            lineGroup.classList.add('terminal-log', `terminal-log-${type}`, 'my-1', 'rounded');
             lineGroup.innerHTML = terminalToHtml(message);
             terminalScreen.appendChild(lineGroup);
 
