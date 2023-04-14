@@ -32,8 +32,8 @@
                         <div class="col-lg-3 col-md-4 col-sm-6 col-12 p-1">
                             <a href="/{{ namespace.name }}" class="card text-decoration-none p-0">
                                 <div class="card-body">
-                                    <div class="card-title h5">
-                                        {{ namespace.name }}
+                                    <div class="card-title h5 d-flex gap-1">
+                                        <span class="card-title-text flex-1">{{ namespace.name }}</span>
                                         {% if namespace.online %}
                                             <span class="online"></span>
                                         {% else %}

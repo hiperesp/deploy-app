@@ -82,3 +82,10 @@
     font-family: 'Fira Code', monospace;
     white-space: pre-wrap;
 }
+
+.card-title-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: calc(100% - 1rem);
+}
