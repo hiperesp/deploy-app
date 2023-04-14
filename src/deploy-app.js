@@ -44,7 +44,7 @@ nunjucksEnv.addFilter('friendlyTime', function(time) {
     if(!isFuture && !isPast) return 'just now';
 
     const seconds = Math.floor((isFuture ? time - now : now - time) / 1000);
-    if(seconds < 60) return relative("few", "seconds");
+    if(seconds < 60) return relative("few", "second");
 
     const minutes = Math.floor(seconds / 60);
     if(minutes < 60) {
