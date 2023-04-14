@@ -29,15 +29,18 @@
                             </div>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-danger w-100 mt-3">Disable SSL</button>
                 {% else %}
                     <div>
                         <input type="hidden" name="action" value="generate-ssl">
                         <div class="display-5 text-body-secondary my-3">SSL not enabled</div>
-                        <button type="submit" class="btn btn-dark w-100 mt-3">Generate SSL</button>
                     </div>
                 {% endif %}
             </div>
         </div>
+        {% if app.ssl %}
+            <button type="submit" class="btn btn-danger w-100 mt-3">Disable SSL</button>
+        {% else %}
+            <button type="submit" class="btn btn-dark w-100 mt-3">Enable SSL</button>
+        {% endif %}
     </form>
 </div>
