@@ -63,6 +63,14 @@ export default class DokkuSSH {
         await this[kExecAppCommands](appOrApps, `ps:scale %app% ${scalingParams.join(' ')}`, onStdout, onStderr);
     }
 
+    async actionLetsEncryptCreate(appOrApps, onStdout = null, onStderr = null) {
+        await this[kExecAppCommands](appOrApps, `letsencrypt:enable %app%`, onStdout, onStderr);
+    }
+
+    async actionLetsEncryptDelete(appOrApps, onStdout = null, onStderr = null) {
+        await this[kExecAppCommands](appOrApps, `letsencrypt:disable %app%`, onStdout, onStderr);
+    }
+
     async nginxAccessLogs(appName, onStdout, onStderr) {
         this.mustBeValidResourceName(appName);
 

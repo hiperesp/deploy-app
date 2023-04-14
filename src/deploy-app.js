@@ -214,6 +214,72 @@ app.get('/:namespace/:app/api/server-sent-events/actions/scale', async function(
     });
 });
 
+app.get('/:namespace/:app/api/server-sent-events/actions/generate-ssl', async function(request, response) {
+    const namespace = system.namespaces.find(namespace => namespace.name === request.params.namespace)
+    if(!namespace) return response.status(404).send('Namespace not found')
+
+    const app = namespace.apps.find(app => app.name === request.params.app)
+    if(!app) return response.status(404).send('App not found')
+
+    response.writeHead(200, {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+    })
+
+    let eventId = 0;
+    app.generateSSL(function(output) {
+        response.write(`id: ${eventId++}\n`)
+        response.write(`event: stdout\n`)
+        response.write(`data: ${JSON.stringify(output)}\n`)
+        response.write(`\n`)
+    }).catch(function(error) {
+        response.write(`id: ${eventId++}\n`)
+        response.write(`event: stderr\n`)
+        response.write(`data: ${JSON.stringify(error)}\n`)
+        response.write(`\n`)
+    }).finally(function() {
+        response.write(`id: ${eventId++}\n`)
+        response.write(`event: done\n`)
+        response.write(`data: ${JSON.stringify("Done!")}\n`)
+        response.write(`\n`)
+        response.end()
+    });
+});
+
+app.get('/:namespace/:app/api/server-sent-events/actions/remove-ssl', async function(request, response) {
+    const namespace = system.namespaces.find(namespace => namespace.name === request.params.namespace)
+    if(!namespace) return response.status(404).send('Namespace not found')
+
+    const app = namespace.apps.find(app => app.name === request.params.app)
+    if(!app) return response.status(404).send('App not found')
+
+    response.writeHead(200, {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+    })
+
+    let eventId = 0;
+    app.removeSSL(function(output) {
+        response.write(`id: ${eventId++}\n`)
+        response.write(`event: stdout\n`)
+        response.write(`data: ${JSON.stringify(output)}\n`)
+        response.write(`\n`)
+    }).catch(function(error) {
+        response.write(`id: ${eventId++}\n`)
+        response.write(`event: stderr\n`)
+        response.write(`data: ${JSON.stringify(error)}\n`)
+        response.write(`\n`)
+    }).finally(function() {
+        response.write(`id: ${eventId++}\n`)
+        response.write(`event: done\n`)
+        response.write(`data: ${JSON.stringify("Done!")}\n`)
+        response.write(`\n`)
+        response.end()
+    });
+});
+
 
 app.get('/:namespace/:app/api/server-sent-events/logs/:type', async function(request, response) {
     const namespace = system.namespaces.find(namespace => namespace.name === request.params.namespace)

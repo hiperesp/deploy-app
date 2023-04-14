@@ -65,6 +65,13 @@ export default class App extends Model {
         await this.#namespace.scaleApp(this.name, options, onStdout, onStderr);
     }
 
+    async generateSSL(onStdout = null, onStderr) {
+        await this.#namespace.generateAppSSL(this.name, onStdout, onStderr);
+    }
+    async removeSSL(onStdout = null, onStderr) {
+        await this.#namespace.removeAppSSL(this.name, onStdout, onStderr);
+    }
+
     getContainers() {
         return []
     }

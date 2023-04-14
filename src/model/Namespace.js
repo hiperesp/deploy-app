@@ -100,6 +100,17 @@ export default class Namespace extends Model {
         return response;
     }
 
+    async generateAppSSL(appOrApps, onStdout = null, onStderr) {
+        const response = await this[kDokku].actionLetsEncryptCreate(appOrApps, onStdout, onStderr);
+        this.refresh();
+        return response;
+    }
+    async removeAppSSL(appOrApps, onStdout = null, onStderr) {
+        const response = await this[kDokku].actionLetsEncryptDelete(appOrApps, onStdout, onStderr);
+        this.refresh();
+        return response;
+    }
+
     toJson() {
         return {
             name: this.name,
