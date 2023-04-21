@@ -29,20 +29,16 @@
     <ul class="nav nav-tabs px-md-5 px-3">
         {% for key, value in tabs %}
             {% if value %}
-                {% if tab === key %}
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="/{{ namespace.name }}/{{ app.name }}?tab={{ key }}">{{ value }}</a>
-                    </li>
-                {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="/{{ namespace.name }}/{{ app.name }}?tab={{ key }}">{{ value }}</a>
-                    </li>
-                {% endif %}
+                <li class="nav-item">
+                    <a class="nav-link {{ "active" if key === tab }}" {{ 'aria-current="page"' if key == tab }} href="/{{ namespace.name }}/{{ app.name }}?tab={{ key }}">
+                        {{ value }}
+                        {% if key in ["overview"] %}
+                            <span class="d-flex badge bg-dark align-items-center ms-2" style="float: right; height: 24px;">Soon</span>
+                        {% endif %}
+                    </a>
+                </li>
             {% endif %}
         {% endfor %}
-        <li class="nav-item">
-            <a class="nav-link disabled">Disabled</a>
-        </li>
     </ul>
 {% endset %}
 {% block content %}
