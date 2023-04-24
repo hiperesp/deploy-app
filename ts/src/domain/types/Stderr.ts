@@ -1,0 +1,1 @@
+export type Stderr = (data: string) => void | undefined;
