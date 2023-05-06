@@ -80,7 +80,11 @@ nunjucksEnv.addFilter('dateInput', function(time) {
     return (new Date(time)).toISOString().split('T')[0];
 });
 nunjucksEnv.addFilter('json', function(string) {
-    return JSON.parse(string);
+    try {
+        return JSON.parse(string);
+    } catch(e) {
+        return null;
+    }
 });
 nunjucksEnv.addFilter('censorEnv', function(value, key) {
 
