@@ -10,7 +10,8 @@
 - [ ] Tela de ports + funcionamento - (melhorar a tela)
 - [ ] Tela de domains + funcionamento
 
-- [ ] Sincronizar apps pelo git 
+- [ ] Sincronizar apps pelo git - usar "deploy keys" do github
 - [ ] Criar apps
 - [ ] Usar envs DEPLOY_APP_* para armazenar configurações do deploy-app
 - [ ] Verificar possibilidade de receber webhook do github para atualizar o app automaticamente
+- [ ] Criar botão de "redeploy" para cada app
