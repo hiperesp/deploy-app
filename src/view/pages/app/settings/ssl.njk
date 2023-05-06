@@ -16,16 +16,16 @@
                     <div class="row">
                         <div class="col-md-6 form-group mb-3">
                             <label class="fw-bold">Will expire</label>
-                            <div class="input-group">
-                                <input type="datetime-local" class="form-control px-0 text-center" disabled value="{{ app.ssl.expirationTime|datetimeInput }}" style="width:75px">
-                                <input type="text"           class="form-control px-0 text-center" disabled value="{{ app.ssl.expirationTime|friendlyTime }}">
+                            <div class="input-group" title="Will expire at {{ app.ssl.expirationTime|datetime }}">
+                                <input type="date" class="form-control px-0 text-center" disabled value="{{ app.ssl.expirationTime|datetimeInput }}">
+                                <input type="text" class="form-control px-0 text-center" disabled value="{{ app.ssl.expirationTime|friendlyTime }}">
                             </div>
                         </div>
                         <div class="col-md-6 form-group mb-3">
                             <label class="fw-bold">Will be renewed</label>
-                            <div class="input-group">
-                                <input type="datetime-local" class="form-control px-0 text-center" disabled value="{{ app.ssl.renewTime|datetimeInput }}" style="width:75px">
-                                <input type="text"           class="form-control px-0 text-center" disabled value="{{ app.ssl.renewTime|friendlyTime }}">
+                            <div class="input-group" title="Will be renewed at {{ app.ssl.renewTime|datetime }}">
+                                <input type="date" class="form-control px-0 text-center" disabled value="{{ app.ssl.renewTime|datetimeInput }}">
+                                <input type="text" class="form-control px-0 text-center" disabled value="{{ app.ssl.renewTime|friendlyTime }}">
                             </div>
                         </div>
                     </div>

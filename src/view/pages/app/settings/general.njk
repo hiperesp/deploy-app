@@ -2,16 +2,38 @@
     <form>
         <input type="hidden" name="redirect" value="{{ originalUrl }}">
 
-        <h4 class="mb-2">General Settings</h4>
-        <p class="mb-4 text-body-secondary">General settings for your app.</p>
+        <h4>General Settings</h4>
+        <p class="text-body-secondary">General settings for your app.</p>
+
+        <hr>
 
         <div class="form-group mb-3">
             <label class="fw-bold">App name</label>
             <div class="input-group">
                 <input type="text" class="form-control" value="{{ app.name }}" disabled>
-                <button type="submit" class="btn btn-dark" disabled>Rename</button>
+            </div>
+            <div class="small text-body-secondary">You can only change the app name using the SSH console.</div>
+        </div>
+
+        <hr>
+
+        <div>
+            <h4 class="mb-2">Git Settings</h4>
+            <p class="small text-body-secondary">It will be used to sync the app data. Please configure "Deploy keys" for this repository using the server public key. We don't need write access.</p>
+            <div class="form-group mt-3">
+                <label for="git-repo" class="small fw-bold">Git clone by SSH URL</label>
+                <input type="text" class="form-control" id="git-repo" name="git-repo">
+            </div>
+            <div class="form-group mt-3">
+                <label for="git-ref" class="small fw-bold">Git ref (branch or tag)</label>
+                <input type="text" class="form-control" id="git-ref" name="git-ref">
             </div>
         </div>
 
+        <hr>
+
+        <div class="mb-5">
+            <button type="submit" class="btn btn-dark w-100">Save</button>
+        </div>
     </form>
 </div>
