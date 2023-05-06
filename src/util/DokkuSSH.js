@@ -71,6 +71,31 @@ export default class DokkuSSH {
         await this[kExecAppCommands](appOrApps, `letsencrypt:disable %app%`, onStdout, onStderr);
     }
 
+    async actionConfigSet(appOrApps, options, onStdout = null, onStderr = null) {
+        const params = [
+            '--encoded'
+        ];
+        if(options.noRestart || false) {
+            params.push('--no-restart');
+        }
+        const configs = [];
+        for(const key in options.config) {
+            this.mustBeValidEnvironmentVariableName(key);
+            const encodedValue = Buffer.from(options.config[key]).toString('base64');
+            configs.push(`${key}=${encodedValue}`);
+        }
+        await this[kExecAppCommands](appOrApps, `config:set ${params.join(' ')} %app% ${configs.join(' ')}`, onStdout, onStderr);
+    }
+
+    async configShow(appOrApps) {
+        const output = {};
+        const configShowResult = await this[kExecAppCommands](appOrApps, 'config:export --format=json %app%');
+        for(const app in configShowResult) {
+            output[app] = JSON.parse(configShowResult[app]);
+        }
+        return output;
+    }
+
     async nginxAccessLogs(appName, onStdout, onStderr) {
         this.mustBeValidResourceName(appName);
 
@@ -231,7 +256,11 @@ export default class DokkuSSH {
     }
 
     [kCreateAppCommand](apps, command, appNameVar = '%app%') {
-        return apps.map(app => app.trim()).filter(app => !!app).map(app => command.replace(appNameVar, app));
+        return apps.map(app => app.trim()).filter(app => !!app).map(app => {
+            let appCommand = command;
+            while(appCommand.includes(appNameVar)) appCommand = appCommand.replace(appNameVar, app)
+            return appCommand;
+        });
     }
 
     async [kExecMultipleCommands](commands, onStdout = null, onStderr = null) {
@@ -334,6 +363,26 @@ SSH_EOF
 
         //must be between 2 and 63 characters long.
         if(resourceName.length > 63 || resourceName.length < 2) return false;
+
+        return true;
+    }
+
+    mustBeValidEnvironmentVariableNameArr(environmentVariableNameArr) {
+        for(const environmentVariableName of environmentVariableNameArr) {
+            this.mustBeValidEnvironmentVariableName(environmentVariableName);
+        }
+    }
+
+    mustBeValidEnvironmentVariableName(environmentVariableName) {
+        if(!this.isValidEnvironmentVariableName(environmentVariableName)) {
+            throw new Error(`Invalid environment variable name: ${environmentVariableName}`);
+        }
+    }
+
+    isValidEnvironmentVariableName(environmentVariableName) {
+        //must contain only letters, numbers, and underscores.
+        //must not start with a number.
+        if(!environmentVariableName.match(/^[a-zA-Z_][a-zA-Z0-9_]*$/)) return false;
 
         return true;
     }

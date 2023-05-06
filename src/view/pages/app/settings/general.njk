@@ -1,6 +1,6 @@
 <div class="col-md-6 pt-3">
-    <form>
-        <input type="hidden" name="redirect" value="{{ originalUrl }}">
+    <form action="/{{ namespace.name }}/{{ app.name }}/api/logs-view" method="post">
+        <input type="hidden" name="action" value="save-general-settings">
 
         <h4>General Settings</h4>
         <p class="text-body-secondary">General settings for your app.</p>
@@ -22,11 +22,11 @@
             <p class="small text-body-secondary">It will be used to sync the app data. Please configure "Deploy keys" for this repository using the server public key. We don't need write access.</p>
             <div class="form-group mt-3">
                 <label for="git-repo" class="small fw-bold">Git clone by SSH URL</label>
-                <input type="text" class="form-control" id="git-repo" name="git-repo">
+                <input type="text" class="form-control" id="git-repo" name="gitRepo" value="{{ (app.config.DEPLOY_APP_GIT | json).REPO }}">
             </div>
             <div class="form-group mt-3">
                 <label for="git-ref" class="small fw-bold">Git ref (branch or tag)</label>
-                <input type="text" class="form-control" id="git-ref" name="git-ref">
+                <input type="text" class="form-control" id="git-ref" name="gitRef" value="{{ (app.config.DEPLOY_APP_GIT | json).REF }}">
             </div>
         </div>
 
