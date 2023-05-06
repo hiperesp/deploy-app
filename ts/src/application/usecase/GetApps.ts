@@ -1,7 +1,8 @@
 import App from "../../domain/entity/App";
 import IAppRepository from "../repository/IAppRepository";
+import IExecutable from "./IExecutable";
 
-export default class GetApps {
+export default class GetApps implements IExecutable<App[]> {
     appRepository: IAppRepository;
 
     constructor(appRepository: IAppRepository) {
