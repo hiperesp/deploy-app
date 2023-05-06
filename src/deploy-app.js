@@ -82,6 +82,37 @@ nunjucksEnv.addFilter('dateInput', function(time) {
 nunjucksEnv.addFilter('json', function(string) {
     return JSON.parse(string);
 });
+nunjucksEnv.addFilter('censorEnv', function(value, key) {
+
+    const keysMustContainToCensor = [
+        "password", "private", "secret"
+    ];
+    const replaceWith = '%censored%';
+    const definitiveReplaceWith = '<span class="censored" title="Censored for security reasons"></span>';
+
+    const keyLower = key.toLowerCase();
+
+    // censor based on key name
+    for(const keyTest of keysMustContainToCensor) {
+        if(keyLower.includes(keyTest)) {
+            value = replaceWith
+        }
+    }
+
+    // censor based on value parts
+    try {
+        value = value.replace(/-{5}BEGIN(?:(?!-)(?:.|[\r\n]))+-----(?:(?!-)(?:.|[\r\n]))+-----END(?:(?!-)(?:.|[\r\n]))+-----/g, replaceWith);
+    } catch(e) {}
+
+    value = nunjucksEnv.filters.escape(value);
+
+    while(value.includes(replaceWith)) {
+        value = value.replace(replaceWith, definitiveReplaceWith);
+    }
+    
+    //return as safe html
+    return nunjucksEnv.filters.safe(value);
+});
 
 
 // Configurar o cookie parser

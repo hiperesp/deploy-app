@@ -38,7 +38,29 @@ export default class App extends Model {
         return this.#ssl;
     }
     get config() {
-        return this.#config;
+        const typesPrefixes = {
+            deployApp: ["DEPLOY_APP_"],
+            dokku: ["DOKKU_", "GIT_REV"],
+            userDefined: [""],
+        };
+        const output = {
+            all: this.#config
+        };
+
+        loopKey: for(const key in output.all) {
+            for(const type in typesPrefixes) {
+                for(const prefix of typesPrefixes[type]) {
+                    if(key.startsWith(prefix)) {
+                        if(!output[type]) {
+                            output[type] = {};
+                        }
+                        output[type][key] = output.all[key];
+                        continue loopKey;
+                    }
+                }
+            }
+        }
+        return output;
     }
 
     get replicas() {

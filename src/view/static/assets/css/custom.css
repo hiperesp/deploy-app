@@ -1,3 +1,9 @@
+.monospace {
+    font-family: 'Fira Code', monospace;
+}
+.pre {
+    white-space: pre-wrap;
+}
 .terminal-log {
     padding-left: 8px;
     border-left: 8px solid var(--bs-secondary);
@@ -88,4 +94,13 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     max-width: calc(100% - 1rem);
+}
+
+.censored {
+    color: var(--bs-danger);
+    font-weight: bold;
+    text-decoration: line-through;
+}
+.censored::after {
+    content: '********';
 }
