@@ -76,6 +76,9 @@ nunjucksEnv.addFilter('datetime', function(time, timeZone = 'UTC', language = 'e
 nunjucksEnv.addFilter('datetimeInput', function(time) {
     return (new Date(time)).toISOString().split('.')[0];
 });
+nunjucksEnv.addFilter('dateInput', function(time) {
+    return (new Date(time)).toISOString().split('T')[0];
+});
 
 
 // Configurar o cookie parser

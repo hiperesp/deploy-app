@@ -2,45 +2,48 @@
     <form action="/{{ namespace.name }}/{{ app.name }}/api/logs-view" method="post">
         <input type="hidden" name="redirect" value="{{ originalUrl }}">
 
-        <h4 class="mb-2">SSL Settings</h4>
-        <p class="mb-4 text-body-secondary">SSL settings for your app.</p>
+        <h4>SSL Settings</h4>
+        <p class="text-body-secondary">SSL settings for your app.</p>
 
-        <div class="card">
-            <div class="card-body">
-                <div class="card-title d-flex justify-content-between">
-                    <h5>Current SSL</h5>
-                </div>
-                {% if app.ssl %}
-                    <input type="hidden" name="action" value="remove-ssl">
-                    <h6 class="card-subtitle mb-2 text-body-secondary">Current SSL expiry times.</h6>
-                    <div class="row">
-                        <div class="col-md-6 form-group mb-3">
-                            <label class="fw-bold">Will expire</label>
-                            <div class="input-group" title="Will expire at {{ app.ssl.expirationTime|datetime }}">
-                                <input type="date" class="form-control px-0 text-center" disabled value="{{ app.ssl.expirationTime|datetimeInput }}">
-                                <input type="text" class="form-control px-0 text-center" disabled value="{{ app.ssl.expirationTime|friendlyTime }}">
-                            </div>
-                        </div>
-                        <div class="col-md-6 form-group mb-3">
-                            <label class="fw-bold">Will be renewed</label>
-                            <div class="input-group" title="Will be renewed at {{ app.ssl.renewTime|datetime }}">
-                                <input type="date" class="form-control px-0 text-center" disabled value="{{ app.ssl.renewTime|datetimeInput }}">
-                                <input type="text" class="form-control px-0 text-center" disabled value="{{ app.ssl.renewTime|friendlyTime }}">
-                            </div>
-                        </div>
-                    </div>
-                {% else %}
-                    <div>
-                        <input type="hidden" name="action" value="generate-ssl">
-                        <div class="display-5 text-body-secondary my-3">SSL not enabled</div>
-                    </div>
-                {% endif %}
+        <hr>
+
+        <div>
+            <div class="d-flex justify-content-between mb-2">
+                <h5 class="mb-0">Current SSL</h5>
             </div>
+            {% if app.ssl %}
+                <input type="hidden" name="action" value="remove-ssl">
+                <p class="small text-body-secondary mb-0">Current SSL expiry times.</h6>
+                <div class="row">
+                    <div class="col-md-6 form-group mt-3">
+                        <label class="fw-bold">Will expire</label>
+                        <div class="input-group" title="Will expire at {{ app.ssl.expirationTime|datetime }}">
+                            <input type="date" class="form-control px-0 text-center" disabled value="{{ app.ssl.expirationTime|dateInput }}">
+                            <input type="text" class="form-control px-0 text-center" disabled value="{{ app.ssl.expirationTime|friendlyTime }}">
+                        </div>
+                    </div>
+                    <div class="col-md-6 form-group mt-3">
+                        <label class="fw-bold">Will be renewed</label>
+                        <div class="input-group" title="Will be renewed at {{ app.ssl.renewTime|datetime }}">
+                            <input type="date" class="form-control px-0 text-center" disabled value="{{ app.ssl.renewTime|dateInput }}">
+                            <input type="text" class="form-control px-0 text-center" disabled value="{{ app.ssl.renewTime|friendlyTime }}">
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div>
+                    <input type="hidden" name="action" value="generate-ssl">
+                    <div class="display-5 text-body-secondary my-3">SSL not enabled</div>
+                </div>
+            {% endif %}
         </div>
-        {% if app.ssl %}
-            <button type="submit" class="btn btn-danger w-100 mt-3">Disable SSL</button>
-        {% else %}
-            <button type="submit" class="btn btn-dark w-100 mt-3">Enable SSL</button>
-        {% endif %}
+
+        <hr>
+
+        <div class="mb-5">
+            <button type="submit" class="btn btn-danger w-100">
+                {% if app.ssl %}Disable{% else %}Enable{% endif %} SSL
+            </button>
+        </div>
     </form>
 </div>
