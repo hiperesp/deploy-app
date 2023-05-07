@@ -6,12 +6,12 @@
         <p class="mb-4 text-body-secondary">Domains settings for your app.</p>
 
         <div class="form-group mb-3">
-            <label for="domains" class="fw-bold">Domains</label>
+            <label for="domains" class="small fw-bold">Domains</label>
             <textarea class="form-control" id="domains" name="domains" rows="{{ app.domains.app.length + 1 }}">{% for domain in app.domains.app %}{{ domain + "\n" }}{% endfor %}</textarea>
         </div>
 
         <div class="form-group mb-3">
-            <label class="fw-bold">Domains (Global)</label>
+            <label class="small fw-bold">Domains (Global)</label>
             <textarea class="form-control" rows="{{ app.domains.global.length }}" disabled="" resize="none">{% for domain in app.domains.global %}{{ domain }}{{ "\n" if not loop.last }}{% endfor %}</textarea>
         </div>
 

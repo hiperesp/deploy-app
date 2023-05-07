@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser'
 
 import System from './model/System.js';
 import buildSearchParams from './helpers/buildSearchParams.js';
+import sse from './helpers/sse.js';
 
 dotenv.config({path: process.cwd() + '/.env'})
 
@@ -86,13 +87,13 @@ nunjucksEnv.addFilter('json', function(string) {
         return null;
     }
 });
-nunjucksEnv.addFilter('censorEnv', function(value, key) {
+nunjucksEnv.addFilter('censorEnv', function(value, key, definitiveReplaceWith = null) {
 
     const keysMustContainToCensor = [
         "password", "private", "secret"
     ];
     const replaceWith = '%censored%';
-    const definitiveReplaceWith = '<span class="censored" title="Censored for security reasons"></span>';
+    definitiveReplaceWith = definitiveReplaceWith || '<span class="censored" title="Censored for security reasons"></span>';
 
     const keyLower = key.toLowerCase();
 
@@ -117,6 +118,8 @@ nunjucksEnv.addFilter('censorEnv', function(value, key) {
     //return as safe html
     return nunjucksEnv.filters.safe(value);
 });
+
+nunjucksEnv.addFilter('buildSearchParams', buildSearchParams);
 
 
 // Configurar o cookie parser
@@ -201,6 +204,8 @@ app.get('/:namespace/:app', async function(request, response) {
 
         tab: request.query.tab || 'overview',
         subtab: request.query.subtab || 'general',
+        method: request.query.method || 'default',
+        id: request.query.id || null,
     })
 })
 
@@ -235,29 +240,9 @@ app.get('/:namespace/:app/api/server-sent-events/actions/scale', async function(
         'Connection': 'keep-alive',
     })
 
-    let eventId = 0;
-    await app.scale(request.query?.process, function(output) {
-        response.write(`id: ${eventId++}\n`)
-        response.write(`event: stdout\n`)
-        response.write(`data: ${JSON.stringify(output)}\n`)
-        response.write(`\n`)
-    }, function(error) {
-        response.write(`id: ${eventId++}\n`)
-        response.write(`event: stderr\n`)
-        response.write(`data: ${JSON.stringify(error)}\n`)
-        response.write(`\n`)
-    }).catch(function(error) {
-        response.write(`id: ${eventId++}\n`)
-        response.write(`event: stderr\n`)
-        response.write(`data: ${JSON.stringify(error)}\n`)
-        response.write(`\n`)
-    }).finally(function() {
-        response.write(`id: ${eventId++}\n`)
-        response.write(`event: done\n`)
-        response.write(`data: ${JSON.stringify("Done!")}\n`)
-        response.write(`\n`)
-        response.end()
-    });
+    await sse(response, {}, async function({stdout, stderr}) {
+        return app.scale(request.query?.process, stdout, stderr);
+    })
 });
 
 app.get('/:namespace/:app/api/server-sent-events/actions/generate-ssl', async function(request, response) {
@@ -273,29 +258,9 @@ app.get('/:namespace/:app/api/server-sent-events/actions/generate-ssl', async fu
         'Connection': 'keep-alive',
     })
 
-    let eventId = 0;
-    await app.generateSSL(function(output) {
-        response.write(`id: ${eventId++}\n`)
-        response.write(`event: stdout\n`)
-        response.write(`data: ${JSON.stringify(output)}\n`)
-        response.write(`\n`)
-    }, function(error) {
-        response.write(`id: ${eventId++}\n`)
-        response.write(`event: stderr\n`)
-        response.write(`data: ${JSON.stringify(error)}\n`)
-        response.write(`\n`)
-    }).catch(function(error) {
-        response.write(`id: ${eventId++}\n`)
-        response.write(`event: stderr\n`)
-        response.write(`data: ${JSON.stringify(error)}\n`)
-        response.write(`\n`)
-    }).finally(function() {
-        response.write(`id: ${eventId++}\n`)
-        response.write(`event: done\n`)
-        response.write(`data: ${JSON.stringify("Done!")}\n`)
-        response.write(`\n`)
-        response.end()
-    });
+    await sse(response, {}, async function({stdout, stderr}) {
+        return app.generateSSL(stdout, stderr);
+    })
 });
 
 app.get('/:namespace/:app/api/server-sent-events/actions/remove-ssl', async function(request, response) {
@@ -311,29 +276,9 @@ app.get('/:namespace/:app/api/server-sent-events/actions/remove-ssl', async func
         'Connection': 'keep-alive',
     })
 
-    let eventId = 0;
-    await app.removeSSL(function(output) {
-        response.write(`id: ${eventId++}\n`)
-        response.write(`event: stdout\n`)
-        response.write(`data: ${JSON.stringify(output)}\n`)
-        response.write(`\n`)
-    }, function(error) {
-        response.write(`id: ${eventId++}\n`)
-        response.write(`event: stderr\n`)
-        response.write(`data: ${JSON.stringify(error)}\n`)
-        response.write(`\n`)
-    }).catch(function(error) {
-        response.write(`id: ${eventId++}\n`)
-        response.write(`event: stderr\n`)
-        response.write(`data: ${JSON.stringify(error)}\n`)
-        response.write(`\n`)
-    }).finally(function() {
-        response.write(`id: ${eventId++}\n`)
-        response.write(`event: done\n`)
-        response.write(`data: ${JSON.stringify("Done!")}\n`)
-        response.write(`\n`)
-        response.end()
-    });
+    await sse(response, {}, async function({stdout, stderr}) {
+        return app.removeSSL(stdout, stderr);
+    })
 });
 
 
@@ -358,22 +303,17 @@ app.get('/:namespace/:app/api/server-sent-events/logs/:type', async function(req
 
     if(!method) return response.status(404).send('Log type not found')
 
-    let eventId = 0;
-    const logging = await app[method](function(stdout) {
-        response.write(`id: ${eventId++}\n`)
-        response.write(`event: stdout\n`)
-        response.write(`data: ${JSON.stringify(stdout)}\n`)
-        response.write(`\n`)
-    }, function(stderr) {
-        response.write(`id: ${eventId++}\n`)
-        response.write(`event: stderr\n`)
-        response.write(`data: ${JSON.stringify(stderr)}\n`)
-        response.write(`\n`)
-    });
+    await sse(response, {
+        doneOnFinish: false
+    }, async function({stdout, stderr}) {
+        const logging = await app[method](stdout, stderr);
 
-    request.on('close', () => {
-        logging.kill()
-        response.end()
+        request.on('close', () => {
+            logging.kill()
+            response.end()
+        });
+
+        return logging;
     });
 });
 
@@ -390,36 +330,85 @@ app.get('/:namespace/:app/api/server-sent-events/actions/save-general-settings',
         'Connection': 'keep-alive',
     })
 
-    let eventId = 0;
-    await app.configSet({
-        noRestart: true,
-        config: {
-            "DEPLOY_APP_GIT": JSON.stringify({
-                "REPO": request.query.gitRepo,
-                "REF": request.query.gitRef,
-            }),
-        }
-    }, function(output) {
-        response.write(`id: ${eventId++}\n`)
-        response.write(`event: stdout\n`)
-        response.write(`data: ${JSON.stringify(output)}\n`)
-        response.write(`\n`)
-    }, function(error) {
-        response.write(`id: ${eventId++}\n`)
-        response.write(`event: stderr\n`)
-        response.write(`data: ${JSON.stringify(error)}\n`)
-        response.write(`\n`)
-    }).catch(function(error) {
-        response.write(`id: ${eventId++}\n`)
-        response.write(`event: stderr\n`)
-        response.write(`data: ${JSON.stringify(error)}\n`)
-        response.write(`\n`)
-    }).finally(function() {
-        response.write(`id: ${eventId++}\n`)
-        response.write(`event: done\n`)
-        response.write(`data: ${JSON.stringify("Done!")}\n`)
-        response.write(`\n`)
-        response.end()
+    await sse(response, {}, async function({stdout, stderr}) {
+        return await app.configSet({
+            noRestart: true,
+            config: {
+                "DEPLOY_APP_GIT": JSON.stringify({
+                    "REPO": request.query.gitRepo,
+                    "REF": request.query.gitRef,
+                }),
+            }
+        }, stdout, stderr);
+    });
+});
+
+app.get('/:namespace/:app/api/server-sent-events/actions/new-environment-variable', async function(request, response) {
+    const namespace = system.namespaces.find(namespace => namespace.name === request.params.namespace)
+    if(!namespace) return response.status(404).send('Namespace not found')
+
+    const app = namespace.apps.find(app => app.name === request.params.app)
+    if(!app) return response.status(404).send('App not found')
+
+    response.writeHead(200, {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+    })
+
+    await sse(response, {}, async function({stdout, stderr}) {
+        return await app.configSet({
+            noRestart: request.query.restart != 'true',
+            config: {
+                [request.query.key]: request.query.value,
+            }
+        }, stdout, stderr);
+    });
+});
+
+app.get('/:namespace/:app/api/server-sent-events/actions/change-environment-variable', async function(request, response) {
+    const namespace = system.namespaces.find(namespace => namespace.name === request.params.namespace)
+    if(!namespace) return response.status(404).send('Namespace not found')
+
+    const app = namespace.apps.find(app => app.name === request.params.app)
+    if(!app) return response.status(404).send('App not found')
+
+    response.writeHead(200, {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+    })
+
+    await sse(response, {}, async function({stdout, stderr}) {
+        return await app.configSet({
+            noRestart: request.query.restart != 'true',
+            config: {
+                [request.query.key]: request.query.value,
+            }
+        }, stdout, stderr);
+    });
+});
+
+app.get('/:namespace/:app/api/server-sent-events/actions/delete-environment-variable', async function(request, response) {
+    const namespace = system.namespaces.find(namespace => namespace.name === request.params.namespace)
+    if(!namespace) return response.status(404).send('Namespace not found')
+
+    const app = namespace.apps.find(app => app.name === request.params.app)
+    if(!app) return response.status(404).send('App not found')
+
+    response.writeHead(200, {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+    })
+
+    await sse(response, {}, async function({stdout, stderr}) {
+        return await app.configUnset({
+            noRestart: request.query.restart != 'true',
+            config: [
+                request.query.key
+            ]
+        }, stdout, stderr);
     });
 });
 

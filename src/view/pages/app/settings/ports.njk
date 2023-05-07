@@ -6,7 +6,7 @@
         <p class="mb-4 text-body-secondary">Proxy ports settings for your app.</p>
 
         <div class="form-group mb-3">
-            <label for="proxy-ports" class="fw-bold">Proxy Ports</label>
+            <label for="proxy-ports" class="small fw-bold">Proxy Ports</label>
             <textarea class="form-control" id="proxy-ports" name="proxy-ports" rows="{{ app.proxyPorts.length + 1 }}">{% for proxyPorts in app.proxyPorts %}{{ proxyPorts + "\n" }}{% endfor %}</textarea>
         </div>
 

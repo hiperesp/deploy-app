@@ -102,6 +102,9 @@ export default class App extends Model {
     async configSet(options, onStdout = null, onStderr) {
         await this.#namespace.configSetApp(this.name, options, onStdout, onStderr);
     }
+    async configUnset(options, onStdout = null, onStderr) {
+        await this.#namespace.configUnsetApp(this.name, options, onStdout, onStderr);
+    }
 
     getContainers() {
         return []

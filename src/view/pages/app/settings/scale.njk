@@ -20,7 +20,7 @@
                         {% if value > 0 %}
                             {% set replicas = replicas + value %}
                             <div class="col-md-4 form-group mb-3">
-                                <label for="replicas-{{ key }}" class="fw-bold small">{{ key }} instances</label>
+                                <label for="replicas-{{ key }}" class="small fw-bold">{{ key }} instances</label>
                                 <input type="number" class="form-control" id="replicas-{{ key }}" name="process[{{ key }}]" value="{{ value }}" min="0" required>
                             </div>
                         {% endif %}

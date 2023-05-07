@@ -1,0 +1,136 @@
+<div class="col-md-9 pt-3">
+    <form action="/{{ namespace.name }}/{{ app.name }}/api/logs-view" method="post">
+        <input type="hidden" name="action" value="change-environment-variable">
+        <input type="hidden" name="key" value="{{ id }}">
+
+        <div class="d-flex justify-content-between align-items-center gap-1">
+            <h4>
+                <a href="/{{ namespace.name }}/{{ app.name }}?tab={{ tab }}&subtab={{ subtab }}&method=list" class="text-decoration-none">Environment Variables</a>
+                /
+                Change
+            </h4>
+        </div>
+
+        <p class="text-body-secondary mb-1">Change a environment variable.</p>
+
+        <hr>
+
+        <div class="form-group mb-3">
+            <label class="small fw-bold">Name</label>
+            <input type="text" class="form-control" disabled value="{{ id }}">
+            <div class="small text-body-secondary">
+                You can't change the name of an environment variable. If you want to change the name, you have to delete the environment variable and create a new one.
+            </div>
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="value" class="small fw-bold">Value</label>
+            {% set rawValue = app.config.all[id] %}
+            {% set censoredValue = rawValue|censorEnv(id, '**CENSORED**') %}
+            <textarea class="form-control" id="value" name="value" rows="4">{{ censoredValue }}</textarea>
+            {% if censoredValue != rawValue %}
+                <div class="small text-body-secondary" data-id="censored-value-info">
+                    This environment variable value is censored because it contains sensitive information. If you want to fill the value with the uncensored value, <a href="#" class="text-decoration-none text-danger" data-uncensored-value="{{ rawValue }}" data-id="fill-uncensored-value">click here</a>.
+                </div>
+                <script>
+(function() {
+    const fillUncensoredValue = document.querySelector('[data-id="fill-uncensored-value"]');
+    const valueInput = document.querySelector('#value');
+    const censoredValueInfo = document.querySelector('[data-id="censored-value-info"]');
+
+    fillUncensoredValue.addEventListener('click', async function() {
+        const fill = await confirmDialog('Are you sure you want to fill the value with the uncensored value?', 'Fill uncensored value', 'Fill', 'Cancel');
+        if (!fill) return;
+
+        valueInput.value = fillUncensoredValue.dataset.uncensoredValue;
+        censoredValueInfo.remove();
+    });
+})();
+                </script>
+            {% endif %}
+        </div>
+
+        <div class="form-group mb-3">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="true" id="restart-app" name="restart">
+                <label class="form-check-label small" for="restart-app">
+                    <span class="fw-bold">Restart app</span>
+                    <div class="text-body-secondary">
+                        If checked, the app will be restarted after the environment variable is changed.
+                    </div>
+                </label>
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="form-group mb-3">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="toggle-danger-zone" data-id="toggle-danger-zone">
+                <label class="form-check-label small" for="toggle-danger-zone">
+                    <span class="fw-bold">Danger Zone</span>
+                    <div class="text-body-secondary">If checked, you can see the dangerous options, such as deleting the environment variable.</div>
+                </label>
+            </div>
+        </div>
+
+        <div data-id="danger-zone">
+
+            <div class="mb-3 rounded border p-2 d-flex justify-content-between border-danger-subtle">
+                <div class="align-self-center small">
+                    <div class="fw-bold">Delete this environment variable</div>
+                    <div class="text-body-secondary">This action is irreversible.</div>
+                </div>
+                <div class="align-self-center">
+                    <button type="button" class="btn btn-sm btn-danger" data-id="delete-environment-variable">
+                        <i class="bi bi-trash-fill"></i>
+                        Delete environment variable
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <hr>
+
+
+        <div class="mb-5">
+            <button type="submit" class="btn btn-dark w-100">Save</button>
+        </div>
+
+    </form>
+
+</div>
+
+<script>
+(function() {
+    const toggleDangerZoneCheckbox = document.querySelector('[data-id="toggle-danger-zone"]');
+    const dangerZone = document.querySelector('[data-id="danger-zone"]');
+
+    toggleDangerZoneCheckbox.addEventListener('change', function() {
+        if (toggleDangerZoneCheckbox.checked) {
+            dangerZone.classList.remove('d-none');
+        } else {
+            dangerZone.classList.add('d-none');
+        }
+    });
+
+    toggleDangerZoneCheckbox.checked = false;
+    toggleDangerZoneCheckbox.dispatchEvent(new Event('change'));
+})();
+
+(function() {
+    const deleteEnvironmentVariableButton = document.querySelector('[data-id="delete-environment-variable"]');
+
+    deleteEnvironmentVariableButton.addEventListener('click', async function() {
+        const deleteEnvironmentVariable = await confirmDialog('Are you sure you want to delete this environment variable?', 'Delete environment variable', 'Delete', 'Cancel');
+        if (!deleteEnvironmentVariable) return;
+
+        const form = document.querySelector('form');
+        form.querySelectorAll("[type='submit']").forEach(function(submitButton) {
+            submitButton.disabled = true;
+        });
+        form.querySelector('[name="action"]').value = 'delete-environment-variable';
+        form.submit();
+    });
+})();
+</script>

@@ -1,0 +1,51 @@
+<div class="col-md-9 pt-3">
+    <form action="/{{ namespace.name }}/{{ app.name }}/api/logs-view" method="post">
+        <input type="hidden" name="action" value="new-environment-variable">
+
+        <div class="d-flex justify-content-between align-items-center gap-1">
+            <h4>
+                <a href="/{{ namespace.name }}/{{ app.name }}?tab={{ tab }}&subtab={{ subtab }}&method=list" class="text-decoration-none">Environment Variables</a>
+                /
+                New
+            </h4>
+        </div>
+
+        <p class="text-body-secondary mb-1">Create a new environment variable for your app.</p>
+
+        <hr>
+
+        <div class="form-group mb-3">
+            <label for="key" class="small fw-bold">Name</label>
+            <input type="text" class="form-control" id="key" name="key">
+            <div class="small text-body-secondary">
+                <i class="bi bi-dot"></i> Alphanumeric characters and underscores only. <code class="monospace">/^([a-zA-Z_][a-zA-Z0-9_]*)$/</code>
+                <br><i class="bi bi-dot"></i> Cannot start with <code class="monospace">DEPLOY_APP_</code>, <code class="monospace">DOKKU_</code> and <code class="monospace">GIT_REV</code> prefixes.
+            </div>
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="value" class="small fw-bold">Value</label>
+            <textarea class="form-control" id="value" name="value" rows="4"></textarea>
+        </div>
+
+        <div class="form-group mb-3">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="true" id="restart-app" name="restart">
+                <label class="form-check-label" for="restart-app">
+                    Restart app
+                </label>
+            </div>
+            <div class="small text-body-secondary">
+                If checked, the app will be restarted after the environment variable is created.
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="mb-5">
+            <button type="submit" class="btn btn-dark w-100">Save</button>
+        </div>
+
+    </form>
+
+</div>

@@ -118,6 +118,11 @@ export default class Namespace extends Model {
         this.refresh();
         return response;
     }
+    async configUnsetApp(appOrApps, options, onStdout = null, onStderr) {
+        const response = await this[kDokku].actionConfigUnset(appOrApps, options, onStdout, onStderr);
+        this.refresh();
+        return response;
+    }
 
     toJson() {
         return {

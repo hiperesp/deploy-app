@@ -87,6 +87,19 @@ export default class DokkuSSH {
         await this[kExecAppCommands](appOrApps, `config:set ${params.join(' ')} %app% ${configs.join(' ')}`, onStdout, onStderr);
     }
 
+    async actionConfigUnset(appOrApps, options, onStdout = null, onStderr = null) {
+        const params = [];
+        if(options.noRestart || false) {
+            params.push('--no-restart');
+        }
+        const configs = [];
+        for(const key of options.config) {
+            this.mustBeValidEnvironmentVariableName(key);
+            configs.push(`${key}`);
+        }
+        await this[kExecAppCommands](appOrApps, `config:unset ${params.join(' ')} %app% ${configs.join(' ')}`, onStdout, onStderr);
+    }
+
     async configShow(appOrApps) {
         const output = {};
         const configShowResult = await this[kExecAppCommands](appOrApps, 'config:export --format=json %app%');

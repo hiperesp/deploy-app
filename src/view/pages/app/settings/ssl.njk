@@ -16,14 +16,14 @@
                 <p class="small text-body-secondary mb-0">Current SSL expiry times.</h6>
                 <div class="row">
                     <div class="col-md-6 form-group mt-3">
-                        <label class="fw-bold">Will expire</label>
+                        <label class="small fw-bold">Will expire</label>
                         <div class="input-group" title="Will expire at {{ app.ssl.expirationTime|datetime }}">
                             <input type="date" class="form-control px-0 text-center" disabled value="{{ app.ssl.expirationTime|dateInput }}">
                             <input type="text" class="form-control px-0 text-center" disabled value="{{ app.ssl.expirationTime|friendlyTime }}">
                         </div>
                     </div>
                     <div class="col-md-6 form-group mt-3">
-                        <label class="fw-bold">Will be renewed</label>
+                        <label class="small fw-bold">Will be renewed</label>
                         <div class="input-group" title="Will be renewed at {{ app.ssl.renewTime|datetime }}">
                             <input type="date" class="form-control px-0 text-center" disabled value="{{ app.ssl.renewTime|dateInput }}">
                             <input type="text" class="form-control px-0 text-center" disabled value="{{ app.ssl.renewTime|friendlyTime }}">
