@@ -20,24 +20,32 @@
             {% endfor %}
         </ul>
 
-        {% for configGroup, configVariables in app.config %}
+        {% for configGroup, configGroupName in configGroups %}
             <div data-tab="{{ configGroup }}">
-                {% for key, value in configVariables %}
-                    <div class="card mb-3">
-                        <div class="card-header d-flex justify-content-between align-items-center gap-1">
-                            <span class="monospace">{{ key }}</span>
-                            <span>
-                                <a href="/{{ namespace.name }}/{{ app.name }}?{{ {
-                                    tab: tab ,
-                                    subtab: subtab,
-                                    method: "change",
-                                    id: key 
-                                } | buildSearchParams }}" class="small">Change</a>
-                            </span>
+                {% set configVariables = app.config[configGroup] %}
+                {% if configVariables %}
+                    {% for key, value in configVariables %}
+                        <div class="card mb-3">
+                            <div class="card-header d-flex justify-content-between align-items-center gap-1">
+                                <span class="monospace">{{ key }}</span>
+                                <span>
+                                    <a href="/{{ namespace.name }}/{{ app.name }}?{{ {
+                                        tab: tab ,
+                                        subtab: subtab,
+                                        method: "change",
+                                        id: key 
+                                    } | buildSearchParams }}" class="small">Change</a>
+                                </span>
+                            </div>
+                            <div class="card-body monospace pre">{{ value | censorEnv(key) }}</div>
                         </div>
-                        <div class="card-body monospace pre">{{ value | censorEnv(key) }}</div>
+                    {% endfor %}
+                {% else %}
+                    <div class="m-3">
+                        <div class="display-5 text-body-secondary my-3">No environment variables</div>
+                        <div class="small text-body-secondary">No environment variables from this group have been set.</div>
                     </div>
-                {% endfor %}
+                {% endif %}
             </div>
         {% endfor %}
     </div>
