@@ -27,10 +27,10 @@
             </nav>
             <div class="dropdown">
                 <button class="btn btn-link" type="button" data-bs-toggle="dropdown">
-                    <img src="/assets/images/user.svg" alt="avatar" width="32" height="32" class="rounded-circle">
+                    <img src="//secure.gravatar.com/avatar/{{ user.gravatar }}?s=250&d=retro&r=g" alt="avatar" width="32" height="32" class="rounded-circle">
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">
-                    <li><p class="px-3 py-0 mb-0 fw-bold">Hello, user</p></li>
+                    <li><p class="px-3 py-0 mb-0 fw-bold">Hello, {{ user.username }}</p></li>
                     <li><hr class="dropdown-divider"></li>
                     <li><a class="dropdown-item" href="/logout">Logout</a></li>
                 </ul>

@@ -2,6 +2,7 @@ import express from 'express'
 import nunjucks from 'nunjucks'
 import dotenv from 'dotenv'
 import cookieParser from 'cookie-parser'
+import { createHash } from 'node:crypto';
 
 import System from './model/System.js';
 import buildSearchParams from './helpers/buildSearchParams.js';
@@ -143,6 +144,10 @@ app.use((request, response, next) => {
     }
 
     if(authData.username === process.env.AUTH_USER && authData.password === process.env.AUTH_PASSWORD) {
+        request.user = {
+            username: authData.username,
+            gravatar: createHash('md5').update(authData.username).digest('hex'),
+        }
         next()
         return
     }
@@ -174,6 +179,8 @@ app.get('/logout', (request, response) => {
 
 app.get('/', function(request, response) {
     response.render('pages/namespaces.njk', {
+        user: request.user,
+
         system: system.toJson(),
     })
 })
@@ -184,6 +191,8 @@ app.get('/:namespace', function(request, response) {
     if(!namespace) return response.status(404).send('Namespace not found')
 
     response.render('pages/apps.njk', {
+        user: request.user,
+
         system: system.toJson(),
         namespace: namespace.toJson(),
     })
@@ -198,6 +207,8 @@ app.get('/:namespace/:app', async function(request, response) {
     if(!app) return response.status(404).send('App not found')
 
     response.render('pages/app.njk', {
+        user: request.user,
+
         system: system.toJson(),
         namespace: namespace.toJson(),
         app: app.toJson(),
@@ -217,6 +228,8 @@ app.post('/:namespace/:app/api/logs-view', async function(request, response) {
     if(!app) return response.status(404).send('App not found')
 
     response.render('pages/app.njk', {
+        user: request.user,
+        
         system: system.toJson(),
         namespace: namespace.toJson(),
         app: app.toJson(),
