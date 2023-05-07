@@ -1,0 +1,10 @@
+{% set methods = {
+    "list": "list",
+    "new": "new",
+    "default": "list"
+} %}
+{% if method not in methods %}
+    {% set method = "default" %}
+{% endif %}
+{% set method = methods[method] %}
+{% include 'pages/namespace/apps/' + method + '.njk' %}

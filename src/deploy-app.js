@@ -159,7 +159,7 @@ app.use((request, response, next) => {
 
 const system = System.instance()
 
-app.post('/login', (request, response) => {
+app.all('/login', (request, response) => {
     const authData = {
         username: request.body?.username,
         password: request.body?.password,
@@ -171,34 +171,54 @@ app.post('/login', (request, response) => {
     const redirect = request.body?.redirect || '/'
     response.redirect(redirect);
 })
-app.get('/logout', (request, response) => {
+app.all('/logout', (request, response) => {
     response.clearCookie('username')
     response.clearCookie('password')
     response.redirect('/');
 })
 
-app.get('/', function(request, response) {
-    response.render('pages/namespaces.njk', {
+app.all('/', function(request, response) {
+    response.render('pages/system.njk', {
         user: request.user,
 
         system: system.toJson(),
     })
 })
 
-app.get('/:namespace', function(request, response) {
+app.all('/:namespace', function(request, response) {
     
     const namespace = system.namespaces.find(namespace => namespace.name === request.params.namespace)
     if(!namespace) return response.status(404).send('Namespace not found')
 
-    response.render('pages/apps.njk', {
+    response.render('pages/namespace.njk', {
         user: request.user,
 
         system: system.toJson(),
         namespace: namespace.toJson(),
+
+        tab: request.query.tab || 'apps',
+        method: request.query.method || 'default',
+
+        body: request.body
     })
 })
 
-app.get('/:namespace/:app', async function(request, response) {
+app.get('/:namespace/api/server-sent-events/actions/new-app', async function(request, response) {
+    const namespace = system.namespaces.find(namespace => namespace.name === request.params.namespace)
+    if(!namespace) return response.status(404).send('Namespace not found')
+
+    response.writeHead(200, {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+    })
+
+    await sse(response, {}, async function({stdout, stderr}) {
+        return namespace.createApp(request.query.name, stdout, stderr);
+    })
+});
+
+app.all('/:namespace/:app', async function(request, response) {
 
     const namespace = system.namespaces.find(namespace => namespace.name === request.params.namespace)
     if(!namespace) return response.status(404).send('Namespace not found')
@@ -217,28 +237,10 @@ app.get('/:namespace/:app', async function(request, response) {
         subtab: request.query.subtab || 'general',
         method: request.query.method || 'default',
         id: request.query.id || null,
+
+        body: request.body
     })
 })
-
-app.post('/:namespace/:app/api/logs-view', async function(request, response) {
-    const namespace = system.namespaces.find(namespace => namespace.name === request.params.namespace)
-    if(!namespace) return response.status(404).send('Namespace not found')
-
-    const app = namespace.apps.find(app => app.name === request.params.app)
-    if(!app) return response.status(404).send('App not found')
-
-    response.render('pages/app.njk', {
-        user: request.user,
-        
-        system: system.toJson(),
-        namespace: namespace.toJson(),
-        app: app.toJson(),
-
-        tab: 'api_action_logs',
-        data: request.body,
-        dataQueryParams: buildSearchParams(request.body),
-    })
-});
 
 app.get('/:namespace/:app/api/server-sent-events/actions/scale', async function(request, response) {
     const namespace = system.namespaces.find(namespace => namespace.name === request.params.namespace)

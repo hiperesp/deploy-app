@@ -1,5 +1,5 @@
 <div class="col-md-9 pt-3">
-    <form action="/{{ namespace.name }}/{{ app.name }}/api/logs-view" method="post">
+    <form action="/{{ namespace.name }}/{{ app.name }}?tab=form_sse" method="post">
         <input type="hidden" name="action" value="new-environment-variable">
 
         <div class="d-flex justify-content-between align-items-center gap-1">
@@ -18,7 +18,8 @@
             <label for="key" class="small fw-bold">Name</label>
             <input type="text" class="form-control" id="key" name="key">
             <div class="small text-body-secondary">
-                <i class="bi bi-dot"></i> Alphanumeric characters and underscores only. <code class="monospace">/^([a-zA-Z_][a-zA-Z0-9_]*)$/</code>
+                <i class="bi bi-dot"></i> Alphanumeric characters and underscores only.
+                <br><i class="bi bi-dot"></i> Must match the regex <code class="monospace">/^([a-zA-Z_][a-zA-Z0-9_]*)$/</code>.
                 <br><i class="bi bi-dot"></i> Cannot start with <code class="monospace">DEPLOY_APP_</code>, <code class="monospace">DOKKU_</code> and <code class="monospace">GIT_REV</code> prefixes.
             </div>
         </div>

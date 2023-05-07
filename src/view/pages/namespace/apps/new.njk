@@ -1,0 +1,34 @@
+<main>
+    <div class="container pt-3">
+        <div class="col-md-6 offset-3 pt-3">
+            <form action="/{{ namespace.name }}?tab=form_sse" method="post">
+                <input type="hidden" name="action" value="new-app">
+
+                <div class="d-flex justify-content-between align-items-center gap-1">
+                    <h4>New app</h4>
+                </div>
+
+                <p class="text-body-secondary mb-1">Create a new app.</p>
+
+                <hr>
+
+                <div class="form-group mb-3">
+                    <label for="name" class="small fw-bold">Name</label>
+                    <input type="text" class="form-control" id="name" name="name">
+                    <div class="small text-body-secondary">
+                        <i class="bi bi-dot"></i> Alphanumeric lowercase characters and dashes only.
+                        <br><i class="bi bi-dot"></i> Must match the regex <code class="monospace">/^([a-z0-9]+(?:-[a-z0-9]+)*)$/</code>.
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="mb-5">
+                    <button type="submit" class="btn btn-dark w-100">Create app</button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>

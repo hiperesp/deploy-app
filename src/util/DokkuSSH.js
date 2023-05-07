@@ -19,6 +19,11 @@ export default class DokkuSSH {
     [kUsername];
     [kPrivateKey];
 
+    async actionAppsCreate(newAppName, onStdout = null, onStderr = null) {
+        this.mustBeValidResourceName(newAppName);
+        await this[kExecCommand](`apps:create ${newAppName}`, onStdout, onStderr);
+    }
+
     async letsEncryptList(appOrApps) {
         const output = {};
 
@@ -372,7 +377,7 @@ SSH_EOF
         //must not start with a hyphen.
         //must not end with a hyphen.
         //must not contain consecutive hyphens.
-        if(!resourceName.match(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)) return false;
+        if(!resourceName.match(/^([a-z0-9]+(?:-[a-z0-9]+)*)$/)) return false;
 
         //must be between 2 and 63 characters long.
         if(resourceName.length > 63 || resourceName.length < 2) return false;
@@ -395,7 +400,7 @@ SSH_EOF
     isValidEnvironmentVariableName(environmentVariableName) {
         //must contain only letters, numbers, and underscores.
         //must not start with a number.
-        if(!environmentVariableName.match(/^[a-zA-Z_][a-zA-Z0-9_]*$/)) return false;
+        if(!environmentVariableName.match(/^([a-zA-Z_][a-zA-Z0-9_]*)$/)) return false;
 
         return true;
     }

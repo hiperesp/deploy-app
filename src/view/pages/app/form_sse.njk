@@ -1,0 +1,2 @@
+{% set sseUrl = '/' + namespace.name + '/' + app.name + '/api/server-sent-events/actions/' + body.action + '?' + (body | buildSearchParams) %}
+{% include "components/terminal_sse.njk" %}

@@ -1,10 +1,7 @@
 {% extends 'layout.njk' %}
 
 {% set tabs = {
-    overview: "Overview",
-    access_logs: "Access Logs",
-    error_logs: "Error Logs",
-    app_logs: "App Logs",
+    apps: "Apps",
     settings: "Settings",
     form_sse: false
 } %}
@@ -12,19 +9,15 @@
     {% set tab = "overview" %}
 {% endif %}
 
-{% set title %}{{ app.name }}{% if tabs[tab] %} - {{ tabs[tab] }}{% endif %}{% endset %}
+{% set title %}{{ namespace.name }}{% endset %}
 
 {% set breadcrumb = [
     {
         text: namespace.name,
-        href: '/' + namespace.name
-    },
-    {
-        text: app.name,
-        active: true,
-        ehref: '//' + (app.domains.app[0] or app.domains.global[0])
+        active: true
     }
 ] %}
+
 {% set tabs %}
     <ul class="nav nav-tabs px-md-5 px-3">
         {% for key, value in tabs %}
@@ -32,7 +25,7 @@
                 <li class="nav-item">
                     <a class="nav-link {{ "active" if key === tab }}" {{ 'aria-current="page"' if key == tab }} href="/{{ namespace.name }}/{{ app.name }}?tab={{ key }}">
                         {{ value }}
-                        {% if key in ["overview"] %}
+                        {% if key in ["settings"] %}
                             <span class="d-flex badge bg-dark align-items-center ms-2" style="float: right; height: 24px;">Soon</span>
                         {% endif %}
                     </a>
@@ -41,6 +34,17 @@
         {% endfor %}
     </ul>
 {% endset %}
+
+{% set methods = {
+    "list": "list",
+    "new": "new",
+    "default": "list"
+} %}
+{% if method not in methods %}
+    {% set method = "default" %}
+{% endif %}
+{% set method = methods[method] %}
+
 {% block content %}
-    {% include 'pages/app/' + tab + '.njk' %}
+    {% include 'pages/namespace/' + tab + '.njk' %}
 {% endblock %}
