@@ -1,5 +1,4 @@
 import { exec } from 'child_process';
-import { quote as q } from 'shell-quote';
 
 const kHost = Symbol('host');
 const kPort = Symbol('port');
@@ -24,16 +23,16 @@ export default class DokkuSSH {
         this.mustBeValidResourceName(appName);
         this.mustBeValidRemote(remote);
         this.mustBeValidRef(ref);
-        await this[kExecCommand](`git:sync --build ${q([appName])} ${q([remote]).replace(/\\(@|:)/g, '$1')} ${q([ref])}`, onStdout, onStderr);
+        await this[kExecCommand](`git:sync --build ${appName} ${remote} ${ref}`, onStdout, onStderr);
     }
 
     async actionAppsCreate(newAppName, onStdout = null, onStderr = null) {
         this.mustBeValidResourceName(newAppName);
-        await this[kExecCommand](`apps:create ${q([newAppName])}`, onStdout, onStderr);
+        await this[kExecCommand](`apps:create ${newAppName}`, onStdout, onStderr);
     }
     async actionAppsDestroy(appName, onStdout = null, onStderr = null) {
         this.mustBeValidResourceName(appName);
-        await this[kExecCommand](`apps:destroy ${q([appName])}\n${q([appName])}`, onStdout, onStderr);
+        await this[kExecCommand](`apps:destroy ${appName}\n${appName}`, onStdout, onStderr);
     }
 
     async letsEncryptList(appOrApps) {
@@ -75,7 +74,7 @@ export default class DokkuSSH {
         const scalingParams = [];
         for(const type in scaling) {
             this.mustBeValidResourceName(type);
-            scalingParams.push(`${q([type])}=${q([parseInt(scaling[type])])}`);
+            scalingParams.push(`${type}=${q([parseInt(scaling[type])])}`);
         }
         await this[kExecAppCommands](appOrApps, `ps:scale %app% ${scalingParams.join(' ')}`, onStdout, onStderr);
     }
@@ -99,7 +98,7 @@ export default class DokkuSSH {
         for(const key in options.config) {
             this.mustBeValidEnvironmentVariableName(key);
             const encodedValue = Buffer.from(options.config[key]).toString('base64');
-            configs.push(`${q([key])}=${q([encodedValue])}`);
+            configs.push(`${key}=${encodedValue}`);
         }
         await this[kExecAppCommands](appOrApps, `config:set ${params.join(' ')} %app% ${configs.join(' ')}`, onStdout, onStderr);
     }
@@ -112,7 +111,7 @@ export default class DokkuSSH {
         const configs = [];
         for(const key of options.config) {
             this.mustBeValidEnvironmentVariableName(key);
-            configs.push(`${q([key])}`);
+            configs.push(`${key}`);
         }
         await this[kExecAppCommands](appOrApps, `config:unset ${params.join(' ')} %app% ${configs.join(' ')}`, onStdout, onStderr);
     }
@@ -129,7 +128,7 @@ export default class DokkuSSH {
     async nginxAccessLogs(appName, onStdout, onStderr) {
         this.mustBeValidResourceName(appName);
 
-        const instance = await this[kExecCommandRealTimeOutput](`nginx:access-logs ${q([appName])} -t`, null, null, onStdout, onStderr);
+        const instance = await this[kExecCommandRealTimeOutput](`nginx:access-logs ${appName} -t`, null, null, onStdout, onStderr);
 
         return {
             kill: (code = 0) => {
@@ -141,7 +140,7 @@ export default class DokkuSSH {
     async nginxErrorLogs(appName, onStdout, onStderr) {
         this.mustBeValidResourceName(appName);
 
-        const instance = await this[kExecCommandRealTimeOutput](`nginx:error-logs ${q([appName])} -t`, null, null, onStdout, onStderr);
+        const instance = await this[kExecCommandRealTimeOutput](`nginx:error-logs ${appName} -t`, null, null, onStdout, onStderr);
 
         return {
             kill: (code = 0) => {
@@ -153,7 +152,7 @@ export default class DokkuSSH {
     async logs(appName, onStdout, onStderr) {
         this.mustBeValidResourceName(appName);
 
-        const instance = await this[kExecCommandRealTimeOutput](`logs ${q([appName])} -t`, null, null, onStdout, onStderr);
+        const instance = await this[kExecCommandRealTimeOutput](`logs ${appName} -t`, null, null, onStdout, onStderr);
 
         return {
             kill: (code = 0) => {
@@ -288,7 +287,7 @@ export default class DokkuSSH {
     [kCreateAppCommand](apps, command, appNameVar = '%app%') {
         return apps.map(app => app.trim()).filter(app => !!app).map(app => {
             let appCommand = command;
-            while(appCommand.includes(appNameVar)) appCommand = appCommand.replace(appNameVar, q([app]))
+            while(appCommand.includes(appNameVar)) appCommand = appCommand.replace(appNameVar, app)
             return appCommand;
         });
     }
