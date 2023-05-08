@@ -105,6 +105,14 @@ export default class App extends Model {
     async configUnset(options, onStdout = null, onStderr) {
         await this.#namespace.configUnsetApp(this.name, options, onStdout, onStderr);
     }
+    async deploy(ref, onStdout = null, onStderr) {
+        try {
+            const remote = JSON.parse(this.config.deployApp.DEPLOY_APP_GIT).REPO;
+            await this.#namespace.deployApp(this.name, remote, ref, onStdout, onStderr);
+        } catch (e) {
+            throw new Error(`Invalid deploy configuration: ${e.message}`);
+        }
+    }
 
     getContainers() {
         return []

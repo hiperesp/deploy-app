@@ -1,4 +1,5 @@
 import { exec } from 'child_process';
+import { quote as q } from 'shell-quote';
 
 const kHost = Symbol('host');
 const kPort = Symbol('port');
@@ -19,13 +20,20 @@ export default class DokkuSSH {
     [kUsername];
     [kPrivateKey];
 
+    async actionGitSync(appName, remote, ref, onStdout = null, onStderr = null) {
+        this.mustBeValidResourceName(appName);
+        this.mustBeValidRemote(remote);
+        this.mustBeValidRef(ref);
+        await this[kExecCommand](`git:sync --build ${q([appName])} ${q([remote]).replace(/\\(@|:)/g, '$1')} ${q([ref])}`, onStdout, onStderr);
+    }
+
     async actionAppsCreate(newAppName, onStdout = null, onStderr = null) {
         this.mustBeValidResourceName(newAppName);
-        await this[kExecCommand](`apps:create ${newAppName}`, onStdout, onStderr);
+        await this[kExecCommand](`apps:create ${q([newAppName])}`, onStdout, onStderr);
     }
     async actionAppsDestroy(appName, onStdout = null, onStderr = null) {
         this.mustBeValidResourceName(appName);
-        await this[kExecCommand](`apps:destroy ${appName}\n${appName}`, onStdout, onStderr);
+        await this[kExecCommand](`apps:destroy ${q([appName])}\n${q([appName])}`, onStdout, onStderr);
     }
 
     async letsEncryptList(appOrApps) {
@@ -67,7 +75,7 @@ export default class DokkuSSH {
         const scalingParams = [];
         for(const type in scaling) {
             this.mustBeValidResourceName(type);
-            scalingParams.push(`${type}=${parseInt(scaling[type])}`);
+            scalingParams.push(`${q([type])}=${q([parseInt(scaling[type])])}`);
         }
         await this[kExecAppCommands](appOrApps, `ps:scale %app% ${scalingParams.join(' ')}`, onStdout, onStderr);
     }
@@ -91,7 +99,7 @@ export default class DokkuSSH {
         for(const key in options.config) {
             this.mustBeValidEnvironmentVariableName(key);
             const encodedValue = Buffer.from(options.config[key]).toString('base64');
-            configs.push(`${key}=${encodedValue}`);
+            configs.push(`${q([key])}=${q([encodedValue])}`);
         }
         await this[kExecAppCommands](appOrApps, `config:set ${params.join(' ')} %app% ${configs.join(' ')}`, onStdout, onStderr);
     }
@@ -104,7 +112,7 @@ export default class DokkuSSH {
         const configs = [];
         for(const key of options.config) {
             this.mustBeValidEnvironmentVariableName(key);
-            configs.push(`${key}`);
+            configs.push(`${q([key])}`);
         }
         await this[kExecAppCommands](appOrApps, `config:unset ${params.join(' ')} %app% ${configs.join(' ')}`, onStdout, onStderr);
     }
@@ -121,7 +129,7 @@ export default class DokkuSSH {
     async nginxAccessLogs(appName, onStdout, onStderr) {
         this.mustBeValidResourceName(appName);
 
-        const instance = await this[kExecCommandRealTimeOutput](`nginx:access-logs ${appName} -t`, null, null, onStdout, onStderr);
+        const instance = await this[kExecCommandRealTimeOutput](`nginx:access-logs ${q([appName])} -t`, null, null, onStdout, onStderr);
 
         return {
             kill: (code = 0) => {
@@ -133,7 +141,7 @@ export default class DokkuSSH {
     async nginxErrorLogs(appName, onStdout, onStderr) {
         this.mustBeValidResourceName(appName);
 
-        const instance = await this[kExecCommandRealTimeOutput](`nginx:error-logs ${appName} -t`, null, null, onStdout, onStderr);
+        const instance = await this[kExecCommandRealTimeOutput](`nginx:error-logs ${q([appName])} -t`, null, null, onStdout, onStderr);
 
         return {
             kill: (code = 0) => {
@@ -145,7 +153,7 @@ export default class DokkuSSH {
     async logs(appName, onStdout, onStderr) {
         this.mustBeValidResourceName(appName);
 
-        const instance = await this[kExecCommandRealTimeOutput](`logs ${appName} -t`, null, null, onStdout, onStderr);
+        const instance = await this[kExecCommandRealTimeOutput](`logs ${q([appName])} -t`, null, null, onStdout, onStderr);
 
         return {
             kill: (code = 0) => {
@@ -280,7 +288,7 @@ export default class DokkuSSH {
     [kCreateAppCommand](apps, command, appNameVar = '%app%') {
         return apps.map(app => app.trim()).filter(app => !!app).map(app => {
             let appCommand = command;
-            while(appCommand.includes(appNameVar)) appCommand = appCommand.replace(appNameVar, app)
+            while(appCommand.includes(appNameVar)) appCommand = appCommand.replace(appNameVar, q([app]))
             return appCommand;
         });
     }
@@ -321,10 +329,12 @@ export default class DokkuSSH {
     [kExecCommandRealTimeOutput](command, fullStdout = null, fullStderr = null, onStdout = null, onStderr = null) {
         return new Promise((resolve, reject) => {
             const child = exec(`
-TMP_FILE=$(mktemp)
-echo "${this[kPrivateKey].replace(/\r?\n/g, '\\\\n')}" >> $TMP_FILE
-chmod 600 $TMP_FILE
-ssh -t -o StrictHostKeyChecking=no ${this[kUsername]}@${this[kHost]} -p ${this[kPort]} -i $TMP_FILE 'shell' <<'SSH_EOF'
+TMP_BASE64=$(mktemp)
+TMP_PEM=$(mktemp)
+echo "${Buffer.from(this[kPrivateKey]+"\n").toString('base64')}" >> $TMP_BASE64
+base64 -d $TMP_BASE64 >> $TMP_PEM
+chmod 600 $TMP_PEM
+ssh -t -o StrictHostKeyChecking=no ${this[kUsername]}@${this[kHost]} -p ${this[kPort]} -i $TMP_PEM 'shell' <<'SSH_EOF'
 ${command}
 SSH_EOF
             `.trim(), (error, stdout, stderr) => {
@@ -408,4 +418,33 @@ SSH_EOF
 
         return true;
     }
+
+    mustBeValidRef(ref) {
+        if(!this.isValidRef(ref)) {
+            throw new Error(`Invalid ref: ${ref}`);
+        }
+    }
+
+    isValidRef(ref) {
+        if(ref.match(/^refs\/(heads|tags)\/[a-zA-Z0-9_.-]+$/)) return true;
+        if(ref.match(/^[0-9a-fA-F]{40}$/)) return true;
+        if(ref.match(/^[a-zA-Z0-9_.-]+$/)) return true;
+        return false;
+    }
+
+    mustBeValidRemote(remote) {
+        if(!this.isValidRemote(remote)) {
+            throw new Error(`Invalid remote: ${remote}`);
+        }
+    }
+
+    isValidRemote(remote) {
+        if(remote.match(/([a-z0-9.\-_]+@[a-z0-9.\-_]+):([a-zA-Z0-9\-._\/]+)/)) return true;
+        try {
+            new URL(remote);
+            return true;
+        } catch(e) {}
+        return false;
+    }
+
 }

@@ -135,6 +135,12 @@ export default class Namespace extends Model {
         return response;
     }
 
+    async deployApp(appName, remote, ref, onStdout = null, onStderr) {
+        const response = await this[kDokku].actionGitSync(appName, remote, ref, onStdout, onStderr);
+        this.refresh();
+        return response;
+    }
+
     toJson() {
         return {
             name: this.name,

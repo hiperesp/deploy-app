@@ -3,8 +3,20 @@
     <div class="container pt-3">
         <div class="mx-2">
             <div class="mb-3 d-flex justify-content-end gap-1">
-                <button type="button" class="btn btn-light btn-sm"><i class="bi bi-pencil-fill"></i> Edit</button>
-                <button type="button" class="btn btn-dark btn-sm"><i class="bi bi-window-plus"></i> Scale</button>
+                {% if (app.config.all.DEPLOY_APP_GIT|json).REPO %}
+                    <div class="dropdown">
+                        <button type="button" class="btn btn-sm btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"><i class="bi bi-rocket-takeoff-fill"></i> Deploy</button>
+                        <form class="dropdown-menu dropdown-menu-end p-3" action="/{{ namespace.name }}/{{ app.name }}?tab=form_sse" method="post">
+                            <input type="hidden" name="action" value="deploy-app">
+                            <div class="form-group mb-3">
+                                <label for="git-ref" class="small fw-bold">Git ref</label>
+                                <input type="text" class="form-control" id="git-ref" name="gitRef" value="{{ (app.config.all.DEPLOY_APP_GIT|json).REF }}">
+                                <div class="small text-body-secondary">Can be a branch, tag or commit hash</div>
+                            </div>
+                            <button type="submit" class="btn btn-sm btn-dark w-100">Deploy now</button>
+                        </form>
+                    </div>
+                {% endif %}
             </div>
             <div class="row">
                 <div class="col-md-3">

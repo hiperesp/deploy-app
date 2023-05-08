@@ -22,7 +22,7 @@ export default function sse(response, options, callable) {
 
 
     const promise = callable({stdout, stderr, done});
-    if(options.stderrOnCatch) promise.catch(stderr);
+    if(options.stderrOnCatch) promise.catch(exception => stderr(exception.message));
     if(options.doneOnFinish) promise.finally(done);
 
     return promise;

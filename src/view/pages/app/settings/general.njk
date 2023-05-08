@@ -21,12 +21,14 @@
             <h4 class="mb-2">Git Settings</h4>
             <p class="small text-body-secondary">It will be used to sync the app data. Please configure "Deploy keys" for this repository using the server public key. We don't need write access.</p>
             <div class="form-group mt-3">
-                <label for="git-repo" class="small fw-bold">Git clone by SSH URL</label>
+                <label for="git-repo" class="small fw-bold">Remote</label>
                 <input type="text" class="form-control" id="git-repo" name="gitRepo" value="{{ (app.config.all.DEPLOY_APP_GIT | json).REPO }}">
+                <div class="small text-body-secondary">Git remote repository URL. It must be a HTTPS URL or SSH URL.</div>
             </div>
             <div class="form-group mt-3">
-                <label for="git-ref" class="small fw-bold">Git ref (branch or tag)</label>
+                <label for="git-ref" class="small fw-bold">Ref</label>
                 <input type="text" class="form-control" id="git-ref" name="gitRef" value="{{ (app.config.all.DEPLOY_APP_GIT | json).REF }}">
+                <div class="small text-body-secondary">Git reference to deploy. Can be a branch, tag or commit hash.</div>
             </div>
         </div>
 
