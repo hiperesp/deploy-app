@@ -218,6 +218,21 @@ app.get('/:namespace/api/server-sent-events/actions/new-app', async function(req
     })
 });
 
+app.get('/:namespace/api/server-sent-events/actions/delete-app', async function(request, response) {
+    const namespace = system.namespaces.find(namespace => namespace.name === request.params.namespace)
+    if(!namespace) return response.status(404).send('Namespace not found')
+
+    response.writeHead(200, {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+    })
+
+    await sse(response, {}, async function({stdout, stderr}) {
+        return namespace.destroyApp(request.query.name, stdout, stderr);
+    })
+});
+
 app.all('/:namespace/:app', async function(request, response) {
 
     const namespace = system.namespaces.find(namespace => namespace.name === request.params.namespace)

@@ -101,6 +101,11 @@ export default class Namespace extends Model {
         this.refresh();
         return response;
     }
+    async destroyApp(appName, onStdout = null, onStderr) {
+        const response = await this[kDokku].actionAppsDestroy(appName, onStdout, onStderr);
+        this.refresh();
+        return response;
+    }
 
     async scaleApp(appOrApps, scaling, onStdout = null, onStderr) {
         const response = await this[kDokku].actionPsScale(appOrApps, scaling, onStdout, onStderr);

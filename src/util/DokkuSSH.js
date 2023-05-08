@@ -23,6 +23,10 @@ export default class DokkuSSH {
         this.mustBeValidResourceName(newAppName);
         await this[kExecCommand](`apps:create ${newAppName}`, onStdout, onStderr);
     }
+    async actionAppsDestroy(appName, onStdout = null, onStderr = null) {
+        this.mustBeValidResourceName(appName);
+        await this[kExecCommand](`apps:destroy ${appName}\n${appName}`, onStdout, onStderr);
+    }
 
     async letsEncryptList(appOrApps) {
         const output = {};
