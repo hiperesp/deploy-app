@@ -42,7 +42,7 @@
                                 <li>
                                     <a href="/{{ namespace.name }}/{{ app.name }}?tab={{ tab }}&subtab={{ key }}" class="mb-1 btn-toggle text-decoration-none d-block rounded {{ "active" if subtab == key }}">
                                         {{ value }}
-                                        {% if key in ["limits", "ports", "domains", "cron"] %}
+                                        {% if key in ["limits", "domains", "cron"] %}
                                             <span class="d-flex badge bg-dark align-items-center" style="float: right; height: 24px;">Soon</span>
                                         {% endif %}
                                     </a>

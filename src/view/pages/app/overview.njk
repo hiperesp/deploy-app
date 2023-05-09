@@ -17,6 +17,10 @@
                         </form>
                     </div>
                 {% endif %}
+                <form action="/{{ namespace.name }}/{{ app.name }}?tab=form_sse" method="post">
+                    <input type="hidden" name="action" value="restart-app">
+                    <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-exclamation-octagon-fill"></i> Restart</button>
+                </form>
             </div>
             <div class="row">
                 <div class="col-md-3">

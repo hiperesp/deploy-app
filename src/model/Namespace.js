@@ -66,6 +66,7 @@ export default class Namespace extends Model {
         const psScale = await this[kDokku].psScale(appsList);
         const letsEncrypt = await this[kDokku].letsEncryptList(appsList);
         const config = await this[kDokku].configShow(appsList);
+        const psInspect = await this[kDokku].psInspect(appsList);
 
         //remove apps that are not in appsList
         for(const app of this.apps) {
@@ -92,6 +93,7 @@ export default class Namespace extends Model {
                 psScale: psScale[app.name],
                 ssl: letsEncrypt[app.name],
                 config: config[app.name],
+                psInspect: psInspect[app.name],
             });
         }
     }
@@ -137,6 +139,23 @@ export default class Namespace extends Model {
 
     async deployApp(appName, remote, ref, onStdout = null, onStderr) {
         const response = await this[kDokku].actionGitSync(appName, remote, ref, onStdout, onStderr);
+        this.refresh();
+        return response;
+    }
+
+    async restartApp(appName, onStdout = null, onStderr) {
+        const response = await this[kDokku].actionPsRestart(appName, onStdout, onStderr);
+        this.refresh();
+        return response;
+    }
+
+    async setAppPorts(appName, ports, onStdout = null, onStderr) {
+        const response = await this[kDokku].actionProxyPortsSet(appName, ports, onStdout, onStderr);
+        this.refresh();
+        return response;
+    }
+    async setExposeAllAppPorts(appName, exposeAllAppPorts, onStdout = null, onStderr) {
+        const response = await this[kDokku].action_setExposeAllAppPorts(appName, exposeAllAppPorts, onStdout, onStderr);
         this.refresh();
         return response;
     }

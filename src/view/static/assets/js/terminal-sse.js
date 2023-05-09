@@ -19,12 +19,16 @@
         });
         eventSource.addEventListener('done', function (event) {
             appendLog('success', JSON.parse(event.data));
+        });
+        eventSource.addEventListener('close', function (e) {
             eventSource.close();
         });
 
         eventSource.addEventListener('error', function (e) {
             appendLog('stderr', "The connection to the server was lost.");
+            eventSource.close();
         });
+
         function appendLog(type, message) {
             // Only scroll to bottom if we are already at the bottom
             const needScroll = terminalContainer.scrollHeight - terminalContainer.scrollTop === terminalContainer.clientHeight;

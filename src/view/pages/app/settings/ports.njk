@@ -1,16 +1,102 @@
 <div class="col-md-6 pt-3">
-    <form>
-        <input type="hidden" name="redirect" value="{{ originalUrl }}">
+    <form action="/{{ namespace.name }}/{{ app.name }}?tab=form_sse" method="post">
+        <input type="hidden" name="action" value="save-ports">
 
-        <h4 class="mb-2">Ports Settings</h4>
-        <p class="mb-4 text-body-secondary">Proxy ports settings for your app.</p>
+        <h4>Ports Settings</h4>
+        <p class="text-body-secondary">Ports settings for your app.</p>
+
+        <hr>
 
         <div class="form-group mb-3">
-            <label for="proxy-ports" class="small fw-bold">Proxy Ports</label>
-            <textarea class="form-control" id="proxy-ports" name="proxy-ports" rows="{{ app.proxyPorts.length + 1 }}">{% for proxyPorts in app.proxyPorts %}{{ proxyPorts + "\n" }}{% endfor %}</textarea>
+            <label for="proxy-ports" class="small fw-bold">Proxy ports</label>
+            <textarea class="form-control" id="proxy-ports" name="proxyPorts" rows="{{ app.proxyPorts.length + 1 }}">{% for proxyPorts in app.proxyPorts %}{{ proxyPorts + "\n" }}{% endfor %}</textarea>
+            <div class="small text-body-secondary">
+                <i class="bi bi-dot"></i> Must follow the format <code>protocol:external:internal</code> (e.g. <code>http:80:8080</code>).
+                <br><i class="bi bi-dot"></i> One definition per line.
+            </div>
         </div>
 
-        <button type="submit" class="btn btn-dark w-100">Save</button>
+        <hr>
 
+        <div class="form-group mb-3">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="toggle-danger-zone" data-id="toggle-danger-zone" {{ "checked" if app.exposeAllPorts }}>
+                <label class="form-check-label small" for="toggle-danger-zone">
+                    <span class="fw-bold">Danger Zone</span>
+                    <div class="text-body-secondary">If checked, you can see the dangerous options, such as exposing all ports.</div>
+                </label>
+            </div>
+        </div>
+
+        <div class="border rounded border-danger-subtle mb-3 p-2" data-id="danger-zone">
+
+            <div class="form-group">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="expose-all-ports" data-id="expose-all-ports" name="exposeAllPorts" value="true" {{ "checked" if app.exposeAllPorts }}>
+                    <label class="form-check-label small" for="expose-all-ports">
+                        <span class="fw-bold">Expose all ports</span>
+                        <div class="text-body-secondary">If checked, all ports will be exposed directly to the internet.</div>
+                    </label>
+                </div>
+            </div>
+
+        </div>
+
+        <hr>
+
+        <div class="form-group mb-3">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="true" id="restart-app" name="restart">
+                <label class="form-check-label small" for="restart-app">
+                    <span class="fw-bold">Restart app</span>
+                    <div class="text-body-secondary">
+                        If checked, the app will be restarted after the ports settings are saved.
+                    </div>
+                </label>
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="mb-5">
+            <button type="submit" class="btn btn-dark w-100">Save</button>
+        </div>
     </form>
+</div>
+
+<script>
+(function() {
+    const toggleDangerZoneCheckbox = document.querySelector('[data-id="toggle-danger-zone"]');
+    const dangerZone = document.querySelector('[data-id="danger-zone"]');
+
+    toggleDangerZoneCheckbox.addEventListener('change', function() {
+        if (toggleDangerZoneCheckbox.checked) {
+            dangerZone.classList.remove('d-none');
+        } else {
+            dangerZone.classList.add('d-none');
+        }
+    });
+
+    toggleDangerZoneCheckbox.dispatchEvent(new Event('change'));
+})();
+</script>
+
+<div class="col-md-3">
+    <div class="card" style="width: 18rem;">
+        <div class="card-header fw-bold">Ports used</div>
+        {% for instanceData in app.psInspect %}
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item monospace">
+                    <b>{{ instanceData.Name }}</b>
+                    {% for internalDefinition, hostData in instanceData.NetworkSettings.Ports %}
+                        {% for hostItem in hostData %}
+                            {% if hostItem.HostIp not in ["::"] %}
+                                <br>{{ internalDefinition }} -> {{ hostItem.HostIp }}:{{ hostItem.HostPort }}
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor %}
+                </li>
+            </ul>
+        {% endfor %}
+    </div>
 </div>

@@ -213,7 +213,7 @@ app.get('/:namespace/api/server-sent-events/actions/new-app', async function(req
         'Connection': 'keep-alive',
     })
 
-    await sse(response, {}, async function({stdout, stderr}) {
+    await sse(request, response, {}, async function({stdout, stderr}) {
         return namespace.createApp(request.query.name, stdout, stderr);
     })
 });
@@ -228,7 +228,7 @@ app.get('/:namespace/api/server-sent-events/actions/delete-app', async function(
         'Connection': 'keep-alive',
     })
 
-    await sse(response, {}, async function({stdout, stderr}) {
+    await sse(request, response, {}, async function({stdout, stderr}) {
         return namespace.destroyApp(request.query.name, stdout, stderr);
     })
 });
@@ -270,7 +270,7 @@ app.get('/:namespace/:app/api/server-sent-events/actions/scale', async function(
         'Connection': 'keep-alive',
     })
 
-    await sse(response, {}, async function({stdout, stderr}) {
+    await sse(request, response, {}, async function({stdout, stderr}) {
         return app.scale(request.query?.process, stdout, stderr);
     })
 });
@@ -288,7 +288,7 @@ app.get('/:namespace/:app/api/server-sent-events/actions/generate-ssl', async fu
         'Connection': 'keep-alive',
     })
 
-    await sse(response, {}, async function({stdout, stderr}) {
+    await sse(request, response, {}, async function({stdout, stderr}) {
         return app.generateSSL(stdout, stderr);
     })
 });
@@ -306,7 +306,7 @@ app.get('/:namespace/:app/api/server-sent-events/actions/remove-ssl', async func
         'Connection': 'keep-alive',
     })
 
-    await sse(response, {}, async function({stdout, stderr}) {
+    await sse(request, response, {}, async function({stdout, stderr}) {
         return app.removeSSL(stdout, stderr);
     })
 });
@@ -333,14 +333,12 @@ app.get('/:namespace/:app/api/server-sent-events/logs/:type', async function(req
 
     if(!method) return response.status(404).send('Log type not found')
 
-    await sse(response, {
-        doneOnFinish: false
-    }, async function({stdout, stderr}) {
+    await sse(request, response, {}, async function({stdout, stderr, done}) {
         const logging = await app[method](stdout, stderr);
 
         request.on('close', () => {
             logging.kill()
-            response.end()
+            done();
         });
 
         return logging;
@@ -360,7 +358,7 @@ app.get('/:namespace/:app/api/server-sent-events/actions/save-general-settings',
         'Connection': 'keep-alive',
     })
 
-    await sse(response, {}, async function({stdout, stderr}) {
+    await sse(request, response, {}, async function({stdout, stderr}) {
         return await app.configSet({
             noRestart: true,
             config: {
@@ -386,7 +384,7 @@ app.get('/:namespace/:app/api/server-sent-events/actions/new-environment-variabl
         'Connection': 'keep-alive',
     })
 
-    await sse(response, {}, async function({stdout, stderr}) {
+    await sse(request, response, {}, async function({stdout, stderr}) {
         return await app.configSet({
             noRestart: request.query.restart != 'true',
             config: {
@@ -409,7 +407,7 @@ app.get('/:namespace/:app/api/server-sent-events/actions/change-environment-vari
         'Connection': 'keep-alive',
     })
 
-    await sse(response, {}, async function({stdout, stderr}) {
+    await sse(request, response, {}, async function({stdout, stderr}) {
         return await app.configSet({
             noRestart: request.query.restart != 'true',
             config: {
@@ -432,7 +430,7 @@ app.get('/:namespace/:app/api/server-sent-events/actions/delete-environment-vari
         'Connection': 'keep-alive',
     })
 
-    await sse(response, {}, async function({stdout, stderr}) {
+    await sse(request, response, {}, async function({stdout, stderr}) {
         return await app.configUnset({
             noRestart: request.query.restart != 'true',
             config: [
@@ -456,8 +454,65 @@ app.get('/:namespace/:app/api/server-sent-events/actions/deploy-app', async func
         'Connection': 'keep-alive',
     })
 
-    await sse(response, {}, async function({stdout, stderr}) {
+    await sse(request, response, {}, async function({stdout, stderr}) {
         return await app.deploy(request.query.gitRef, stdout, stderr);
+    });
+});
+
+app.get('/:namespace/:app/api/server-sent-events/actions/restart-app', async function(request, response) {
+    const namespace = system.namespaces.find(namespace => namespace.name === request.params.namespace)
+    if(!namespace) return response.status(404).send('Namespace not found')
+
+    const app = namespace.apps.find(app => app.name === request.params.app)
+    if(!app) return response.status(404).send('App not found')
+
+    response.writeHead(200, {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+    })
+
+    await sse(request, response, {}, async function({stdout, stderr}) {
+        return await app.restart(stdout, stderr);
+    });
+});
+
+app.get('/:namespace/:app/api/server-sent-events/actions/save-ports', async function(request, response) {
+    const namespace = system.namespaces.find(namespace => namespace.name === request.params.namespace)
+    if(!namespace) return response.status(404).send('Namespace not found')
+
+    const app = namespace.apps.find(app => app.name === request.params.app)
+    if(!app) return response.status(404).send('App not found')
+
+    response.writeHead(200, {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+    })
+
+    await sse(request, response, {
+        sendDoneMessage: false
+    }, async function({stdout}) {
+        const options = {
+            autoClose: false
+        };
+
+        stdout('Saving ports...');
+        await sse(request, response, options, async function({stdout, stderr}) {
+            return await app.setPorts(request.query.proxyPorts.split(/\r?\n/), stdout, stderr);
+        });
+
+        stdout('Exposing all ports...');
+        await sse(request, response, options, async function({stdout, stderr}) {
+            return await app.setExposeAllPorts(request.query.exposeAllPorts=="true", stdout, stderr);
+        });
+
+        if(request.query.restart == 'true') {
+            stdout('Restarting app...');
+            await sse(request, response, options, async function({stdout, stderr}) {
+                return await app.restart(stdout, stderr);
+            });
+        }
     });
 });
 

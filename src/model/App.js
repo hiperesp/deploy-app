@@ -11,6 +11,7 @@ export default class App extends Model {
     #psScale;
     #ssl;
     #config;
+    #psInspect;
 
     #lastRefreshTime = 0;
 
@@ -62,6 +63,9 @@ export default class App extends Model {
         }
         return output;
     }
+    get psInspect() {
+        return this.#psInspect;
+    }
 
     get replicas() {
         return this.#psScale;
@@ -79,12 +83,13 @@ export default class App extends Model {
         return this.#lastRefreshTime;
     }
 
-    async refresh({proxyPorts, domains, psScale, ssl, config}) {
+    async refresh({ proxyPorts, domains, psScale, ssl, config, psInspect }) {
         this.#proxyPorts = proxyPorts;
         this.#domains = domains;
         this.#psScale = psScale;
         this.#ssl = ssl;
         this.#config = config;
+        this.#psInspect = psInspect;
         this.#lastRefreshTime = Date.now();
     }
 
@@ -105,6 +110,7 @@ export default class App extends Model {
     async configUnset(options, onStdout = null, onStderr) {
         await this.#namespace.configUnsetApp(this.name, options, onStdout, onStderr);
     }
+
     async deploy(ref, onStdout = null, onStderr) {
         try {
             const remote = JSON.parse(this.config.deployApp.DEPLOY_APP_GIT).REPO;
@@ -113,9 +119,15 @@ export default class App extends Model {
             throw new Error(`Invalid deploy configuration: ${e.message}`);
         }
     }
+    async restart(onStdout = null, onStderr) {
+        await this.#namespace.restartApp(this.name, onStdout, onStderr);
+    }
 
-    getContainers() {
-        return []
+    async setPorts(ports, onStdout = null, onStderr) {
+        await this.#namespace.setAppPorts(this.name, ports, onStdout, onStderr);
+    }
+    async setExposeAllPorts(exposeAllPorts, onStdout = null, onStderr) {
+        await this.#namespace.setExposeAllAppPorts(this.name, exposeAllPorts, onStdout, onStderr);
     }
 
     toJson() {
@@ -128,6 +140,7 @@ export default class App extends Model {
             domains: this.domains,
             ssl: this.ssl,
             config: this.config,
+            psInspect: this.psInspect,
 
             _lastRefreshTime: this.lastRefreshTime,
         }

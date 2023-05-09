@@ -74,9 +74,16 @@ export default class DokkuSSH {
         const scalingParams = [];
         for(const type in scaling) {
             this.mustBeValidResourceName(type);
-            scalingParams.push(`${type}=${q([parseInt(scaling[type])])}`);
+            scalingParams.push(`${type}=${parseInt(scaling[type])}`);
         }
         await this[kExecAppCommands](appOrApps, `ps:scale %app% ${scalingParams.join(' ')}`, onStdout, onStderr);
+    }
+
+    async actionPsRestart(appOrApps, onStdout = null, onStderr = null) {
+        const restartParams = [
+            "--parallel -1",
+        ];
+        await this[kExecAppCommands](appOrApps, `ps:restart %app% ${restartParams.join(' ')}`, onStdout, onStderr);
     }
 
     async actionLetsEncryptCreate(appOrApps, onStdout = null, onStderr = null) {
@@ -135,6 +142,21 @@ export default class DokkuSSH {
                 instance.kill(code);
             }
         }
+    }
+
+    async actionProxyPortsSet(appName, portsDefinition, onStdout, onStderr) {
+        const ports = [];
+        for(const portDefinition of portsDefinition) {
+            if(!portDefinition) continue;
+            this.mustBeValidPortDefinition(portDefinition, true);
+            ports.push(portDefinition);
+        }
+        await this[kExecAppCommands](appName, `proxy:ports-set %app% ${ports.join(' ')}`, onStdout, onStderr);
+    }
+
+    async action_setExposeAllAppPorts(appName, exposeAllAppPorts, onStdout, onStderr) {
+        const action = exposeAllAppPorts ? 'add' : 'remove';
+        await this[kExecAppCommands](appName, `docker-options:${action} %app% deploy "-P"`, onStdout, onStderr);
     }
 
     async nginxErrorLogs(appName, onStdout, onStderr) {
@@ -252,6 +274,19 @@ export default class DokkuSSH {
                 psScaleApp[process] = Number(quantity);
             }
             output[app] = psScaleApp;
+        }
+        return output;
+    }
+
+    async psInspect(appOrApps) {
+        const output = {};
+        const psInspectResult = await this[kExecAppCommands](appOrApps, 'ps:inspect %app%');
+        for(const app in psInspectResult) {
+            try {
+                output[app] = JSON.parse(psInspectResult[app]);
+            } catch(e) {
+                output[app] = [];
+            }
         }
         return output;
     }
@@ -446,4 +481,18 @@ SSH_EOF
         return false;
     }
 
+    mustBeValidPortDefinition(portDefinition, needProtocol = true) {
+        if(!this.isValidPortDefinition(portDefinition, needProtocol)) {
+            throw new Error(`Invalid port definition: ${portDefinition}`);
+        }
+    }
+
+    isValidPortDefinition(portDefinition, needProtocol = true) {
+        if(needProtocol) {
+            if(portDefinition.match(/^[a-z]+:[0-9]+:[0-9]+$/)) return true;
+        } else {
+            if(portDefinition.match(/^[0-9]+:[0-9]+$/)) return true;
+        }
+        return false;
+    }
 }
