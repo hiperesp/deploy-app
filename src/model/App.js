@@ -83,6 +83,18 @@ export default class App extends Model {
         return this.#lastRefreshTime;
     }
 
+    get isExposedAllPorts() {
+        for(const instance of this.psInspect) {
+            const ports = instance?.NetworkSettings?.Ports??{};
+            for(const port in ports) {
+                if(ports[port] && ports[port][0]) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     async refresh({ proxyPorts, domains, psScale, ssl, config, psInspect }) {
         this.#proxyPorts = proxyPorts;
         this.#domains = domains;
@@ -141,6 +153,7 @@ export default class App extends Model {
             ssl: this.ssl,
             config: this.config,
             psInspect: this.psInspect,
+            exposeAllPorts: this.isExposedAllPorts,
 
             _lastRefreshTime: this.lastRefreshTime,
         }

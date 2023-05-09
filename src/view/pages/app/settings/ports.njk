@@ -83,18 +83,22 @@
 
 <div class="col-md-3">
     <div class="card" style="width: 18rem;">
-        <div class="card-header fw-bold">Ports exposed to the internet</div>
+        <div class="card-header fw-bold">Ports directly exposed to the internet</div>
         {% for instanceData in app.psInspect %}
             <ul class="list-group list-group-flush">
                 <li class="list-group-item monospace">
                     <b>{{ instanceData.Name }}</b>
-                    {% for internalDefinition, hostData in instanceData.NetworkSettings.Ports %}
-                        {% for hostItem in hostData %}
-                            {% if hostItem.HostIp not in ["::"] %}
-                                <br>{{ internalDefinition }} -> {{ hostItem.HostIp }}:{{ hostItem.HostPort }}
-                            {% endif %}
+                    {% if app.exposeAllPorts %}
+                        {% for internalDefinition, hostData in instanceData.NetworkSettings.Ports %}
+                            {% for hostItem in hostData %}
+                                {% if hostItem.HostIp not in ["::"] %}
+                                    <br>{{ internalDefinition }} -> {{ hostItem.HostIp }}:{{ hostItem.HostPort }}
+                                {% endif %}
+                            {% endfor %}
                         {% endfor %}
-                    {% endfor %}
+                    {% else %}
+                        <br>Not exposed directly to the internet.
+                    {% endif %}
                 </li>
             </ul>
         {% endfor %}

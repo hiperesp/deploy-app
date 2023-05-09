@@ -7,8 +7,8 @@
         const eventSource = new EventSource(`${sseLogs}`, {
             withCredentials: true
         });
-        eventSource.addEventListener('open', function (e) {
-            appendLog('success', "The connection to the server was established.");
+        eventSource.addEventListener('hello', function (event) {
+            appendLog('success', JSON.parse(event.data));
         });
 
         eventSource.addEventListener('stdout', function (event) {
@@ -20,11 +20,11 @@
         eventSource.addEventListener('done', function (event) {
             appendLog('success', JSON.parse(event.data));
         });
-        eventSource.addEventListener('close', function (e) {
+        eventSource.addEventListener('close', function (event) {
             eventSource.close();
         });
 
-        eventSource.addEventListener('error', function (e) {
+        eventSource.addEventListener('error', function (event) {
             appendLog('stderr', "The connection to the server was lost.");
             eventSource.close();
         });

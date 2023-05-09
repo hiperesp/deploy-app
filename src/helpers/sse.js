@@ -11,7 +11,6 @@ export default function sse(request, response, options, callable) {
     const output = (event, output) => {
         if(event=='stderr') {
             if(options.ignorePseudoTerminalStderr) {
-                console.log(">"+output+"<");
                 if(output=='Pseudo-terminal will not be allocated because stdin is not a terminal.\r\n') {
                     return;
                 }
@@ -25,6 +24,7 @@ export default function sse(request, response, options, callable) {
 
     let promise;
 
+    const hello = () => output('hello', 'Connection established');
     const stdout = (msg) => output('stdout', msg);
     const stderr = (msg) => output('stderr', msg);
     const done = (msg) => output('done', msg || options.doneMessage);
@@ -33,6 +33,7 @@ export default function sse(request, response, options, callable) {
         response.end();
     }
 
+    hello();
     promise = callable({stdout, stderr, done, close});
     if(options.stderrOnCatch) promise.catch(exception => stderr(exception.message));
     promise.finally(function() {

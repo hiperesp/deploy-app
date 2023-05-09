@@ -333,15 +333,11 @@ app.get('/:namespace/:app/api/server-sent-events/logs/:type', async function(req
 
     if(!method) return response.status(404).send('Log type not found')
 
-    await sse(request, response, {}, async function({stdout, stderr, done}) {
-        const logging = await app[method](stdout, stderr);
-
-        request.on('close', () => {
-            logging.kill()
-            done();
+    await sse(request, response, {}, function({stdout, stderr, done, close}) {
+        return new Promise(async (resolve, reject) => {
+            const logging = await app[method](stdout, stderr);
+            request.on('close', () => resolve(logging.kill()));
         });
-
-        return logging;
     });
 });
 
