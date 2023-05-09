@@ -30,7 +30,7 @@
             <textarea class="form-control" id="value" name="value" rows="4">{{ censoredValue }}</textarea>
             {% if censoredValue != rawValue %}
                 <div class="small text-body-secondary" data-id="censored-value-info">
-                    This environment variable value is censored because it contains sensitive information. If you want to fill the value with the uncensored value, <a href="#" class="text-decoration-none text-danger" data-uncensored-value="{{ rawValue }}" data-id="fill-uncensored-value">click here</a>.
+                    This environment variable value is censored because it contains sensitive information. If you want to fill the value with the uncensored value, <a href="javascript:void(0)" class="text-decoration-none text-danger" data-uncensored-value="{{ rawValue }}" data-id="fill-uncensored-value">click here</a>.
                 </div>
                 <script>
 (function() {

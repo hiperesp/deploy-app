@@ -2,7 +2,6 @@
 
 {% set tabs = {
     apps: "Apps",
-    settings: "Settings",
     form_sse: false
 } %}
 {% if tab not in tabs %}
@@ -25,9 +24,6 @@
                 <li class="nav-item">
                     <a class="nav-link {{ "active" if key === tab }}" {{ 'aria-current="page"' if key == tab }} href="/{{ namespace.name }}/{{ app.name }}?tab={{ key }}">
                         {{ value }}
-                        {% if key in ["settings"] %}
-                            <span class="d-flex badge bg-dark align-items-center ms-2" style="float: right; height: 24px;">Soon</span>
-                        {% endif %}
                     </a>
                 </li>
             {% endif %}
