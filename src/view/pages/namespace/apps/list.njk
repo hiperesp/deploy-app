@@ -5,43 +5,56 @@
         </div>
         <div class="mx-2">
             <div class="row">
-                {% for app in namespace.apps %}
-                    <div class="col-lg-3 col-md-4 col-sm-6 col-12 p-1">
-                        <a href="/{{ namespace.name }}/{{ app.name }}" class="card text-decoration-none p-0">
-                            <div class="card-body">
-                                <div class="card-title h5 d-flex gap-1" title="{{ app.name }}">
-                                    <span class="card-title-text flex-1">{{ app.name }}</span>
-                                    {% if app.online %}
-                                        <span class="online"></span>
-                                    {% else %}
-                                        <span class="offline"></span>
-                                    {% endif %}
-                                </div>
-                                <div class="text-body-secondary">
-                                    <div class="fs-6">
-                                        {% set replicas = 0 %}
-                                        {% for key, value in app.replicas %}
-                                            {% set replicas = replicas + value %}
-                                        {% endfor %}
-                                        {% if replicas == 0 %}
-                                            <i class="bi bi-window-x"></i>
-                                            No replicas
-                                        {% elseif replicas == 1 %}
-                                            <i class="bi bi-window"></i>
-                                            {{ replicas }} replica
+                {% if namespace.apps.length > 0 %}
+                    {% for app in namespace.apps %}
+                        <div class="col-lg-3 col-md-4 col-sm-6 p-1">
+                            <a href="/{{ namespace.name }}/{{ app.name }}" class="card text-decoration-none p-0">
+                                <div class="card-body">
+                                    <div class="card-title h5 d-flex gap-1" title="{{ app.name }}">
+                                        <span class="card-title-text flex-1">{{ app.name }}</span>
+                                        {% if app.instances.length > 0 %}
+                                            <span class="status-online"></span>
                                         {% else %}
-                                            <i class="bi bi-window-stack"></i>
-                                            {{ replicas }} replicas
+                                            <span class="status-offline"></span>
                                         {% endif %}
                                     </div>
-                                    <div class="small mt-2">
-                                        <i class="bi bi-clock"></i> Updated {{ namespace._lastRefreshTime | friendlyTime }}
+                                    <div class="text-body-secondary">
+                                        <div class="fs-6">
+                                            {% set replicas = 0 %}
+                                            {% for key, value in app.replicas %}
+                                                {% set replicas = replicas + value %}
+                                            {% endfor %}
+                                            {% if replicas == 0 %}
+                                                <i class="bi bi-window-x"></i>
+                                                No replicas
+                                            {% elseif replicas == 1 %}
+                                                <i class="bi bi-window"></i>
+                                                {{ replicas }} replica
+                                            {% else %}
+                                                <i class="bi bi-window-stack"></i>
+                                                {{ replicas }} replicas
+                                            {% endif %}
+                                        </div>
+                                        <div class="small mt-2">
+                                            <i class="bi bi-clock"></i> Updated {{ namespace._lastRefreshTime | friendlyTime }}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </a>
-                    </div>
-                {% endfor %}
+                            </a>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    {% if namespace._lastRefreshTime === 0 %}
+                        <div class="display-5 text-body-secondary my-3">
+                            Please wait while we fetch your apps...
+                        </div>
+                    {% else %}
+                        <div class="display-5 text-body-secondary my-3">
+                            <i class="bi bi-window"></i>
+                            No apps
+                        </div>
+                    {% endif %}
+                {% endif %}
             </div>
         </div>
     </div>

@@ -82,25 +82,34 @@
 </script>
 
 <div class="col-md-3">
-    <div class="card" style="width: 18rem;">
-        <div class="card-header fw-bold">Ports directly exposed to the internet</div>
-        {% for instanceData in app.psInspect %}
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item monospace">
-                    <b>{{ instanceData.Name }}</b>
-                    {% if app.exposeAllPorts %}
-                        {% for internalDefinition, hostData in instanceData.NetworkSettings.Ports %}
-                            {% for hostItem in hostData %}
-                                {% if hostItem.HostIp not in ["::"] %}
-                                    <br>{{ internalDefinition }} -> {{ hostItem.HostIp }}:{{ hostItem.HostPort }}
+    {% if app.instances %}
+        <div class="card">
+            <div class="card-header fw-bold">Ports</div>
+            {% for instance in app.instances %}
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item monospace">
+                        <b>{{ instance.dyno }}</b>
+                        {% if instance.networkSettings.ports %}
+                            {% for port in instance.networkSettings.ports %}
+                                <br><code class="monospace">{{ port.containerPort }}/{{ port.protocol }}</code>
+                                {% if port.type=="direct" %}
+                                    -> <code class="monospace">{{ port.hostPort }}</code>
+                                {% elseif port.type=="proxy" %}
+                                    => <code class="monospace">{{ port.hostPort }}</code>
+                                {% else%}
+                                    unknown
                                 {% endif %}
                             {% endfor %}
-                        {% endfor %}
-                    {% else %}
-                        <br>Not exposed directly to the internet.
-                    {% endif %}
-                </li>
-            </ul>
-        {% endfor %}
-    </div>
+                        {% else %}
+                            <br><code class="monospace">No ports exposed</code>
+                        {% endif %}
+                    </li>
+                </ul>
+            {% endfor %}
+            <div class="card-footer text-body-secondary small">
+                <code class="monospace"> -> </code>means that the port is directly exposed to the internet and is accessible using the any domain name pointing to this namespace or the namespace IP address.
+                <br></i><code class="monospace"> => </code>means that the port is exposed to the internet through a proxy and is only accessible using the app domain name.
+            </div>
+        </div>
+    {% endif %}
 </div>

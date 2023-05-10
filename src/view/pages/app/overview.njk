@@ -23,14 +23,40 @@
                 </form>
             </div>
             <div class="row">
-                <div class="col-md-3">
-                    
-                </div>
-
-                <div class="col-md-6">
-                    
-                </div>
+                {% for instance in app.instances %}
+                    <div class="col-lg-3 col-md-4 col-sm-6 p-1">
+                        <div class="card text-decoration-none p-0">
+                            <div class="card-header fw-bold d-flex gap-1" title="{{ instance.id }}">
+                                <span class="card-title-text flex-1">{{ app.name }} / {{ instance.dyno }}</span>
+                                {% if instance.status in [ "running" ] %}
+                                    <span class="status-online"></span>
+                                {% elseif instance.status in [ "restarting", "paused", "removing" ] %}
+                                    <span class="status-warning"></span>
+                                {% elseif instance.status in [ "exited", "dead" ] %}
+                                    <span class="status-offline"></span>
+                                {% endif %}
+                            </div>
+                            <div class="card-body">
+                                <div class="text-body-secondary">
+                                    <div class="small">
+                                        Hostname: {{ instance.hostname }}
+                                        <br>IP Address: {{ instance.networkSettings.ipAddress }}
+                                        <br>MAC Address: {{ instance.networkSettings.macAddress }}
+                                        <br>Status: {{ instance.status }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
             </div>
         </div>
+
+        <hr>
+
+        <div class="text-body-secondary small">
+            <i class="bi bi-clock"></i> Updated {{ app._lastRefreshTime | friendlyTime }}
+        </div>
+
     </div>
 </main>

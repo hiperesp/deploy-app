@@ -63,7 +63,7 @@
     50% { box-shadow: 0 0 0.5rem var(--on-off-color); }
     100% { box-shadow: 0 0 1rem transparent; }
 }
-.online, .offline {
+.status-online, .status-offline {
     width: 0.5rem;
     height: 0.5rem;
     display: inline-block;
@@ -72,10 +72,10 @@
     background-color: var(--on-off-color);
     animation: blink 2s linear infinite;
 }
-.online {
+.status-online {
     --on-off-color: var(--bs-primary);
 }
-.offline {
+.status-offline {
     --on-off-color: var(--bs-danger);
 }
 

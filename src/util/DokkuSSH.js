@@ -151,7 +151,13 @@ export default class DokkuSSH {
             this.mustBeValidPortDefinition(portDefinition, true);
             ports.push(portDefinition);
         }
-        await this[kExecAppCommands](appName, `proxy:ports-set %app% ${ports.join(' ')}`, onStdout, onStderr);
+        let command;
+        if(ports.length === 0) {
+            command = 'proxy:ports-clear %app%';
+        } else {
+            command = `proxy:ports-set %app% ${ports.join(' ')}`;
+        }
+        await this[kExecAppCommands](appName, command, onStdout, onStderr);
     }
 
     async action_setExposeAllAppPorts(appName, exposeAllAppPorts, onStdout, onStderr) {

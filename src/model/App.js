@@ -71,12 +71,59 @@ export default class App extends Model {
         return this.#psScale;
     }
 
-    get online() {
-        let replicas = 0;
-        for(const key in this.replicas) {
-            replicas += this.replicas[key];
+    get instances() {
+        const instances = [];
+        for(const instance of this.psInspect) {
+            const ports = [];
+            for(const port in instance?.NetworkSettings?.Ports??{}) {
+                if(!instance.NetworkSettings.Ports[port]) continue;
+
+                const portProtocol = port.split("/");
+
+                ports.push({
+                    containerPort: portProtocol[0],
+                    protocol: portProtocol[1],
+                    type: "direct",
+                    hostPort: instance.NetworkSettings.Ports[port][0].HostPort,
+                    hostIp: instance.NetworkSettings.Ports[port][0].HostIp,
+                    hostName: null
+                });
+            }
+
+            for(const proxyPort of this.proxyPorts) {
+                const protocolProxyPortContainer = proxyPort.split(":");
+                const protocol = protocolProxyPortContainer[0];
+                const proxyPortN = protocolProxyPortContainer[1];
+                const containerPort = protocolProxyPortContainer[2];
+
+                ports.push({
+                    containerPort: containerPort,
+                    protocol: protocol,
+                    type: "proxy",
+                    hostPort: proxyPortN,
+                    hostIp: null,
+                    hostName: this.domains.app[0] || this.domains.global[0]
+                });
+            }
+
+            instances.push({
+                id: instance.Id,
+                dyno: instance.Config.Labels["com.dokku.dyno"],
+                type: instance.Config.Labels["com.dokku.builder-type"],
+                platform: instance.Platform,
+                hostname: instance.Config.Hostname,
+                name: instance.Name,
+                networkSettings: {
+                    gateway: instance.NetworkSettings.Gateway,
+                    ipAddress: instance.NetworkSettings.IPAddress,
+                    ipPrefixLen: instance.NetworkSettings.IPPrefixLen,
+                    macAddress: instance.NetworkSettings.MacAddress,
+                    ports,
+                },
+                status: instance.State.Status,//created, restarting, running, removing, paused, exited, dead
+            });
         }
-        return replicas > 0;
+        return instances;
     }
 
     get lastRefreshTime() {
@@ -84,10 +131,9 @@ export default class App extends Model {
     }
 
     get isExposedAllPorts() {
-        for(const instance of this.psInspect) {
-            const ports = instance?.NetworkSettings?.Ports??{};
-            for(const port in ports) {
-                if(ports[port] && ports[port][0]) {
+        for(const instance of this.instances) {
+            for(const port of instance.networkSettings.ports) {
+                if(port.type === "direct") {
                     return true;
                 }
             }
@@ -145,14 +191,13 @@ export default class App extends Model {
     toJson() {
         return {
             name: this.name,
-            online: this.online,
 
             proxyPorts: this.proxyPorts,
             replicas: this.replicas,
             domains: this.domains,
             ssl: this.ssl,
             config: this.config,
-            psInspect: this.psInspect,
+            instances: this.instances,
             exposeAllPorts: this.isExposedAllPorts,
 
             _lastRefreshTime: this.lastRefreshTime,
