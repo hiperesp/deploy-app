@@ -47,6 +47,12 @@
                     {% endfor %}
                 </div>
             </div>
+
+            <hr>
+
+            <div class="text-body-secondary small">
+                <i class="bi bi-clock"></i> Updated {{ system._lastRefreshTime | friendlyTime }}
+            </div>
         </div>
     </main>
 {% endblock %}
