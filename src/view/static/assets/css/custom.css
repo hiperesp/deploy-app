@@ -63,7 +63,7 @@
     50% { box-shadow: 0 0 0.5rem var(--on-off-color); }
     100% { box-shadow: 0 0 1rem transparent; }
 }
-.status-online, .status-offline {
+.status-online, .status-warning, .status-offline {
     width: 0.5rem;
     height: 0.5rem;
     display: inline-block;
@@ -74,6 +74,9 @@
 }
 .status-online {
     --on-off-color: var(--bs-primary);
+}
+.status-warning {
+    --on-off-color: var(--bs-warning);
 }
 .status-offline {
     --on-off-color: var(--bs-danger);
