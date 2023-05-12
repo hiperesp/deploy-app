@@ -64,7 +64,7 @@ export default class App extends Model {
         return output;
     }
     get psInspect() {
-        return this.#psInspect;
+        return this.#psInspect || [];
     }
 
     get replicas() {
@@ -73,6 +73,7 @@ export default class App extends Model {
 
     get instances() {
         const instances = [];
+
         for(const instance of this.psInspect) {
             const ports = [];
             for(const port in instance?.NetworkSettings?.Ports??{}) {
@@ -126,6 +127,22 @@ export default class App extends Model {
         return instances;
     }
 
+    get status() {
+        const status = {
+            created: 0,
+            restarting: 0,
+            running: 0,
+            removing: 0,
+            paused: 0,
+            exited: 0,
+            dead: 0,
+        };
+        for(const instance of this.instances) {
+            status[instance.status]++;
+        }
+        return status;
+    }
+
     get lastRefreshTime() {
         return this.#lastRefreshTime;
     }
@@ -141,14 +158,18 @@ export default class App extends Model {
         return false;
     }
 
-    async refresh({ proxyPorts, domains, psScale, ssl, config, psInspect }) {
+    async refresh({ proxyPorts, domains, psScale, ssl, config }, fullRefresh) {
+        this.#domains    = domains;
         this.#proxyPorts = proxyPorts;
-        this.#domains = domains;
-        this.#psScale = psScale;
-        this.#ssl = ssl;
-        this.#config = config;
-        this.#psInspect = psInspect;
+        this.#psScale    = psScale;
+        this.#ssl        = ssl;
+        this.#config     = config;
+
+        if(!fullRefresh) return;
+
+        this.#psInspect  = await this.namespace.psInspect(this.name);
         this.#lastRefreshTime = Date.now();
+
     }
 
     async scale(options, onStdout = null, onStderr) {
@@ -199,6 +220,8 @@ export default class App extends Model {
             config: this.config,
             instances: this.instances,
             exposeAllPorts: this.isExposedAllPorts,
+
+            status: this.status,
 
             _lastRefreshTime: this.lastRefreshTime,
         }

@@ -12,8 +12,22 @@
                                 <div class="card-body">
                                     <div class="card-title h5 d-flex gap-1" title="{{ app.name }}">
                                         <span class="card-title-text flex-1">{{ app.name }}</span>
-                                        {% if app.instances.length > 0 %}
+
+                                        {% set intermediateStatus = -1 %}
+                                        {% if app.status.running > 0 %}
+                                            {% set intermediateStatus = 2 %}
+                                        {% endif %}
+                                        {% if app.status.created > 0 or app.status.restarting > 0 or app.status.removing > 0 %}
+                                            {% set intermediateStatus = 1 %}
+                                        {% endif %}
+                                        {% if app.status.exited > 0 or app.dead > 0 %}
+                                            {% set intermediateStatus = 0 %}
+                                        {% endif %}
+
+                                        {% if intermediateStatus == 2 %}
                                             <span class="status-online"></span>
+                                        {% elseif intermediateStatus == 1 %}
+                                            <span class="status-warning"></span>
                                         {% else %}
                                             <span class="status-offline"></span>
                                         {% endif %}
@@ -36,7 +50,7 @@
                                             {% endif %}
                                         </div>
                                         <div class="small mt-2">
-                                            <i class="bi bi-clock"></i> Updated {{ namespace._lastRefreshTime | friendlyTime }}
+                                            <i class="bi bi-clock"></i> Updated {{ app._lastRefreshTime | friendlyTime }}
                                         </div>
                                     </div>
                                 </div>

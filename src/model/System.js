@@ -23,9 +23,7 @@ export default class System extends Model {
     }
 
     async refresh() {
-        for(const namespace of this.namespaces) {
-            await namespace.refresh();
-        }
+        await Promise.all(this.namespaces.map(namespace => namespace.refresh()));
         this.#lastRefreshTime = Date.now();
         setTimeout(this.refresh.bind(this), (process.env.REFRESH_INTERVAL || 600) * 1000, null);
     }

@@ -283,17 +283,13 @@ export default class DokkuSSH {
         return output;
     }
 
-    async psInspect(appOrApps) {
-        const output = {};
-        const psInspectResult = await this[kExecAppCommands](appOrApps, 'ps:inspect %app%');
-        for(const app in psInspectResult) {
-            try {
-                output[app] = JSON.parse(psInspectResult[app]);
-            } catch(e) {
-                output[app] = [];
-            }
+    async psInspect(appName) {
+        const psInspectResult = await this[kExecCommand](`ps:inspect ${appName}`);
+        try {
+            return JSON.parse(psInspectResult);
+        } catch(e) {
+            return [];
         }
-        return output;
     }
 
     async [kExecAppCommands](appOrApps, command, onStdout = null, onStderr = null, appNameVar = '%app%') {

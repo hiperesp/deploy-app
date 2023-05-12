@@ -1,4 +1,3 @@
-import DokkuSSH from '../util/DokkuSSH.js';
 import App from './App.js'
 import Model from './Model.js';
 
@@ -61,18 +60,14 @@ export default class Namespace extends Model {
     }
 
     async [kRefreshApps](appOrApps = null) {
-        let appsList = [];
-        if(appOrApps) {
-            appsList = this.dokkuSSH.normalizeAppNames(appOrApps);
-        } else {
-            appsList = await this[kDokku].appsList();
-        }
+        const appsList = await this[kDokku].appsList();
+        const appsToFullRefresh = this[kDokku].normalizeAppNames(appOrApps || appsList);
+
         const proxyPorts = await this[kDokku].proxyPorts(appsList);
         const domainsReport = await this[kDokku].domainsReport(appsList);
         const psScale = await this[kDokku].psScale(appsList);
         const letsEncrypt = await this[kDokku].letsEncryptList(appsList);
         const config = await this[kDokku].configShow(appsList);
-        const psInspect = await this[kDokku].psInspect(appsList);
 
         //remove apps that are not in appsList
         for(const app of this.apps) {
@@ -99,8 +94,7 @@ export default class Namespace extends Model {
                 psScale: psScale[app.name],
                 ssl: letsEncrypt[app.name],
                 config: config[app.name],
-                psInspect: psInspect[app.name],
-            });
+            }, appsToFullRefresh.includes(app.name));
         }
     }
 
@@ -185,5 +179,10 @@ export default class Namespace extends Model {
     }
     async getNginxErrorLogs(appName, onStdout, onStderr) {
         return await this[kDokku].nginxErrorLogs(appName, onStdout, onStderr);
+    }
+
+
+    async psInspect(appName) {
+        return await this[kDokku].psInspect(appName);
     }
 }
