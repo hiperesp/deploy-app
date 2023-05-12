@@ -8,7 +8,6 @@ const kPrivateKey = Symbol('privateKey');
 const kExecCommandRealTimeOutput = Symbol('execCommandRealTimeOutput');
 const kExecCommand = Symbol('execCommand');
 const kExecAppCommands = Symbol('execAppCommands');
-const kNormalizeAppNames = Symbol('normalizeAppNames');
 const kExecMultipleCommands = Symbol('execMultipleCommands');
 const kCreateAppCommand = Symbol('createAppCommand');
 
@@ -38,7 +37,7 @@ export default class DokkuSSH {
     async letsEncryptList(appOrApps) {
         const output = {};
 
-        const appsNames = this[kNormalizeAppNames](appOrApps);
+        const appsNames = this.normalizeAppNames(appOrApps);
         const letsEncryptListResult = await this[kExecCommand]('letsencrypt:list');
         const letsEncryptListLines = letsEncryptListResult.split(/\r?\n/);
         letsEncryptListLines.shift(); // remove header
@@ -298,7 +297,7 @@ export default class DokkuSSH {
     }
 
     async [kExecAppCommands](appOrApps, command, onStdout = null, onStderr = null, appNameVar = '%app%') {
-        const apps = this[kNormalizeAppNames](appOrApps);
+        const apps = this.normalizeAppNames(appOrApps);
         const responses = await this[kExecMultipleCommands](this[kCreateAppCommand](apps, command, appNameVar), onStdout ? function(log, index) {
             onStdout(log, apps[index]);
         } : null, onStderr ? function(log, index) {
@@ -313,12 +312,12 @@ export default class DokkuSSH {
         return output;
     }
 
-    [kNormalizeAppNames](appOrApps) {
+    normalizeAppNames(appOrApps) {
         if(typeof appOrApps === 'string') {
-            return this[kNormalizeAppNames]([appOrApps]);
+            return this.normalizeAppNames([appOrApps]);
         }
         if(appOrApps && appOrApps?.name) {
-            return this[kNormalizeAppNames](appOrApps.name);
+            return this.normalizeAppNames(appOrApps.name);
         }
         const apps = appOrApps.map(app => app.trim()).filter(app => !!app);
         this.mustBeValidResourceNameArr(apps);

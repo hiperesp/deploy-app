@@ -1,3 +1,4 @@
+import DokkuSSH from '../util/DokkuSSH.js';
 import App from './App.js'
 import Model from './Model.js';
 
@@ -39,10 +40,10 @@ export default class Namespace extends Model {
         return this.#apps;
     }
 
-    async refresh() {
+    async refresh(appOrApps = null) {
         try {
             await this[kPing]();
-            await this[kRefreshApps]();
+            await this[kRefreshApps](appOrApps);
         } catch (e) {
             console.error("Error refreshing namespace", e);
         }
@@ -59,8 +60,13 @@ export default class Namespace extends Model {
         }
     }
 
-    async [kRefreshApps]() {
-        const appsList = await this[kDokku].appsList();
+    async [kRefreshApps](appOrApps = null) {
+        let appsList = [];
+        if(appOrApps) {
+            appsList = this.dokkuSSH.normalizeAppNames(appOrApps);
+        } else {
+            appsList = await this[kDokku].appsList();
+        }
         const proxyPorts = await this[kDokku].proxyPorts(appsList);
         const domainsReport = await this[kDokku].domainsReport(appsList);
         const psScale = await this[kDokku].psScale(appsList);
@@ -100,63 +106,63 @@ export default class Namespace extends Model {
 
     async createApp(newAppName, onStdout = null, onStderr) {
         const response = await this[kDokku].actionAppsCreate(newAppName, onStdout, onStderr);
-        this.refresh();
+        this.refresh(newAppName);
         return response;
     }
     async destroyApp(appName, onStdout = null, onStderr) {
         const response = await this[kDokku].actionAppsDestroy(appName, onStdout, onStderr);
-        this.refresh();
+        this.refresh(null);
         return response;
     }
 
     async scaleApp(appOrApps, scaling, onStdout = null, onStderr) {
         const response = await this[kDokku].actionPsScale(appOrApps, scaling, onStdout, onStderr);
-        this.refresh();
+        this.refresh(appOrApps);
         return response;
     }
 
     async generateAppSSL(appOrApps, onStdout = null, onStderr) {
         const response = await this[kDokku].actionLetsEncryptCreate(appOrApps, onStdout, onStderr);
-        this.refresh();
+        this.refresh(appOrApps);
         return response;
     }
     async removeAppSSL(appOrApps, onStdout = null, onStderr) {
         const response = await this[kDokku].actionLetsEncryptDelete(appOrApps, onStdout, onStderr);
-        this.refresh();
+        this.refresh(appOrApps);
         return response;
     }
 
     async configSetApp(appOrApps, options, onStdout = null, onStderr) {
         const response = await this[kDokku].actionConfigSet(appOrApps, options, onStdout, onStderr);
-        this.refresh();
+        this.refresh(appOrApps);
         return response;
     }
     async configUnsetApp(appOrApps, options, onStdout = null, onStderr) {
         const response = await this[kDokku].actionConfigUnset(appOrApps, options, onStdout, onStderr);
-        this.refresh();
+        this.refresh(appOrApps);
         return response;
     }
 
     async deployApp(appName, remote, ref, onStdout = null, onStderr) {
         const response = await this[kDokku].actionGitSync(appName, remote, ref, onStdout, onStderr);
-        this.refresh();
+        this.refresh(appName);
         return response;
     }
 
     async restartApp(appName, onStdout = null, onStderr) {
         const response = await this[kDokku].actionPsRestart(appName, onStdout, onStderr);
-        this.refresh();
+        this.refresh(appName);
         return response;
     }
 
     async setAppPorts(appName, ports, onStdout = null, onStderr) {
         const response = await this[kDokku].actionProxyPortsSet(appName, ports, onStdout, onStderr);
-        this.refresh();
+        this.refresh(appName);
         return response;
     }
     async setExposeAllAppPorts(appName, exposeAllAppPorts, onStdout = null, onStderr) {
         const response = await this[kDokku].action_setExposeAllAppPorts(appName, exposeAllAppPorts, onStdout, onStderr);
-        this.refresh();
+        this.refresh(appName);
         return response;
     }
 
