@@ -336,7 +336,6 @@ export default class DokkuSSH {
     
     [kExecCommandRealTimeOutput](command, fullStdout = null, fullStderr = null, onStdout = null, onStderr = null) {
         return new Promise((resolve, reject) => {
-            command = command.replace(/letsencrypt/g, 'letsencrypt-force-error');
             const child = exec(`
 TMP_BASE64=$(mktemp)
 TMP_PEM=$(mktemp)
