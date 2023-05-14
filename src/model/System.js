@@ -33,23 +33,33 @@ export default class System extends Model {
         if(!System.#instance) {
             const instance = new System()
 
-            const namespacesData = JSON.parse(process.env.NAMESPACES)
-            for(const namespaceData of namespacesData) {
-                const namespace = new Namespace({
-                    name: namespaceData.name,
-                    dokkuSSH: DokkuSSH.create({
-                        host: namespaceData.server_host,
-                        port: namespaceData.server_port,
-                        username: namespaceData.server_username,
-                        privateKey: namespaceData.server_privateKey,
+            if(!process.env.NAMESPACES) throw new Error("Missing namespaces environment variable in .env file: NAMESPACES");
+
+            try {
+                const namespacesData = JSON.parse(process.env.NAMESPACES)
+
+                if(!Array.isArray(namespacesData)) throw new Error("NAMESPACES environment variable must be an array of namespaces, see README.md");
+
+                for(const namespaceData of namespacesData) {
+                    const namespace = new Namespace({
+                        name: namespaceData.name,
+                        dokkuSSH: DokkuSSH.create({
+                            host: namespaceData.server_host,
+                            port: namespaceData.server_port,
+                            username: namespaceData.server_username,
+                            privateKey: namespaceData.server_privateKey,
+                        })
                     })
-                })
-                instance.#namespaces.push(namespace)
+                    instance.#namespaces.push(namespace)
+                }
+
+                instance.refresh();
+
+                System.#instance = instance
+
+            } catch(e) {
+                throw new Error("NAMESPACES environment variable must be a valid JSON array, see README.md");
             }
-
-            instance.refresh();
-
-            System.#instance = instance
         }
         return System.#instance
     }
