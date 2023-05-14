@@ -31,7 +31,7 @@ export default class DokkuSSH {
     }
     async actionAppsDestroy(appName, onStdout = null, onStderr = null) {
         this.mustBeValidResourceName(appName);
-        await this[kExecCommand](`apps:destroy ${appName}\n${appName}`, onStdout, onStderr);
+        await this[kExecCommand](`apps:destroy ${appName} --force`, onStdout, onStderr);
     }
 
     async actionPsScale(appOrApps, scaling, onStdout = null, onStderr = null) {
