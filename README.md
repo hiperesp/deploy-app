@@ -1,38 +1,6 @@
 # Deploy.app.br
 
-## Screenshots
-
-### Login Screen
-![Login](/docs/images/login.png)
-
-### Namespace Screen
-![Namespaces](/docs/images/namespaces.png)
-
-### Apps Screen
-![Apps](/docs/images/apps.png)
-
-### App Overview Screen
-![App Overview](/docs/images/app-overview.png)
-
-### App Overview Screen - Deploy option
-![App Overview with deploy option](/docs/images/app-overview-deploy.png)
-
-### App Overview Screen - Access logs, error logs, app logs
-![App Access Logs](/docs/images/app-access-logs.png)
-![App Error Logs](/docs/images/app-error-logs.png)
-![App Logs](/docs/images/app-logs.png)
-
-### App Overview Screen - General Settings
 ![Apps](/docs/images/app-settings-general.png)
-
-### App Overview Screen - Scaling Settings
-![Apps](/docs/images/app-settings-scaling.png)
-
-### App Overview Screen - Ports Settings
-![Apps](/docs/images/app-settings-ports.png)
-
-### App Overview Screen - Environment Variables Settings
-![Apps](/docs/images/app-settings-env.png)
 
 ## About
 
@@ -125,8 +93,42 @@ Now save, and you will see the "Deploy" button.
 
 [Gabriel Lopes](https://github.com/hiperesp)
 
-# Special thanks
+## Special thanks
 
 - Dokku - the software that makes this project possible.
 - Ledokku - the inspiration for this project.
 - PlanetScale - the inspiration for the design.
+
+## Screenshots
+
+### Login Screen
+![Login](/docs/images/login.png)
+
+### Namespace Screen
+![Namespaces](/docs/images/namespaces.png)
+
+### Apps Screen
+![Apps](/docs/images/apps.png)
+
+### App Overview Screen
+![App Overview](/docs/images/app-overview.png)
+
+### App Overview Screen - Deploy option
+![App Overview with deploy option](/docs/images/app-overview-deploy.png)
+
+### App Overview Screen - Access logs, error logs, app logs
+![App Access Logs](/docs/images/app-access-logs.png)
+![App Error Logs](/docs/images/app-error-logs.png)
+![App Logs](/docs/images/app-logs.png)
+
+### App Overview Screen - General Settings
+![Apps](/docs/images/app-settings-general.png)
+
+### App Overview Screen - Scaling Settings
+![Apps](/docs/images/app-settings-scaling.png)
+
+### App Overview Screen - Ports Settings
+![Apps](/docs/images/app-settings-ports.png)
+
+### App Overview Screen - Environment Variables Settings
+![Apps](/docs/images/app-settings-env.png)
