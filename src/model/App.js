@@ -124,6 +124,24 @@ export default class App extends Model {
                 status: instance.State.Status,//created, restarting, running, removing, paused, exited, dead
             });
         }
+
+        //order instances dyno
+        instances.sort((a, b) => {
+            const [ aName, aNumberStr ] = a.dyno.split(".");
+            const [ baName, bNumberStr ] = b.dyno.split(".");
+
+            const aNumber = parseInt(aNumberStr);
+            const bNumber = parseInt(bNumberStr);
+
+            //order by name, then by number
+            if(aName < baName) return -1;
+            if(aName > baName) return 1;
+            if(aNumber < bNumber) return -1;
+            if(aNumber > bNumber) return 1;
+            
+            return 0;
+        });
+
         return instances;
     }
 
