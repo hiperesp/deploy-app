@@ -1,6 +1,6 @@
 <div class="col-md-6 pt-3">
-    <form>
-        <input type="hidden" name="redirect" value="{{ originalUrl }}">
+    <form action="/{{ namespace.name }}/{{ app.name }}?tab=form_sse" method="post">
+        <input type="hidden" name="action" value="save-domains">
 
         <h4 class="mb-2">Domains Settings</h4>
         <p class="mb-4 text-body-secondary">Domains settings for your app.</p>

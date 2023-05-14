@@ -34,41 +34,6 @@ export default class DokkuSSH {
         await this[kExecCommand](`apps:destroy ${appName}\n${appName}`, onStdout, onStderr);
     }
 
-    async letsEncryptList(appOrApps) {
-        const output = {};
-
-        const appsNames = this.normalizeAppNames(appOrApps);
-        const letsEncryptListResult = await this[kExecCommand]('letsencrypt:list');
-        const letsEncryptListLines = letsEncryptListResult.split(/\r?\n/);
-        letsEncryptListLines.shift(); // remove header
-
-        for(const letsEncryptListLine of letsEncryptListLines) {
-            const [ appName, expirationDate, _remainingTimeToExpire, remainingTimeToRenew ] = letsEncryptListLine.split(/\s\s+/);
-
-            if(!appsNames.includes(appName)) continue;
-
-            const expirationTime = (new Date(expirationDate)).getTime();
-
-            const renewDays    = (remainingTimeToRenew.match(/(\d\d)d(?:, )?/) || [0, 0])[1];
-            const renewHours   = (remainingTimeToRenew.match(/(\d\d)h(?:, )?/) || [0, 0])[1];
-            const renewMinutes = (remainingTimeToRenew.match(/(\d\d)m(?:, )?/) || [0, 0])[1];
-            const renewSeconds = (remainingTimeToRenew.match(/(\d\d)s(?:, )?/) || [0, 0])[1];
-            
-            const renewDate = new Date();
-            renewDate.setDate(renewDate.getDate() + parseInt(renewDays));
-            renewDate.setHours(renewDate.getHours() + parseInt(renewHours));
-            renewDate.setMinutes(renewDate.getMinutes() + parseInt(renewMinutes));
-            renewDate.setSeconds(renewDate.getSeconds() + parseInt(renewSeconds));
-            const renewTime = renewDate.getTime();
-
-            output[appName] = {
-                expirationTime,
-                renewTime,
-            };
-        }
-        return output;
-    }
-
     async actionPsScale(appOrApps, scaling, onStdout = null, onStderr = null) {
         const scalingParams = [];
         for(const type in scaling) {
@@ -83,14 +48,6 @@ export default class DokkuSSH {
             "--parallel -1",
         ];
         await this[kExecAppCommands](appOrApps, `ps:restart %app% ${restartParams.join(' ')}`, onStdout, onStderr);
-    }
-
-    async actionLetsEncryptCreate(appOrApps, onStdout = null, onStderr = null) {
-        await this[kExecAppCommands](appOrApps, `letsencrypt:enable %app%`, onStdout, onStderr);
-    }
-
-    async actionLetsEncryptDelete(appOrApps, onStdout = null, onStderr = null) {
-        await this[kExecAppCommands](appOrApps, `letsencrypt:disable %app%`, onStdout, onStderr);
     }
 
     async actionConfigSet(appOrApps, options, onStdout = null, onStderr = null) {
@@ -283,6 +240,22 @@ export default class DokkuSSH {
         return output;
     }
 
+    async actionDomainsSet(appOrApps, domains, onStdout, onStderr) {
+        const parsedDomains = [];
+        for(const domain of domains) {
+            if(!domain) continue;
+            this.mustBeValidDomain(domain);
+            parsedDomains.push(domain);
+        }
+        let command;
+        if(parsedDomains.length === 0) {
+            command = 'domains:clear %app%';
+        } else {
+            command = `domains:set %app% ${parsedDomains.join(' ')}`;
+        }
+        await this[kExecAppCommands](appOrApps, command, onStdout, onStderr);
+    }
+
     async psInspect(appName) {
         const psInspectResult = await this[kExecCommand](`ps:inspect ${appName}`);
         try {
@@ -363,6 +336,7 @@ export default class DokkuSSH {
     
     [kExecCommandRealTimeOutput](command, fullStdout = null, fullStderr = null, onStdout = null, onStderr = null) {
         return new Promise((resolve, reject) => {
+            command = command.replace(/letsencrypt/g, 'letsencrypt-force-error');
             const child = exec(`
 TMP_BASE64=$(mktemp)
 TMP_PEM=$(mktemp)
@@ -495,5 +469,80 @@ SSH_EOF
             if(portDefinition.match(/^[0-9]+:[0-9]+$/)) return true;
         }
         return false;
+    }
+
+    mustBeValidDomain(domain) {
+        if(!this.isValidDomain(domain)) {
+            throw new Error(`Invalid domain: ${domain}`);
+        }
+    }
+
+    isValidDomain(domain) {
+        if(domain.match(/^[a-zA-Z0-9\-._]+$/)) return true;
+        return false;
+    }
+
+
+
+
+    async getPluginList() {
+        const output = {};
+        const pluginListResult = await this[kExecCommand]('plugin:list');
+        const pluginListLines = pluginListResult.split(/\r?\n/);
+
+        for(const pluginListLine of pluginListLines) {
+            const [ name, version, status, ...descriptionWords ] = pluginListLine.trim().split(/\s+/);
+            const description = descriptionWords.join(' ');
+
+            output[name] = {
+                version,
+                status,
+                description
+            };
+        }
+        return output;
+    }
+
+    async actionLetsEncryptCreate(appOrApps, onStdout = null, onStderr = null) {
+        await this[kExecAppCommands](appOrApps, `letsencrypt:enable %app%`, onStdout, onStderr);
+    }
+
+    async actionLetsEncryptDelete(appOrApps, onStdout = null, onStderr = null) {
+        await this[kExecAppCommands](appOrApps, `letsencrypt:disable %app%`, onStdout, onStderr);
+    }
+
+    async letsEncryptList(appOrApps) {
+        const output = {};
+
+        const appsNames = this.normalizeAppNames(appOrApps);
+        const letsEncryptListResult = await this[kExecCommand]('letsencrypt:list');
+        const letsEncryptListLines = letsEncryptListResult.split(/\r?\n/);
+        letsEncryptListLines.shift(); // remove header
+
+        for(const letsEncryptListLine of letsEncryptListLines) {
+            const [ appName, expirationDate, _remainingTimeToExpire, remainingTimeToRenew ] = letsEncryptListLine.split(/\s\s+/);
+
+            if(!appsNames.includes(appName)) continue;
+
+            const expirationTime = (new Date(expirationDate)).getTime();
+
+            const renewDays    = (remainingTimeToRenew.match(/(\d\d)d(?:, )?/) || [0, 0])[1];
+            const renewHours   = (remainingTimeToRenew.match(/(\d\d)h(?:, )?/) || [0, 0])[1];
+            const renewMinutes = (remainingTimeToRenew.match(/(\d\d)m(?:, )?/) || [0, 0])[1];
+            const renewSeconds = (remainingTimeToRenew.match(/(\d\d)s(?:, )?/) || [0, 0])[1];
+            
+            const renewDate = new Date();
+            renewDate.setDate(renewDate.getDate() + parseInt(renewDays));
+            renewDate.setHours(renewDate.getHours() + parseInt(renewHours));
+            renewDate.setMinutes(renewDate.getMinutes() + parseInt(renewMinutes));
+            renewDate.setSeconds(renewDate.getSeconds() + parseInt(renewSeconds));
+            const renewTime = renewDate.getTime();
+            
+            output[appName] = {
+                expirationTime,
+                renewTime,
+            };
+        }
+        return output;
     }
 }

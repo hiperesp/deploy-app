@@ -123,6 +123,13 @@ nunjucksEnv.addFilter('censorEnv', function(value, key, definitiveReplaceWith = 
 
 nunjucksEnv.addFilter('buildSearchParams', buildSearchParams);
 
+nunjucksEnv.addFilter('setAttribute', function(object, key, value) {
+    object[key] = value;
+    return object;
+});
+nunjucksEnv.addFilter('objectSize', function(object) {
+    return Object.keys(object).length;
+});
 
 // Configurar o cookie parser
 app.use(cookieParser())
@@ -511,6 +518,25 @@ app.get('/:namespace/:app/api/server-sent-events/actions/save-ports', async func
             });
         }
     });
+});
+
+app.get('/:namespace/:app/api/server-sent-events/actions/save-domains', async function(request, response) {
+    const namespace = system.namespaces.find(namespace => namespace.name === request.params.namespace)
+    if(!namespace) return response.status(404).send('Namespace not found')
+
+    const app = namespace.apps.find(app => app.name === request.params.app)
+    if(!app) return response.status(404).send('App not found')
+
+    response.writeHead(200, {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+    })
+
+    await sse(request, response, {}, async function({stdout, stderr}) {
+        return await app.setDomains(request.query.domains.split(/\r?\n/), stdout, stderr);
+    });
+
 });
 
 // Iniciar o servidor

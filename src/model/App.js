@@ -208,6 +208,9 @@ export default class App extends Model {
     async setExposeAllPorts(exposeAllPorts, onStdout = null, onStderr) {
         await this.#namespace.setExposeAllAppPorts(this.name, exposeAllPorts, onStdout, onStderr);
     }
+    async setDomains(domains, onStdout = null, onStderr) {
+        await this.#namespace.setAppDomains(this.name, domains, onStdout, onStderr);
+    }
 
     toJson() {
         return {

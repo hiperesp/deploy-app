@@ -11,11 +11,18 @@
     "Access": {
         ports  : "Ports",
         domains: "Domains"
-    },
-    "Others": {
-        ssl : "SSL"
     }
 } %}
+
+{% set pluginsSubtab = {} %}
+{% if namespace.plugins["letsencrypt"] %}
+    {% set pluginsSubtab = pluginsSubtab|setAttribute("pl_ssl", "SSL") %}
+{% endif %}
+
+{% if pluginsSubtab|objectSize > 0 %}
+    {% set subtabs = subtabs|setAttribute("Plugins", pluginsSubtab) %}
+{% endif %}
+
 {% set validSubtab = false %}
 {% for category, list in subtabs %}
     {% if not validSubtab %}
@@ -40,9 +47,6 @@
                                 <li>
                                     <a href="/{{ namespace.name }}/{{ app.name }}?tab={{ tab }}&subtab={{ key }}" class="mb-1 btn-toggle text-decoration-none d-block rounded {{ "active" if subtab == key }}">
                                         {{ value }}
-                                        {% if key in ["limits", "domains", "cron"] %}
-                                            <span class="d-flex badge bg-dark align-items-center" style="float: right; height: 24px;">Soon</span>
-                                        {% endif %}
                                     </a>
                                 </li>
                             {% endfor %}
