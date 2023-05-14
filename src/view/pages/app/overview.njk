@@ -28,7 +28,10 @@
                         <div class="col-lg-3 col-md-4 col-sm-6 p-1">
                             <div class="card text-decoration-none p-0">
                                 <div class="card-header fw-bold d-flex gap-1" title="{{ instance.id }}">
-                                    <span class="card-title-text flex-1">{{ app.name }} / {{ instance.dyno }}</span>
+                                    <span class="card-title-text flex-1 d-flex">
+                                        <span class="d-block flex-1" style="text-overflow: ellipsis; overflow: hidden;">{{ app.name }}</span>
+                                        <span class="d-block">&nbsp;/&nbsp;{{ instance.dyno }}</span>
+                                    </span>
                                     {% if instance.status in [ "running" ] %}
                                         <span class="status-online"></span>
                                     {% elseif instance.status in [ "restarting", "paused", "removing" ] %}
@@ -37,14 +40,30 @@
                                         <span class="status-offline"></span>
                                     {% endif %}
                                 </div>
-                                <div class="card-body">
-                                    <div class="text-body-secondary">
-                                        <div class="small">
-                                            Hostname: {{ instance.hostname }}
-                                            <br>IP Address: {{ instance.networkSettings.ipAddress }}
-                                            <br>MAC Address: {{ instance.networkSettings.macAddress }}
-                                            <br>Status: {{ instance.status }}
+                                <ul class="list-group list-group-flush small">
+                                    <li class="list-group-item monospace">
+                                        <div class="d-flex justify-content-between">
+                                            <span class="text-body-secondary small">Hostname</span>
+                                            <code class="monospace">{{ instance.hostname }}</code>
                                         </div>
+                                    </li>
+                                    <li class="list-group-item monospace">
+                                        <div class="d-flex justify-content-between">
+                                            <span class="text-body-secondary small">IP Address</span>
+                                            <code class="monospace">{{ instance.networkSettings.ipAddress }}</code>
+                                        </div>
+                                    </li>
+                                    <li class="list-group-item monospace">
+                                        <div class="d-flex justify-content-between">
+                                            <span class="text-body-secondary small">MAC Address</span>
+                                            <code class="monospace">{{ instance.networkSettings.macAddress }}</code>
+                                        </div>
+                                    </li>
+                                </ul>
+                                <div class="card-footer monospace small">
+                                    <div class="d-flex justify-content-between">
+                                        <span class="text-body-secondary small">Status</span>
+                                        <code class="monospace">{{ instance.status }}</code>
                                     </div>
                                 </div>
                             </div>
