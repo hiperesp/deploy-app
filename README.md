@@ -46,6 +46,8 @@ You can use it to manage your Dokku apps, deploy new apps, manage your app setti
 
 - Dokku Server (https://dokku.com/docs/getting-started/installation) with SSH access
 
+- Dokku Let's Encrypt plugin (optional, but recommended to enable https)
+
 ### Installation
 
 Choose a name for your app, and create it on Dokku server. We will use `host` as an example.\
