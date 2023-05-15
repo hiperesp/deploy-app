@@ -33,7 +33,7 @@ dokku shell
 apps:create host
 
 # Now we will sync our app with the latest version of deploy-app:
-git:sync host https://github.com/hiperesp/deploy-app.git main --build
+git:sync host https://github.com/hiperesp/deploy-app.git latest --build
 
 # Now we will configure our app ports:
 proxy:ports-set host http:80:3000
@@ -75,12 +75,12 @@ Now, you can access your app using your defined domain.
 ## How to update
 Access your app using your defined domain then open the namespace of this app.
 
-Open this app and click on "Deploy" button. Fill the "git ref" field with "main" or the app version that you want to deploy.
+Open this app and click on "Deploy" button. Fill the "git ref" field with "latest" or the app version that you want to deploy.
 
 The app will be updated and restarted.
 
 If you don't see the "Deploy" button, you need to go to your app settings, at the "General Settings" tab, you can see the "Git Settings" section.\
-You need to set the "Remote" field with the following value: `https://github.com/hiperesp/deploy-app.git` and the "Ref" field with `main`.
+You need to set the "Remote" field with the following value: `https://github.com/hiperesp/deploy-app.git` and the "Ref" field with `latest`.
 
 Now save, and you will see the "Deploy" button.
 
