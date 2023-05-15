@@ -17,6 +17,18 @@
 
         <hr>
 
+        <div class="form-group mb-3">
+            <label class="small fw-bold">Builder</label>
+            <select class="form-control" name="builder">
+                {% for builderKey, builderValue in namespace.builders %}
+                    <option value="{{ builderKey }}" {{ "selected" if builderKey == app.builder }}>{{ builderValue }}</option>
+                {% endfor %}
+            </select>
+            <div class="small text-body-secondary">Usually, the auto-detected builder is the best option.</div>
+        </div>
+
+        <hr>
+
         <div>
             <h4 class="mb-2">Git Settings</h4>
             <p class="small text-body-secondary">It will be used to sync the app data. Please configure "Deploy keys" for this repository using the server public key. We don't need write access.</p>

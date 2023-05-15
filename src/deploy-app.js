@@ -362,16 +362,31 @@ app.get('/:namespace/:app/api/server-sent-events/actions/save-general-settings',
         'Connection': 'keep-alive',
     })
 
-    await sse(request, response, {}, async function({stdout, stderr}) {
-        return await app.configSet({
-            noRestart: true,
-            config: {
-                "DEPLOY_APP_GIT": JSON.stringify({
-                    "REPO": request.query.gitRepo,
-                    "REF": request.query.gitRef,
-                }),
-            }
-        }, stdout, stderr);
+    await sse(request, response, {
+        sendDoneMessage: false
+    }, async function({stdout}) {
+        const options = {
+            autoClose: false,
+            hideHelloMessage: true,
+        };
+
+        stdout('Saving build settings...');
+        await sse(request, response, options, async function({stdout, stderr}) {
+            return await app.setBuilder(request.query.builder, stdout, stderr);
+        });
+
+        stdout('Saving git settings...');
+        await sse(request, response, options, async function({stdout, stderr}) {
+            return await app.configSet({
+                noRestart: true,
+                config: {
+                    "DEPLOY_APP_GIT": JSON.stringify({
+                        "REPO": request.query.gitRepo,
+                        "REF": request.query.gitRef,
+                    }),
+                }
+            }, stdout, stderr);
+        });
     });
 });
 
@@ -498,7 +513,8 @@ app.get('/:namespace/:app/api/server-sent-events/actions/save-ports', async func
         sendDoneMessage: false
     }, async function({stdout}) {
         const options = {
-            autoClose: false
+            autoClose: false,
+            hideHelloMessage: true,
         };
 
         stdout('Saving ports...');

@@ -41,7 +41,28 @@ export default class Namespace extends Model {
         return this.#apps;
     }
     get plugins() {
-        return this.#plugins;
+        return this.#plugins || [];
+    }
+
+    get builders() {
+        const buildersNames = {
+            '': 'Auto-detect',
+            'herokuish': 'Herokuish',
+            'dockerfile': 'Docker',
+            'lambda': 'AWS Lambda',
+            'pack': 'Cloud Native Buildpacks',
+            'null': 'No builder',
+        };
+        const validBuilders = {
+            '': buildersNames[''],
+        };
+        for(const pluginName in this.plugins) {
+            if(!pluginName.startsWith('builder-')) continue;
+            const builderName = pluginName.replace(/^builder-/, '');
+            validBuilders[builderName] = buildersNames[builderName] || builderName;
+        }
+
+        return validBuilders;
     }
 
     async refresh(appOrApps = null) {
@@ -86,6 +107,7 @@ export default class Namespace extends Model {
         const psScale       = await this.psScale(appsList);
         const letsEncrypt   = await this.letsEncryptList(appsList);
         const config        = await this.configShow(appsList);
+        const builder       = await this.getBuilder(appsList);
 
         //remove apps that are not in appsList
         for(const app of this.apps) {
@@ -112,8 +134,22 @@ export default class Namespace extends Model {
                 psScale: psScale[app.name],
                 ssl: letsEncrypt[app.name],
                 config: config[app.name],
+                builder: builder[app.name],
             }, appsToFullRefresh.includes(app.name));
         }
+    }
+
+    async setAppBuilder(appName, builderName, onStdout = null, onStderr) {
+        if(typeof this.builders[builderName] != "string") throw new Error(`Invalid builder "${builder}". Must be one of: ${Object.keys(validBuilders).join(', ')}`);
+
+        const response = await this[kDokku].actionBuilderSet(appName, builderName, onStdout, onStderr);
+        this.refresh(appName);
+        return response;
+    }
+
+    async getBuilder(appsList) {
+        const response = await this[kDokku].builderReport(appsList);
+        return response;
     }
 
     async proxyPorts(appsList) {
@@ -235,6 +271,7 @@ export default class Namespace extends Model {
             online: this.online,
             apps: this.apps.map(app => app.toJson()),
             plugins: this.plugins,
+            builders: this.builders,
 
             _lastRefreshTime: this.lastRefreshTime,
         }

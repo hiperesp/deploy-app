@@ -11,6 +11,7 @@ export default class App extends Model {
     #psScale;
     #ssl;
     #config;
+    #builder;
     #psInspect;
 
     #lastRefreshTime = 0;
@@ -161,6 +162,10 @@ export default class App extends Model {
         return status;
     }
 
+    get builder() {
+        return this.#builder;
+    }
+
     get lastRefreshTime() {
         return this.#lastRefreshTime;
     }
@@ -176,18 +181,23 @@ export default class App extends Model {
         return false;
     }
 
-    async refresh({ proxyPorts, domains, psScale, ssl, config }, fullRefresh) {
+    async refresh({ proxyPorts, domains, psScale, ssl, config, builder }, fullRefresh) {
         this.#domains    = domains;
         this.#proxyPorts = proxyPorts;
         this.#psScale    = psScale;
         this.#ssl        = ssl;
         this.#config     = config;
+        this.#builder    = builder;
 
         if(!fullRefresh) return;
 
         this.#psInspect  = await this.namespace.psInspect(this.name);
         this.#lastRefreshTime = Date.now();
 
+    }
+
+    async setBuilder(builder, onStdout = null, onStderr) {
+        await this.#namespace.setAppBuilder(this.name, builder, onStdout, onStderr);
     }
 
     async scale(options, onStdout = null, onStderr) {
@@ -241,6 +251,7 @@ export default class App extends Model {
             config: this.config,
             instances: this.instances,
             exposeAllPorts: this.isExposedAllPorts,
+            builder: this.builder,
 
             status: this.status,
 

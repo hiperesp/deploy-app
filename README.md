@@ -1,10 +1,10 @@
-# Deploy.app.br
+# deploy-app
 
 ![Apps](/docs/images/app-settings-general.png)
 
 ## About
 
-Deploy.app.br is a beautiful UI for Dokku. It's a work in progress, but it's already usable.
+deploy-app is a beautiful UI for Dokku. It's a work in progress, but it's already usable.
 
 You can use it to manage your Dokku apps, deploy new apps, manage your app settings, and more.
 
@@ -32,8 +32,8 @@ dokku shell
 # Let's create our app:
 apps:create host
 
-# Now we will sync our app with the latest version of Deploy-app:
-git:sync host https://github.com/hiperesp/Deploy.app.br.git main --build
+# Now we will sync our app with the latest version of deploy-app:
+git:sync host https://github.com/hiperesp/deploy-app.git main --build
 
 # Now we will configure our app ports:
 proxy:ports-set host http:80:3000
@@ -80,7 +80,7 @@ Open this app and click on "Deploy" button. Fill the "git ref" field with "main"
 The app will be updated and restarted.
 
 If you don't see the "Deploy" button, you need to go to your app settings, at the "General Settings" tab, you can see the "Git Settings" section.\
-You need to set the "Remote" field with the following value: `https://github.com/hiperesp/Deploy.app.br.git` and the "Ref" field with `main`.
+You need to set the "Remote" field with the following value: `https://github.com/hiperesp/deploy-app.git` and the "Ref" field with `main`.
 
 Now save, and you will see the "Deploy" button.
 

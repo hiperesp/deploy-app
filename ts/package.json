@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/hiperesp/Deploy.app.br.git"
+    "url": "git+ssh://git@github.com/hiperesp/deploy-app.git"
   },
   "author": "Gabriel Lopes",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/hiperesp/Deploy.app.br/issues"
+    "url": "https://github.com/hiperesp/deploy-app/issues"
   },
-  "homepage": "https://github.com/hiperesp/Deploy.app.br#readme",
+  "homepage": "https://github.com/hiperesp/deploy-app#readme",
   "dependencies": {
     "@types/express": "^4.17.17",
     "@types/jsonwebtoken": "^9.0.1",

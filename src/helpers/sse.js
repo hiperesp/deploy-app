@@ -5,6 +5,7 @@ export default function sse(request, response, options, callable) {
     options.stderrOnCatch = options.stderrOnCatch ?? true;
     options.sendDoneMessage = options.sendDoneMessage ?? true;
     options.doneMessage = options.doneMessage || 'Done!';
+    options.hideHelloMessage = options.hideHelloMessage ?? false;
 
     let eventId = 0;
 
@@ -33,7 +34,7 @@ export default function sse(request, response, options, callable) {
         response.end();
     }
 
-    hello();
+    if(!options.hideHelloMessage) hello();
     promise = callable({stdout, stderr, done, close});
     if(options.stderrOnCatch) promise.catch(exception => stderr(exception.message));
     promise.finally(function() {

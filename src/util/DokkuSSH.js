@@ -18,6 +18,22 @@ export default class DokkuSSH {
     [kUsername];
     [kPrivateKey];
 
+    async actionBuilderSet(appName, builder, onStdout = null, onStderr = null) {
+        this.mustBeValidResourceName(appName);
+        this.mustBeValidResourceName(builder);
+
+        await this[kExecCommand](`builder:set ${appName} selected ${builder}`, onStdout, onStderr);
+    }
+
+    async builderReport(appOrApps) {
+        const output = {};
+        const builderReportResult = await this[kExecAppCommands](appOrApps, 'builder:report %app%');
+        for(const app in builderReportResult) {
+            output[app] = builderReportResult[app].match(/Builder selected:\s+([a-z0-9]+)?/)[1] || "";
+        }
+        return output;
+    }
+
     async actionGitSync(appName, remote, ref, onStdout = null, onStderr = null) {
         this.mustBeValidResourceName(appName);
         this.mustBeValidRemote(remote);
