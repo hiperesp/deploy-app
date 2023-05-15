@@ -12,7 +12,7 @@ jobs:
 
   release:
     name: Release
-    uses: hiperesp/actions/.github/workflows/release-and-deploy.yml@main
+    uses: hiperesp/actions/.github/workflows/release.yml@main
     secrets:
       DOKKU_SSH_URL: 'ssh://dokku@deploy.app.br:22/deploy-app'
       DOKKU_SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}

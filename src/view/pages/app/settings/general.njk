@@ -19,7 +19,7 @@
 
         <div class="form-group mb-3">
             <label class="small fw-bold">Builder</label>
-            <select class="form-control" name="builder">
+            <select class="form-select" name="builder">
                 {% for builderKey, builderValue in namespace.builders %}
                     <option value="{{ builderKey }}" {{ "selected" if builderKey == app.builder }}>{{ builderValue }}</option>
                 {% endfor %}
