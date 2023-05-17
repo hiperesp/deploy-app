@@ -57,5 +57,11 @@
                 {% include 'pages/app/settings/' + subtab + '.njk' %}
             </div>
         </div>
+
+        <hr>
+
+        <div class="text-body-secondary small mb-3">
+            <i class="bi bi-clock"></i> Updated {{ app._lastRefreshTime | friendlyTime }}
+        </div>
     </div>
 </main>

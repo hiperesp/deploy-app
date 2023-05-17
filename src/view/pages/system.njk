@@ -1,9 +1,10 @@
 {% extends 'layout.njk' %}
 
-{% set title %}Select a namespace{% endset %}
+{% set title %}deploy-app{% endset %}
 {% set breadcrumb = [
     {
-        text: "Select a namespace"
+        text: "deploy-app <a href=\"https://github.com/hiperesp/deploy-app\" target=\"blank\"><i class=\"bi bi-github\"></i></a>" | safe,
+        active: true
     }
 ] %}
 {% set tabs %}
@@ -50,7 +51,7 @@
 
             <hr>
 
-            <div class="text-body-secondary small">
+            <div class="text-body-secondary small mb-3">
                 <i class="bi bi-clock"></i> Updated {{ system._lastRefreshTime | friendlyTime }}
             </div>
         </div>
