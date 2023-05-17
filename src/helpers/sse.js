@@ -23,8 +23,6 @@ export default function sse(request, response, options, callable) {
         response.write(`\n`)
     }
 
-    let promise;
-
     const hello = () => output('hello', 'Connection established');
     const stdout = (msg) => output('stdout', msg);
     const stderr = (msg) => output('stderr', msg);
@@ -35,9 +33,16 @@ export default function sse(request, response, options, callable) {
     }
 
     if(!options.hideHelloMessage) hello();
-    promise = callable({stdout, stderr, done, close});
-    if(options.stderrOnCatch) promise.catch(exception => stderr(exception.message));
-    promise.finally(function() {
+
+    const promise = new Promise(function(resolve, reject) {
+        resolve(callable({stdout, stderr, done, close}));
+    })
+    .catch(exception => {
+        if(options.stderrOnCatch) {
+            stderr(exception.message)
+        }
+    })
+    .finally(function() {
         if(options.sendDoneMessage) done();
         if(options.autoClose) close();
     });
