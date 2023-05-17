@@ -20,7 +20,7 @@ export default class DokkuSSH {
 
     async actionBuilderSet(appName, builder, onStdout = null, onStderr = null) {
         this.mustBeValidResourceName(appName);
-        this.mustBeValidResourceName(builder);
+        if(builder) this.mustBeValidResourceName(builder);
 
         await this[kExecCommand](`builder:set ${appName} selected ${builder}`, onStdout, onStderr);
     }
