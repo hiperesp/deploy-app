@@ -45,7 +45,7 @@
 
         function appendLog(type, message) {
             // Only scroll to bottom if we are already at the bottom
-            const needScroll = (terminalContainer.scrollHeight - terminalContainer.scrollTop) > (terminalContainer.clientHeight - 40);
+            const needScroll = (terminalContainer.scrollHeight - terminalContainer.scrollTop) < (terminalContainer.clientHeight - 40);
 
             if(type==='html') {
                 const htmlContainer = document.createElement('div');
