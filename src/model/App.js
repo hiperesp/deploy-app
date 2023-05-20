@@ -122,6 +122,7 @@ export default class App extends Model {
                     macAddress: instance.NetworkSettings.MacAddress,
                     ports,
                 },
+                uptime: new Date(instance.State.StartedAt).getTime(),
                 status: instance.State.Status,//created, restarting, running, removing, paused, exited, dead
             });
         }

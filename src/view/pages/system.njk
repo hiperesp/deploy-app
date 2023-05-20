@@ -39,7 +39,7 @@
                                             <i class="bi bi-app-indicator"></i> {{ namespace.apps.length }} apps
                                         </div>
                                         <div class="small mt-2">
-                                            <i class="bi bi-clock"></i> Updated {{ namespace._lastRefreshTime | friendlyTime }}
+                                            <i class="bi bi-clock"></i> Last refreshed {{ namespace._lastRefreshTime | friendlyTime }}
                                         </div>
                                     </div>
                                 </div>
@@ -52,7 +52,7 @@
             <hr>
 
             <div class="text-body-secondary small mb-3">
-                <i class="bi bi-clock"></i> Updated {{ system._lastRefreshTime | friendlyTime }}
+                <i class="bi bi-clock"></i> Last refreshed {{ system._lastRefreshTime | friendlyTime }}
             </div>
         </div>
     </main>

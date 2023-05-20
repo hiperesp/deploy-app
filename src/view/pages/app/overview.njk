@@ -59,6 +59,12 @@
                                             <code class="monospace">{{ instance.networkSettings.macAddress }}</code>
                                         </div>
                                     </li>
+                                    <li class="list-group-item monospace" title="{{ instance.uptime | datetime }}">
+                                        <div class="d-flex justify-content-between">
+                                            <span class="text-body-secondary small">Uptime</span>
+                                            <code class="monospace">{{ instance.uptime | friendlyTime }}</code>
+                                        </div>
+                                    </li>
                                 </ul>
                                 <div class="card-footer monospace small">
                                     <div class="d-flex justify-content-between">
@@ -87,7 +93,7 @@
         <hr>
 
         <div class="text-body-secondary small mb-3">
-            <i class="bi bi-clock"></i> Updated {{ app._lastRefreshTime | friendlyTime }}
+            <i class="bi bi-clock"></i> Last refreshed {{ app._lastRefreshTime | friendlyTime }}
         </div>
 
     </div>
