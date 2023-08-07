@@ -185,7 +185,7 @@ export default class DokkuSSH {
                 },
             };
             for(const domainConfig of domainsConfigs) {
-                const [type, config, configValue] = domainConfig.trim().replace(/Domains (app|global) (enabled|vhosts):\s+/g, '$1,$2,').split(',');
+                const [type, config, configValue] = domainConfig.trim().replace(/Domains (app|global) (enabled|vhosts):\s*/g, '$1,$2,').split(',');
                 if(config === 'vhosts') {
                     configs[type][config] = configValue.split(' ');
                 } else {
