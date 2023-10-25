@@ -125,9 +125,9 @@ export default class DokkuSSH {
         }
         let command;
         if(ports.length === 0) {
-            command = 'proxy:ports-clear %app%';
+            command = 'ports:clear %app%';
         } else {
-            command = `proxy:ports-set %app% ${ports.join(' ')}`;
+            command = `ports:set %app% ${ports.join(' ')}`;
         }
         await this[kExecAppCommands](appName, command, onStdout, onStderr);
     }
@@ -220,7 +220,7 @@ export default class DokkuSSH {
 
     async proxyPorts(appOrApps) {
         const output = {};
-        const proxyPortsResult = await this[kExecAppCommands](appOrApps, 'proxy:ports %app%');
+        const proxyPortsResult = await this[kExecAppCommands](appOrApps, 'ports:list %app%');
         for(const app in proxyPortsResult) {
             const proxyPorts = proxyPortsResult[app].split(/\r?\n/);
             proxyPorts.shift(); // remove header

@@ -39,7 +39,7 @@ git:set host rev-env-var GIT_ENV
 git:sync host https://github.com/hiperesp/deploy-app.git latest --build
 
 # Now we will configure our app ports:
-proxy:ports-set host http:80:3000
+ports:set host http:80:3000
 
 # Now we will define our app domain. If you have configured a global domain on your Dokku server, you can skip this step. If you don't have a global domain, you can use the following command to add a domain to your app:
 domains:add host mydomain.com
