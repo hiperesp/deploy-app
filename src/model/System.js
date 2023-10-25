@@ -20,7 +20,6 @@ export default class System extends Model {
         return this.#updateChecker;
     }
     get hostname() {
-        return "3f7a5672fe4e";
         return os.hostname();
     }
     get currentAppPath() {
