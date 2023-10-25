@@ -42,7 +42,7 @@ export default class App extends Model {
     get config() {
         const typesPrefixes = {
             deployApp: ["DEPLOY_APP_"],
-            dokku: ["DOKKU_", "GIT_REV"],
+            dokku: ["DOKKU_", "GIT_"],
             userDefined: [""],
         };
         const output = {
