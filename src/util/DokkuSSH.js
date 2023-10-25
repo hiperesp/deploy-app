@@ -383,6 +383,10 @@ SSH_EOF
                 });
             }
 
+            setTimeout(() => {
+                child.kill();
+            }, 10 * 60 * 1000);
+
             resolve(child);
         });
     }
