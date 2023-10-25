@@ -33,7 +33,7 @@ dokku shell
 apps:create host
 
 # Let's enable the update-checker feature
-git:set host rev-env-var GIT_ENV
+git:set host rev-env-var GIT_REV
 
 # Now we will sync our app with the latest version of deploy-app:
 git:sync host https://github.com/hiperesp/deploy-app.git latest --build
