@@ -12,7 +12,7 @@ const UPDATE_STATUS = {
 
 export default class UpdateCheck {
     [kUpdateStatus] = null;
-    [kUpdateMessage]   = null;
+    [kUpdateMessage] = null;
     [kUpdateNotes]  = null;
 
     async check() {
@@ -95,73 +95,75 @@ export default class UpdateCheck {
                 console.log(this[kUpdateMessage]);
                 return;
             }
+
             const responseJson = await response.json();
-            if(responseJson.status==="ahead") {
-                const tags = await (async function() {
-                    try {
-                        const tags = await fetch(`https://api.github.com/repos/${githubUsername}/${githubRepo}/tags`, {
-                            headers: {
-                                "Accept": "application/vnd.github.v3+json"
-                            }
-                        });
-                        if(!tags.ok) {
-                            return [];
-                        }
-                        const tagsJson = await tags.json();
 
-                        const response = [];
-                        for(const tag of tagsJson) {
-                            response[tag.commit.sha] = tag.name;
-                        }
-
-                        return response;
-                    } catch(e) {
-                        return [];
-                    }
-                })();
-                const lastCommitSha = responseJson.commits[responseJson.commits.length-1].sha;
-
-                this[kUpdateStatus] = UPDATE_STATUS.OUT_OF_DATE;
-                this[kUpdateMessage] = `There is a new version available: ${tags[lastCommitSha] || lastCommitSha}`;
-                this[kUpdateNotes] = (function() {
-                    const updateNotes = [];
-                    let messageAppend = "";
-                    for(const commit of responseJson.commits) {
-                        messageAppend+= `${commit.commit.message}`;
-                        if(tags[commit.sha]) {
-                            updateNotes.push({
-                                "version": tags[commit.sha],
-                                "versionStr": `v${tags[commit.sha]}`,
-                                "sha": commit.sha,
-                                "date": commit.commit.author.date,
-                                "commitMessage": messageAppend,
-                                "changesUrl": commit.html_url,
-                                "author": {
-                                    "login": commit.author.login,
-                                    "name": commit.author.name,
-                                    "email": commit.author.email,
-                                    "avatarUrl": commit.author.avatar_url,
-                                    "verified": commit.author.login===githubUsername,
-                                }
-                            });
-                            messageAppend = "";
-                        } else {
-                            messageAppend+= "\n";
-                        }
-                    }
-                    return updateNotes;
-                })();
+            if(responseJson.status!=="ahead") {
+                this[kUpdateStatus] = UPDATE_STATUS.UP_TO_DATE;
+                this[kUpdateMessage]   = "You are running the latest version.";
+                this[kUpdateNotes]  = null;
                 return;
             }
-            this[kUpdateStatus] = UPDATE_STATUS.UP_TO_DATE;
-            this[kUpdateMessage]   = "You are running the latest version.";
-            this[kUpdateNotes]  = null;
+
+            const tags = await (async function() {
+                try {
+                    const tags = await fetch(`https://api.github.com/repos/${githubUsername}/${githubRepo}/tags`, {
+                        headers: {
+                            "Accept": "application/vnd.github.v3+json"
+                        }
+                    });
+                    if(!tags.ok) {
+                        return [];
+                    }
+                    const tagsJson = await tags.json();
+
+                    const response = [];
+                    for(const tag of tagsJson) {
+                        response[tag.commit.sha] = tag.name;
+                    }
+
+                    return response;
+                } catch(e) {
+                    return [];
+                }
+            })();
+            const lastCommitSha = responseJson.commits[responseJson.commits.length-1].sha;
+
+            this[kUpdateStatus] = UPDATE_STATUS.OUT_OF_DATE;
+            this[kUpdateMessage] = `There is a new version available: ${tags[lastCommitSha] || lastCommitSha}`;
+            this[kUpdateNotes] = (function() {
+                const updateNotes = [];
+                let messageAppend = "";
+                for(const commit of responseJson.commits) {
+                    messageAppend+= `${commit.commit.message}`;
+                    if(tags[commit.sha]) {
+                        updateNotes.push({
+                            "version": tags[commit.sha],
+                            "versionStr": `v${tags[commit.sha]}`,
+                            "sha": commit.sha,
+                            "date": commit.commit.author.date,
+                            "commitMessage": messageAppend,
+                            "changesUrl": commit.html_url,
+                            "author": {
+                                "login": commit.author.login,
+                                "name": commit.author.name,
+                                "email": commit.author.email,
+                                "avatarUrl": commit.author.avatar_url,
+                                "verified": commit.author.login===githubUsername,
+                            }
+                        });
+                        messageAppend = "";
+                    } else {
+                        messageAppend+= "\n";
+                    }
+                }
+                return updateNotes;
+            })();
         } catch(e) {
             this[kUpdateStatus] = UPDATE_STATUS.ERROR;
             this[kUpdateMessage] = `We can't check for updates because the GitHub API returned an error: ${e.message}`;
             this[kUpdateNotes] = null;
             console.log(this[kUpdateMessage]);
-            return;
         }
     }
 
