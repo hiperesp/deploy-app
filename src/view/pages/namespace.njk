@@ -18,17 +18,15 @@
 ] %}
 
 {% set tabs %}
-    <ul class="nav nav-tabs px-md-5 px-3">
-        {% for key, value in tabs %}
-            {% if value %}
-                <li class="nav-item">
-                    <a class="nav-link {{ "active" if key === tab }}" {{ 'aria-current="page"' if key == tab }} href="/{{ namespace.name }}/{{ app.name }}?tab={{ key }}">
-                        {{ value }}
-                    </a>
-                </li>
-            {% endif %}
-        {% endfor %}
-    </ul>
+    {% for key, value in tabs %}
+        {% if value %}
+            <li class="nav-item">
+                <a class="nav-link {{ "active" if key === tab }}" {{ 'aria-current="page"' if key == tab }} href="/{{ namespace.name }}/{{ app.name }}?tab={{ key }}">
+                    {{ value }}
+                </a>
+            </li>
+        {% endif %}
+    {% endfor %}
 {% endset %}
 
 {% set methods = {

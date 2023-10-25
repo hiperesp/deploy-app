@@ -82,6 +82,9 @@ nunjucksEnv.addFilter('datetimeInput', function(time) {
 nunjucksEnv.addFilter('dateInput', function(time) {
     return (new Date(time)).toISOString().split('T')[0];
 });
+nunjucksEnv.addFilter('timestamp', function(datetime) {
+    return (new Date(datetime)).getTime();
+});
 nunjucksEnv.addFilter('json', function(string) {
     try {
         return JSON.parse(string);

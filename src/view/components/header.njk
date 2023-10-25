@@ -42,5 +42,60 @@
             </nav>
         </div>
     </nav>
-    {{ tabs | safe }}
+    {% if tabs %}
+        <ul class="nav nav-tabs px-md-5 px-3">
+            {{ tabs | safe }}
+        </ul>
+    {% endif %}
+    </ul>
 </header>
+{% if system.updateCheck.status == "OUT_OF_DATE" %}
+    {% if tab != "form_sse" %}
+        <div class="alert alert-info rounded-0 mb-0" role="alert">
+            You are using a <b>outdated</b> version of deploy-app since <b>{{ (system.updateCheck.notes|first).date | timestamp | friendlyTime }}</b> and you can update to <b>{{ (system.updateCheck.notes|last).versionStr }}</b> now. Please update to get the latest features and security updates.
+            <b style="float:right"><a href="javascript:void(0)" class="btn btn-sm btn-info fw-bold" data-id="btn-show-update-moredetails">{% if system.currentAppPath %}Click here to Update{% else %}Changelog{% endif %}</a></b>
+            <span data-id="update-moredetails">
+                {% set isSystemCurrentAppScreen = "/"+namespace.name+"/"+app.name == system.currentAppPath %}
+                {% if system.currentAppPath %}
+                    <hr>
+                    <h5>Update</h5>
+                    <ol>
+                        <li {{ ('class="fw-bold"' | safe ) if not isSystemCurrentAppScreen }}>Go to <a href="{{ system.currentAppPath}}">{{ system.currentAppPath }}</a></li>
+                        <li {{ ('class="fw-bold"' | safe ) if isSystemCurrentAppScreen }}>Click on <button type="button" class="btn btn-sm btn-dark dropdown-toggle" style="transform: scale(0.8)" disabled><i class="bi bi-rocket-takeoff-fill"></i> Deploy</button> then click on <button type="button" class="btn btn-sm btn-dark" style="transform: scale(0.8)" disabled>Deploy now</button> button and wait for update.</li>
+                    </ol>
+                {% endif %}
+                <hr>
+                <h5>Changelog</h5>
+                <code>
+                    {% set defaultNotes = "Minimal fixes and improvements." %}
+                    {% if system.updateCheck.notes %}
+                        {% for log in system.updateCheck.notes %}
+                            - <b>{{ log.date | datetime }} - {{ log.versionStr }}</b>:
+                            {% set itemNotes = log.commitMessage | replace(r/#([a-z]+)/, "") | trim %}
+                            {% if not itemNotes %}
+                                {% set itemNotes = defaultNotes %}
+                            {% endif %}
+                            <pre class="ps-3">{{ notes }}</pre>
+                        {% endfor %}
+                    {% else %}
+                        - {{ defaultNotes }}
+                    {% endif %}
+                </code>
+            </span>
+        </div>
+        <script>
+    (function() {
+        const btnShowUpdateMoreDetails = document.querySelector('[data-id="btn-show-update-moredetails"]');
+        const updateMoreDetails = document.querySelector('[data-id="update-moredetails"]');
+
+        btnShowUpdateMoreDetails.addEventListener("click", function() {
+            updateMoreDetails.classList.toggle("d-none");
+        });
+
+        {% if not isSystemCurrentAppScreen or tab != "overview" %}
+            updateMoreDetails.classList.add("d-none");
+        {% endif %}
+    })();
+        </script>
+    {% endif %}
+{% endif %}
