@@ -1,5 +1,4 @@
 import DokkuSSH from "../util/DokkuSSH.js";
-import UpdateCheck from "../util/UpdateCheck.js";
 import Model from "./Model.js";
 import Namespace from "./Namespace.js";
 import os from "node:os";
@@ -8,7 +7,6 @@ export default class System extends Model {
 
     #namespaces = [];
     #lastRefreshTime = 0;
-    #updateChecker = null;
 
     get namespaces() {
         return this.#namespaces;
@@ -16,18 +14,18 @@ export default class System extends Model {
     get lastRefreshTime() {
         return this.#lastRefreshTime;
     }
-    get updateChecker() {
-        return this.#updateChecker;
-    }
     get hostname() {
         return os.hostname();
     }
-    get currentAppPath() {
+    get systemAppPath() {
         for(const namespace of this.namespaces) {
             for(const app of namespace.apps) {
                 for(const instance of app.instances) {
                     if(instance.hostname === this.hostname) {
-                        return `/${namespace.name}/${app.name}`;
+                        return {
+                            namespace: namespace.name,
+                            app: app.name,
+                        }
                     }
                 }
             }
@@ -38,18 +36,10 @@ export default class System extends Model {
     toJson() {
         return {
             namespaces: this.namespaces.map(namespace => namespace.toJson()),
-            updateCheck: this.updateChecker.toJson(),
             _lastRefreshTime: this.lastRefreshTime,
             hostname: this.hostname,
-            currentAppPath: this.currentAppPath,
+            systemAppPath: this.systemAppPath,
         }
-    }
-
-    async verifyUpdates() {
-        if(process.env.UPDATE_CHECK_INTERVAL < 1) return;
-
-        this.#updateChecker.check();
-        setTimeout(this.verifyUpdates.bind(this), (process.env.UPDATE_CHECK_INTERVAL || 3600) * 1000, null);
     }
 
     async refresh() {
@@ -62,8 +52,6 @@ export default class System extends Model {
     static instance() {
         if(!System.#instance) {
             const instance = new System()
-
-            instance.#updateChecker = new UpdateCheck();
 
             if(!process.env.NAMESPACES) throw new Error("Missing namespaces environment variable in .env file: NAMESPACES");
 
@@ -86,7 +74,6 @@ export default class System extends Model {
                 }
 
                 instance.refresh();
-                instance.verifyUpdates();
 
                 System.#instance = instance
 

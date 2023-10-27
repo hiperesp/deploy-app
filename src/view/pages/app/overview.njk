@@ -3,7 +3,10 @@
     <div class="container pt-3">
         <div class="mx-2">
             <div class="mb-3 d-flex justify-content-end gap-1">
-                {% if (app.config.all.DEPLOY_APP_GIT|json).REPO %}
+                {% if app.updateCheck.status == "OUT_OF_DATE" %}
+                    <div class="alert alert-warning py-1 small" role="alert">{{ app.updateCheck.message }}</div>
+                {% endif %}
+                {% if (app.config.deployApp.DEPLOY_APP_GIT|json).REPO %}
                     <div class="dropdown">
                         <button type="button" class="btn btn-sm btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"><i class="bi bi-rocket-takeoff-fill"></i> Deploy</button>
                         <form class="dropdown-menu dropdown-menu-end p-3" action="/{{ namespace.name }}/{{ app.name }}?tab=form_sse" method="post">

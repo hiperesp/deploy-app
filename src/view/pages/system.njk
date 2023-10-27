@@ -26,11 +26,7 @@
                                 <div class="card-body">
                                     <div class="card-title h5 d-flex gap-1" title="{{ namespace.name }}">
                                         <span class="card-title-text flex-1">{{ namespace.name }}</span>
-                                        {% if namespace.online %}
-                                            <span class="status-online"></span>
-                                        {% else %}
-                                            <span class="status-offline"></span>
-                                        {% endif %}
+                                        <span class="status-{{ namespace.statusClass }}"></span>
                                     </div>
                                     <div class="text-body-secondary">
                                         <div class="fs-6">

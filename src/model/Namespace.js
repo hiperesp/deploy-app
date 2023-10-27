@@ -34,6 +34,17 @@ export default class Namespace extends Model {
     get online() {
         return this.#online;
     }
+    get statusClass() {
+        if(!this.online) {
+            return "offline";
+        }
+        for(const app of this.apps) {
+            if(app.statusClass === "warning") {
+                return "warning";
+            }
+        }
+        return "online";
+    }
     get lastRefreshTime() {
         return this.#lastRefreshTime;
     }
@@ -268,7 +279,7 @@ export default class Namespace extends Model {
         return {
             name: this.name,
             globalDomain: this.globalDomain,
-            online: this.online,
+            statusClass: this.statusClass,
             apps: this.apps.map(app => app.toJson()),
             plugins: this.plugins,
             builders: this.builders,

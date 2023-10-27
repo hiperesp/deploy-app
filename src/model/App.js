@@ -1,3 +1,4 @@
+import UpdateCheck from "../util/UpdateCheck.js";
 import Model from "./Model.js";
 
 export default class App extends Model {
@@ -13,6 +14,7 @@ export default class App extends Model {
     #config;
     #builder;
     #psInspect;
+    #updateCheck;
 
     #lastRefreshTime = 0;
 
@@ -20,6 +22,7 @@ export default class App extends Model {
         super()
         this.#namespace = namespace
         this.#name = options.name
+        this.#updateCheck = new UpdateCheck();
     }
 
     get namespace() {
@@ -163,6 +166,34 @@ export default class App extends Model {
         return status;
     }
 
+    get statusClass() {
+        let intermediateStatus = -1;
+
+        if(this.status.running > 0) {
+            intermediateStatus = 2;
+        }
+        if(this.status.created > 0 || this.status.restarting > 0 || this.status.removing > 0) {
+            intermediateStatus = 1;
+        }
+        if(this.#updateCheck.status === "OUT_OF_DATE") {
+            intermediateStatus = 1;
+        }
+        if(this.status.exited > 0 || this.status.dead > 0) {
+            intermediateStatus = 0;
+        }
+
+        switch(intermediateStatus) {
+            case 2:
+                return "online";
+            case 1:
+                return "warning";
+            case 0:
+                return "offline";
+        }
+
+        return "offline";
+    }
+
     get builder() {
         return this.#builder;
     }
@@ -189,6 +220,7 @@ export default class App extends Model {
         this.#ssl        = ssl;
         this.#config     = config;
         this.#builder    = builder;
+        this.#updateCheck.check(this.config.all);
 
         if(!fullRefresh) return;
 
@@ -255,6 +287,9 @@ export default class App extends Model {
             builder: this.builder,
 
             status: this.status,
+            statusClass: this.statusClass,
+
+            updateCheck: this.#updateCheck.toJson(),
 
             _lastRefreshTime: this.lastRefreshTime,
         }
