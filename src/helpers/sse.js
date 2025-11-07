@@ -23,11 +23,14 @@ export default function sse(request, response, options, callable) {
         response.write(`\n`)
     }
 
+    const updateInterval = setInterval(() => output('update', ''), 1000);
+
     const hello = () => output('hello', 'Connection established');
     const stdout = (msg) => output('stdout', msg);
     const stderr = (msg) => output('stderr', msg);
     const done = (msg) => output('done', msg || options.doneMessage);
     const close = () => {
+        clearInterval(updateInterval);
         output('close', 'Connection closed');
         response.end();
     }
