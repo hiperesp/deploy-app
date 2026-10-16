@@ -5,3 +5,5 @@
 - Botão refresh app
 - Botão refresh namespace
 - Botão refresh all namespaces
+
+Versão atual: v0.38.31
