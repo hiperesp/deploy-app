@@ -81,18 +81,27 @@ export default class App extends Model {
         for(const instance of this.psInspect) {
             const ports = [];
             for(const port in instance?.NetworkSettings?.Ports??{}) {
-                if(!instance.NetworkSettings.Ports[port]) continue;
-
                 const portProtocol = port.split("/");
 
-                ports.push({
-                    containerPort: portProtocol[0],
-                    protocol: portProtocol[1],
-                    type: "direct",
-                    hostPort: instance.NetworkSettings.Ports[port][0].HostPort,
-                    hostIp: instance.NetworkSettings.Ports[port][0].HostIp,
-                    hostName: null
-                });
+                if(instance.NetworkSettings.Ports[port]) {
+                    ports.push({
+                        containerPort: portProtocol[0],
+                        protocol: portProtocol[1],
+                        type: "direct",
+                        hostPort: instance.NetworkSettings.Ports[port][0].HostPort,
+                        hostIp: instance.NetworkSettings.Ports[port][0].HostIp,
+                        hostName: null
+                    });
+                } else {
+                    ports.push({
+                        containerPort: portProtocol[0],
+                        protocol: portProtocol[1],
+                        type: "proxy",
+                        hostPort: portProtocol[0],
+                        hostIp: null,
+                        hostName: this.domains.app[0] || this.domains.global[0]
+                    });
+                }
             }
 
             for(const proxyPort of this.proxyPorts) {
